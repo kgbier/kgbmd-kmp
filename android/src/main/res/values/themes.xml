@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="darkGrey">#121212</color>
+    <color name="darkGrey_7">#232323</color>
+    <color name="darkGrey_9">#272727</color>
+
+    <!-- Window background color  -->
+    <attr name="backgroundColorPrimary" format="reference|color" />
+    <!-- Appears elevated above the background -->
+    <attr name="backgroundColorSecondary" format="reference|color" />
+    <!-- Appears elevated above secondary backgrounds -->
+    <attr name="backgroundColorTertiary" format="reference|color" />
+
+</resources>
