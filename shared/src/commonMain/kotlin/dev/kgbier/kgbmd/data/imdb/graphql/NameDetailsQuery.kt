@@ -53,9 +53,9 @@ class NameDetailsQuery : GraphqlQuery<NameDetailsQuery.Params, NameDetailsQuery.
         }
     }
 
-    override val document: String = """
-query NameDetails(${'$'}id: ID!) {
-  name(id: ${'$'}id) {
+    override val document: String = $$"""
+query NameDetails($id: ID!) {
+  name(id: $id) {
     nameText {
       text
     }

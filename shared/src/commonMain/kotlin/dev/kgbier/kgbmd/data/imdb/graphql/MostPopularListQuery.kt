@@ -42,11 +42,11 @@ class MostPopularListQuery :
         }
     }
 
-    override val document: String = """
-query MostPopularList(${'$'}count: Int!, ${'$'}type: ChartTitleType!) {
-  chartTitles(first: ${'$'}count, chart: { chartType: ${'$'}type }) {
+    override val document: String = $$"""
+query MostPopularList($count: Int!, $type: ChartTitleType!) {
+  chartTitles(first: $count, chart: { chartType: $type }) {
     pageInfo {
-      ...${PaginationFragment.name}
+      ...$${PaginationFragment.name}
     }
 
     edges {
@@ -66,7 +66,7 @@ query MostPopularList(${'$'}count: Int!, ${'$'}type: ChartTitleType!) {
     }
   }
 }
-${PaginationFragment.fragment}
+$${PaginationFragment.fragment}
 """
 }
 

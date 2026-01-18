@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.MoviePoster
-import dev.kgbier.kgbmd.presentation.MovieListViewModel
+import dev.kgbier.kgbmd.presentation.TitleListViewModel
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -30,13 +30,13 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun TitleList(
     scope: CoroutineScope,
-    viewModelFactory: MovieListViewModel.Factory,
+    viewModelFactory: TitleListViewModel.Factory,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModel: MovieListViewModel = remember {
-        viewModelFactory.createMovieListViewModelFactory(scope)
+    viewModel: TitleListViewModel = remember {
+        viewModelFactory.createTitleListViewModelFactory(scope)
     }
 ) {
-    val state: MovieListViewModel.TitleListState by viewModel.titleList.collectAsState()
+    val state: TitleListViewModel.TitleListState by viewModel.titleList.collectAsState()
     TitleListView(
         state = state,
         contentPadding = contentPadding,
@@ -45,7 +45,7 @@ fun TitleList(
 
 @Composable
 fun TitleListView(
-    state: MovieListViewModel.TitleListState,
+    state: TitleListViewModel.TitleListState,
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val layoutDirection = LocalLayoutDirection.current
@@ -57,8 +57,8 @@ fun TitleListView(
     )
 
     val shimmerState = when (state) {
-        MovieListViewModel.TitleListState.Loading -> rememberShimmerState()
-        is MovieListViewModel.TitleListState.Loaded -> 0f
+        TitleListViewModel.TitleListState.Loading -> rememberShimmerState()
+        is TitleListViewModel.TitleListState.Loaded -> 0f
     }
 
     LazyVerticalGrid(
@@ -68,14 +68,14 @@ fun TitleListView(
         contentPadding = composedContentPadding,
     ) {
         when (state) {
-            is MovieListViewModel.TitleListState.Loaded -> items(items = state.items) { item ->
+            is TitleListViewModel.TitleListState.Loaded -> items(items = state.items) { item ->
                 PosterView(
                     poster = item,
                     onClick = {},
                 )
             }
 
-            MovieListViewModel.TitleListState.Loading -> {
+            TitleListViewModel.TitleListState.Loading -> {
                 items(count = 20) {
                     PosterCard(
                         onClick = {},
@@ -93,7 +93,7 @@ fun TitleListViewPreview() {
     MaterialTheme {
         Box(Modifier.background(Color.White)) {
             TitleListView(
-                MovieListViewModel.TitleListState.Loaded(
+                TitleListViewModel.TitleListState.Loaded(
                     listOf(
                         MoviePoster(
                             ttId = "id",

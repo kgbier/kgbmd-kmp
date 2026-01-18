@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Tv
@@ -25,6 +26,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,12 +41,18 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import coil3.util.DebugLogger
 import dev.kgbier.kgbmd.data.StubPreferencesService
+import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
-import dev.kgbier.kgbmd.presentation.MovieListViewModelFactory
+import dev.kgbier.kgbmd.presentation.MainScreenViewModelFactory
+import dev.kgbier.kgbmd.presentation.TitleListViewModelFactory
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 
 @Composable
 fun MainScreen() {
+    val prefs = PreferencesRepo(
+        StubPreferencesService()
+    )
+
     AppTheme {
         val coilContext = LocalPlatformContext.current
         setSingletonImageLoaderFactory {
@@ -58,7 +68,9 @@ fun MainScreen() {
             exitDirection = FloatingToolbarExitDirection.Bottom,
         )
 
-        scrollBehaviour.state.offset
+        val vm = remember {
+            MainScreenViewModelFactory(prefs).createMainScreenViewModelFactory(scope)
+        }
 
         Scaffold(
             bottomBar = {
@@ -81,9 +93,14 @@ fun MainScreen() {
                             }
                             .padding(16.dp)
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = vm::toggleTitleCategory) {
+                            val currentCategory by vm.titleCategory.collectAsState(TitleCategory.Movie)
+                            val toggleCategoryIcon = when (currentCategory) {
+                                TitleCategory.Movie -> Icons.Default.Tv
+                                TitleCategory.TvShow -> Icons.Default.Movie
+                            }
                             Icon(
-                                Icons.Default.Tv,
+                                toggleCategoryIcon,
                                 contentDescription = "Localized description",
                             )
                         }
@@ -109,11 +126,7 @@ fun MainScreen() {
             ) {
                 TitleList(
                     scope = scope,
-                    viewModelFactory = MovieListViewModelFactory(
-                        PreferencesRepo(
-                            StubPreferencesService()
-                        )
-                    ),
+                    viewModelFactory = TitleListViewModelFactory(prefs),
                     contentPadding = innerPadding,
                 )
             }
