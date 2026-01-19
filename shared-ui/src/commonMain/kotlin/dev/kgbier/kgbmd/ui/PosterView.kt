@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,14 +28,17 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import dev.kgbier.kgbmd.domain.model.MoviePoster
+import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
 fun PosterView(
     poster: MoviePoster,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    shape: Shape = CardDefaults.shape,
 ) = PosterView(
     modifier = modifier,
+    shape = shape,
     thumbnailUrl = poster.thumbnailUrl,
     imageUrl = poster.posterUrlSmall,
     title = poster.title,
@@ -48,11 +52,15 @@ fun PosterView(
     imageUrl: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = CardDefaults.shape,
     title: String? = null,
     rating: String? = null,
 ) {
     PosterCard(
         onClick = onClick,
+        enabled = enabled,
+        shape = shape,
         modifier = modifier
     ) {
         Box {
@@ -69,16 +77,14 @@ fun PosterView(
                     modifier = Modifier
                         .padding(4.dp)
                         .clip(RoundedCornerShape(100))
-                        .background(Color.Black.copy(alpha = 0.6f))
-                        .padding(
-                            horizontal = 6.dp,
-                        )
+                        .background(Tonal.scrimDark.copy(alpha = 0.6f))
+                        .padding(horizontal = 6.dp)
                         .align(Alignment.TopEnd)
                 ) {
                     RatingStarView(
                         ratingText = rating,
                         textStyle = MaterialTheme.typography.labelMedium,
-                        textColour = Color.White,
+                        textColour = Tonal.primaryDark,
                         starSizeMultiplier = 0.6f,
                         modifier = Modifier.padding(start = 2.dp)
                             .align(Alignment.TopEnd)
@@ -101,10 +107,13 @@ fun PosterView(
 fun PosterCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = CardDefaults.shape,
     content: @Composable ColumnScope.() -> Unit,
 ) = Card(
     onClick = onClick,
-    shape = MaterialTheme.shapes.medium,
+    enabled = enabled,
+    shape = shape,
     elevation = CardDefaults.cardElevation(
         defaultElevation = 2.dp,
         pressedElevation = 8.dp,
@@ -121,15 +130,15 @@ private fun BottomTitle(title: String, modifier: Modifier) = Text(
         .background(
             Brush.verticalGradient(
                 0.0f to Color.Transparent,
-                0.6f to Color.Black.copy(alpha = 0.7f),
-                1.0f to Color.Black.copy(alpha = 1f),
+                0.6f to Tonal.scrimDark.copy(alpha = 0.7f),
+                1.0f to Tonal.scrimDark.copy(alpha = 1f),
                 startY = 0f,
                 endY = Float.POSITIVE_INFINITY,
             )
         )
         .padding(6.dp)
         .padding(top = 18.dp),
-    color = Color.White,
+    color = Tonal.primaryDark,
     textAlign = TextAlign.End,
     style = MaterialTheme.typography.labelSmall,
 )

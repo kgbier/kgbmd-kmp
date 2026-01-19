@@ -1,7 +1,7 @@
 package dev.kgbier.kgbmd.domain.model
 
 data class Suggestion(
-    val id: String,
+    val id: MediaEntityId,
     val title: String,
     val type: SearchSuggestionType?,
     val year: String?,
@@ -10,18 +10,18 @@ data class Suggestion(
 )
 
 enum class SearchSuggestionType {
-    MOVIE,      //  q: "feature", "TV movie"
-    TV_SHOW,    //  q: "TV mini-series", "TV series"
-    CAST_CREW,  // id: "nm0000000"
-    GAME,       //  q: ""
+    Movie,      //  q: "feature", "TV movie"
+    TvShow,     //  q: "TV mini-series", "TV series"
+    CastOrCrew, // id: "nm0000000"
+    Game,       //  q: ""
 }
 
 fun getSuggestionType(id: String, type: String?): SearchSuggestionType? = when (type) {
-    "feature", "TV movie" -> SearchSuggestionType.MOVIE
-    "TV mini-series", "TV series" -> SearchSuggestionType.TV_SHOW
-    "video game" -> SearchSuggestionType.GAME
+    "feature", "TV movie" -> SearchSuggestionType.Movie
+    "TV mini-series", "TV series" -> SearchSuggestionType.TvShow
+    "video game" -> SearchSuggestionType.Game
     else -> {
-        if (id.startsWith("nm")) SearchSuggestionType.CAST_CREW
+        if (id.startsWith("nm")) SearchSuggestionType.CastOrCrew
         else null
     }
 }

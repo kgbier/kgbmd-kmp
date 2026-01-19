@@ -9,13 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 
-class MainScreenViewModelFactory(
-    private val preferencesRepo: PreferencesRepo
-) : MainScreenViewModel.Factory {
-    override fun createMainScreenViewModelFactory(scope: CoroutineScope): MainScreenViewModel =
-        MainScreenViewModel(scope = scope, preferencesRepo = preferencesRepo)
-}
-
 class MainScreenViewModel(
     private val scope: CoroutineScope,
     private val preferencesRepo: PreferencesRepo

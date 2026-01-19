@@ -1,11 +1,13 @@
-package dev.kgbier.kgbmd.service
+package dev.kgbier.kgbmd.di
 
-import co.touchlab.kermit.Logger.Companion.d
-import io.ktor.client.*
-import io.ktor.client.plugins.compression.*
-import io.ktor.client.plugins.logging.*
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.compression.ContentEncoding
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import co.touchlab.kermit.Logger as KLogger
 
-object Services {
+class KtorModule {
     val ktor: HttpClient by lazy {
         HttpClient {
             install(ContentEncoding) {
@@ -14,7 +16,7 @@ object Services {
             install(Logging) {
                 logger = object : Logger {
                     override fun log(message: String) {
-                        d { message }
+                        KLogger.d { message }
                     }
                 }
                 level = LogLevel.ALL

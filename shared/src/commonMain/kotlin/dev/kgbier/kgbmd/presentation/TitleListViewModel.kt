@@ -12,15 +12,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 
-class TitleListViewModelFactory(
-    private val preferencesRepo: PreferencesRepo
-) : TitleListViewModel.Factory {
-    override fun createTitleListViewModelFactory(scope: CoroutineScope): TitleListViewModel =
-        TitleListViewModel(scope = scope, preferencesRepo = preferencesRepo)
-}
-
 class TitleListViewModel(
-    private val scope: CoroutineScope, preferencesRepo: PreferencesRepo
+    private val scope: CoroutineScope,
+    preferencesRepo: PreferencesRepo,
+    private val mediaInfoRepo: MediaInfoRepo,
 ) {
 
     interface Factory {
@@ -51,10 +46,10 @@ class TitleListViewModel(
         runCatching {
             when (titleCategory) {
                 TitleCategory.Movie -> titleList.value =
-                    TitleListState.Loaded(MediaInfoRepo.getMovieHotListPosters())
+                    TitleListState.Loaded(mediaInfoRepo.getMovieHotListPosters())
 
                 TitleCategory.TvShow -> titleList.value =
-                    TitleListState.Loaded(MediaInfoRepo.getTvShowHotListPosters())
+                    TitleListState.Loaded(mediaInfoRepo.getTvShowHotListPosters())
             }
         }
     }

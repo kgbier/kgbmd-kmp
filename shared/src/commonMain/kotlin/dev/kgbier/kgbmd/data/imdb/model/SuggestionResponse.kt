@@ -1,6 +1,7 @@
 package dev.kgbier.kgbmd.data.imdb.model
 
 import dev.kgbier.kgbmd.domain.imdb.operation.ImageResizer
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.domain.model.getSuggestionType
 import kotlinx.serialization.SerialName
@@ -40,21 +41,19 @@ data class SuggestionResponse(
     }
 }
 
-fun transformSuggestionResult(result: SuggestionResponse.Result) = with(result) {
-    Suggestion(
-        id,
-        title,
-        getSuggestionType(id, type),
-        year,
-        tidbit,
-        image?.imageUrl?.let {
-            ImageResizer.resize(
-                imageUrl = it,
-                size = ImageResizer.SIZE_WIDTH_THUMBNAIL,
-            )
-        }
-    )
-}
+fun SuggestionResponse.Result.toSuggestion() = Suggestion(
+    id = MediaEntityId(id),
+    title = title,
+    type = getSuggestionType(id, type),
+    year = year,
+    tidbit = tidbit,
+    thumbnailUrl = image?.imageUrl?.let {
+        ImageResizer.resize(
+            imageUrl = it,
+            size = ImageResizer.SIZE_WIDTH_THUMBNAIL,
+        )
+    }
+)
 
-fun transformSuggestionResponse(search: SuggestionResponse?) =
-    search?.data?.map(::transformSuggestionResult) ?: emptyList()
+fun SuggestionResponse.transform(): List<Suggestion> =
+    data?.map { it.toSuggestion() } ?: emptyList()

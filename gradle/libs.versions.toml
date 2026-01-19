@@ -23,6 +23,7 @@ jetbrains-compose-runtime = "org.jetbrains.compose.runtime:runtime:1.10.0"
 jetbrains-compose-foundation = "org.jetbrains.compose.foundation:foundation:1.10.0"
 jetbrains-compose-material3 = "org.jetbrains.compose.material3:material3:1.10.0-alpha05"
 jetbrains-compose-materialIconsExtended = "org.jetbrains.compose.material:material-icons-extended:1.7.3"
+jetbrains-compose-navigationevent = "org.jetbrains.androidx.navigationevent:navigationevent-compose:1.0.0"
 jetbrains-compose-ui = "org.jetbrains.compose.ui:ui:1.10.0"
 jetbrains-compose-resources = "org.jetbrains.compose.components:components-resources:1.10.0"
 jetbrains-compose-preview = "org.jetbrains.compose.ui:ui-tooling-preview:1.10.0"
@@ -46,8 +47,6 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
-
-google-material = { module = "com.google.android.material:material", version.ref = "material" }
 
 [bundles]
 ktor-client = [

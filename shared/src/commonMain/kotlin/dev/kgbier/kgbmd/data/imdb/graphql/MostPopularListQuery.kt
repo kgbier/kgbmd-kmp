@@ -1,6 +1,7 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.domain.imdb.operation.ImageResizer
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import kotlinx.serialization.Serializable
 
@@ -71,7 +72,7 @@ $${PaginationFragment.fragment}
 }
 
 fun MostPopularListQuery.Result.ChartTitles.Edge.toMoviePoster() = MoviePoster(
-    ttId = node.id,
+    ttId = MediaEntityId(node.id),
     title = node.titleText.text,
     rating = node.ratingsSummary.aggregateRating
         ?.takeUnless { it == 0.0 }?.toString(),

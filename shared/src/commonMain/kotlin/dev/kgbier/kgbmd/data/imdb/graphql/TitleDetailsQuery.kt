@@ -1,6 +1,7 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import kotlinx.serialization.Serializable
 
@@ -19,11 +20,9 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val primaryImage: PrimaryImage?,
             val releaseYear: ReleaseYear,
             val ratingsSummary: RatingsSummary,
-            val runtime: Runtime,
+            val runtime: Runtime?,
             val titleGenres: TitleGenres,
-            val creators: List<PrincipalCreditsForCategory>,
-            val directors: List<PrincipalCreditsForCategory>,
-            val writers: List<PrincipalCreditsForCategory>,
+            val principalCreditsV2: List<PrincipalCreditsForGrouping>,
             val outline: Plot,
         ) {
             @Serializable
@@ -63,13 +62,26 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             }
 
             @Serializable
-            data class PrincipalCreditsForCategory(val credits: List<Credit>) {
+            data class PrincipalCreditsForGrouping(
+                val grouping: Grouping,
+                val credits: List<Credit>,
+            ) {
+                @Serializable
+                data class Grouping(val text: String)
+
                 @Serializable
                 data class Credit(val name: Name) {
                     @Serializable
-                    data class Name(val id: String, val nameText: NameText) {
+                    data class Name(
+                        val id: String,
+                        val nameText: NameText,
+                        val primaryImage: PrimaryImage?,
+                    ) {
                         @Serializable
                         data class NameText(val text: String)
+
+                        @Serializable
+                        data class PrimaryImage(val url: String?)
                     }
                 }
             }
@@ -81,16 +93,16 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
                     @Serializable
                     data class Node(val plotText: PlotText) {
                         @Serializable
-                        data class PlotText(val plaidHtml: String)
+                        data class PlotText(val plainText: String)
                     }
                 }
             }
         }
     }
 
-    override val document: String = """
-query TitleDetails(${'$'}id: ID!) {
-  title(id: ${'$'}id) {
+    override val document: String = $$"""
+query TitleDetails($id: ID!) {
+  title(id: $id) {
     titleText {
       text
     }
@@ -125,14 +137,21 @@ query TitleDetails(${'$'}id: ID!) {
         }
       }
     }
-    creators: principalCredits(filter: { categories: ["creator"] }) {
-      ...CreditNameAndId
-    }
-    directors: principalCredits(filter: { categories: ["director"] }) {
-      ...CreditNameAndId
-    }
-    writers: principalCredits(filter: { categories: ["writer"] }) {
-      ...CreditNameAndId
+    principalCreditsV2(filter: { mode: "DEFAULT" }) {
+      grouping {
+        text
+      }
+      credits {
+        name {
+          id
+          nameText {
+            text
+          }
+          primaryImage {
+            url
+          }
+        }
+      }
     }
     outline: plots(first: 1, filter: { type: OUTLINE }) {
       edges {
@@ -144,20 +163,9 @@ query TitleDetails(${'$'}id: ID!) {
   }
 }
 
-fragment CreditNameAndId on PrincipalCreditsForCategory {
-  credits {
-    name {
-      id
-      nameText {
-        text
-      }
-    }
-  }
-}
-
 fragment PlotData on Plot {
   plotText {
-    plaidHtml
+    plainText
   }
 }
 """
@@ -167,12 +175,12 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
     return TitleDetails(
         name = titleText.text,
         poster = primaryImage?.url?.let(::transformImageUrl),
-        contentRating = "",
+        contentRating = null,
         genre = titleGenres.genres.joinToString { it.genre.text },
-        directedBy = directors.toCommaSeparatedList(),
-        writtenBy = writers.toCommaSeparatedList(),
-        createdBy = creators.toCommaSeparatedList(),
-        description = outline.edges.firstOrNull()?.node?.plotText?.plaidHtml,
+        principalCreditsByGroup = principalCreditsV2.associate { groupedCredits ->
+            groupedCredits.grouping.text to groupedCredits.credits.map { it.toPrincipalCredit() }
+        },
+        description = outline.edges.firstOrNull()?.node?.plotText?.plainText,
         yearReleased = releaseYear.year?.toString(),
         rating = ratingsSummary.aggregateRating?.toString()?.let { aggregate ->
             TitleDetails.Rating(
@@ -181,11 +189,14 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
                 count = ratingsSummary.voteCount?.toString(),
             )
         },
-        duration = runtime.displayableProperty.value.plainText,
+        duration = runtime?.displayableProperty?.value?.plainText,
         castMembers = emptyList(), // Load lazily
     )
 }
 
-private fun List<TitleDetailsQuery.Result.Title.PrincipalCreditsForCategory>.toCommaSeparatedList() =
-    firstOrNull()?.credits
-        ?.joinToString { it.name.nameText.text }
+private fun TitleDetailsQuery.Result.Title.PrincipalCreditsForGrouping.Credit.toPrincipalCredit(
+) = TitleDetails.PrincipalCredit(
+    id = MediaEntityId(name.id),
+    name = name.nameText.text,
+    thumbnailUrl = name.primaryImage?.url
+)

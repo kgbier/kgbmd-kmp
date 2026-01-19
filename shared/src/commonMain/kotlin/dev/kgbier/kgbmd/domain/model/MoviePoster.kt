@@ -1,7 +1,7 @@
 package dev.kgbier.kgbmd.domain.model
 
 data class MoviePoster(
-    val ttId: String,
+    val ttId: MediaEntityId,
     val title: String,
     val rating: String?,
     val thumbnailUrl: String?,

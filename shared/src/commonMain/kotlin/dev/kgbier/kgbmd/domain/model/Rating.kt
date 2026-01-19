@@ -4,7 +4,8 @@ import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-fun transformRatingResponse(response: RatingResponse) = transformRatingInfo(response.ratingInfo)
+fun transformRatingResponse(response: RatingResponse): String? =
+    transformRatingInfo(response.ratingInfo)
 
 fun transformRatingInfo(info: RatingResponse.RatingInfo) =
     info.rating?.takeIf { it > 0 }?.toOneDecimalPlace()

@@ -7,7 +7,8 @@ import dev.kgbier.kgbmd.data.imdb.graphql.TitleDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import dev.kgbier.kgbmd.data.imdb.model.SuggestionResponse
 import dev.kgbier.kgbmd.data.operation.JsonP
-import dev.kgbier.kgbmd.service.Services
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
+import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -22,9 +23,19 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
-object ImdbService {
+interface ImdbService {
 
-    private const val graphqEndpoint = "https://api.graphql.imdb.com/"
+    suspend fun getHotMovies(): MostPopularListQuery.Result
+    suspend fun getHotShows(): MostPopularListQuery.Result
+    suspend fun search(query: String): SuggestionResponse?
+    suspend fun getRating(ttid: MediaEntityId): RatingResponse?
+    suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
+    suspend fun getNameDetails(nmid: MediaEntityId): NameDetailsQuery.Result
+}
+
+class KtorImdbService(
+    private val ktor: HttpClient,
+) : ImdbService {
 
     // https://v2.sg.media-imdb.com/suggestion/d/dark_knight.json
     private fun buildSuggestionUrl(query: String) = buildUrl {
@@ -60,13 +71,13 @@ object ImdbService {
         params = MostPopularListQuery.Params(count = 100, type = type),
     )
 
-    suspend fun getHotMovies() =
+    override suspend fun getHotMovies() =
         getHotList(MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_MOVIES)
 
-    suspend fun getHotShows() =
+    override suspend fun getHotShows() =
         getHotList(MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_TV_SHOWS)
 
-    suspend fun search(query: String): SuggestionResponse? {
+    override suspend fun search(query: String): SuggestionResponse? {
         val validatedQuery = query
             .trim()
             .lowercase()
@@ -76,25 +87,25 @@ object ImdbService {
 
         val url = buildSuggestionUrl(validatedQuery)
 
-        val response = Services.ktor.get(url)
+        val response = ktor.get(url)
 
         return json.decodeFromString(response.bodyAsText())
     }
 
-    suspend fun getRating(ttid: String): RatingResponse? {
-        val url = buildRatingUrl(ttid)
+    override suspend fun getRating(ttid: MediaEntityId): RatingResponse? {
+        val url = buildRatingUrl(ttid.id)
 
-        val response = Services.ktor.get(url)
+        val response = ktor.get(url)
 
         val validatedJson = JsonP.toJson(response.bodyAsText()) ?: return null
         return json.decodeFromString(validatedJson)
     }
 
-    suspend fun getTitleDetails(ttid: String) =
-        graphqlQuery(TitleDetailsQuery(), TitleDetailsQuery.Params(ttid))
+    override suspend fun getTitleDetails(ttid: MediaEntityId) =
+        graphqlQuery(TitleDetailsQuery(), TitleDetailsQuery.Params(ttid.id))
 
-    suspend fun getNameDetails(nmid: String) =
-        graphqlQuery(NameDetailsQuery(), NameDetailsQuery.Params(nmid))
+    override suspend fun getNameDetails(nmid: MediaEntityId) =
+        graphqlQuery(NameDetailsQuery(), NameDetailsQuery.Params(nmid.id))
 
     private suspend inline fun <reified Params, reified Result> graphqlQuery(
         query: GraphqlQuery<Params, Result>,
@@ -135,11 +146,15 @@ object ImdbService {
             value = graphqlRequest,
         )
 
-        val response = Services.ktor.post(graphqEndpoint) {
+        val response = ktor.post(graphqEndpoint) {
             contentType(ContentType.Application.Json)
             setBody(bodyText)
         }
         return json.decodeFromString(resultSerializer, response.bodyAsText())
             .data
+    }
+
+    companion object {
+        private const val graphqEndpoint = "https://api.graphql.imdb.com/"
     }
 }
