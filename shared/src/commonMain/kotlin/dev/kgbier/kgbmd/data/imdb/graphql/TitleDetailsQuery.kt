@@ -19,6 +19,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val titleType: TitleType,
             val primaryImage: PrimaryImage?,
             val releaseYear: ReleaseYear,
+            val certificate: Certificate?,
             val ratingsSummary: RatingsSummary,
             val runtime: Runtime?,
             val titleGenres: TitleGenres,
@@ -39,6 +40,9 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
 
             @Serializable
             data class ReleaseYear(val year: Int?, val endYear: Int?)
+
+            @Serializable
+            data class Certificate(val rating: String?)
 
             @Serializable
             data class RatingsSummary(val aggregateRating: Double?, val voteCount: Int?)
@@ -119,6 +123,9 @@ query TitleDetails($id: ID!) {
       year
       endYear
     }
+    certificate {
+      rating
+    }
     ratingsSummary {
       aggregateRating
       voteCount
@@ -175,7 +182,7 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
     return TitleDetails(
         name = titleText.text,
         poster = primaryImage?.url?.let(::transformImageUrl),
-        contentRating = null,
+        contentRating = certificate?.rating,
         genre = titleGenres.genres.joinToString { it.genre.text },
         principalCreditsByGroup = principalCreditsV2.associate { groupedCredits ->
             groupedCredits.grouping.text to groupedCredits.credits.map { it.toPrincipalCredit() }
@@ -198,5 +205,5 @@ private fun TitleDetailsQuery.Result.Title.PrincipalCreditsForGrouping.Credit.to
 ) = TitleDetails.PrincipalCredit(
     id = MediaEntityId(name.id),
     name = name.nameText.text,
-    thumbnailUrl = name.primaryImage?.url
+    photo = name.primaryImage?.url?.let(::transformImageUrl),
 )

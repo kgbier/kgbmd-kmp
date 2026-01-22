@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui
+package dev.kgbier.kgbmd.ui.component
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.RepeatMode
@@ -9,13 +9,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun rememberShimmerState(): Float {
@@ -63,5 +64,13 @@ fun ShimmerEffect(
             )
         )
         drawRect(brush = brush)
+    }
+}
+
+@Preview(widthDp = 30, heightDp = 40)
+@Composable
+fun ShimmerEffectPreview() = MaterialTheme {
+    Surface {
+        ShimmerEffect(0.2f)
     }
 }

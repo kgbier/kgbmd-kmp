@@ -60,7 +60,7 @@ fun MainScreen(
             .nestedScroll(scrollBehaviour)
     ) { innerPadding ->
         Box(
-            modifier = Modifier.consumeWindowInsets(innerPadding),
+            modifier = Modifier.consumeWindowInsets(innerPadding)
         ) {
             HorizontalFloatingToolbar(
                 expanded = false,

@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui
+package dev.kgbier.kgbmd.ui.util
 
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.staticCompositionLocalOf

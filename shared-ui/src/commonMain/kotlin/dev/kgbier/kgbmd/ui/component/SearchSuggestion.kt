@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui
+package dev.kgbier.kgbmd.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,15 +15,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.presentation.RatingState
+import dev.kgbier.kgbmd.ui.PosterView
+import dev.kgbier.kgbmd.ui.RatingStarView
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 
 @Composable
-fun SearchSuggestionView(
+fun SearchSuggestion(
     suggestion: Suggestion,
     ratingState: RatingState,
     modifier: Modifier = Modifier,
 ) = with(suggestion) {
-    SearchSuggestionView(
+    SearchSuggestion(
         title = title,
         modifier = modifier,
         year = year,
@@ -38,7 +40,7 @@ fun SearchSuggestionView(
 }
 
 @Composable
-fun SearchSuggestionView(
+fun SearchSuggestion(
     title: String,
     modifier: Modifier = Modifier,
     year: String? = null,
@@ -104,6 +106,6 @@ fun SearchSuggestionView(
 
 @Composable
 @Preview
-fun SearchSuggestionViewPreview() = AppTheme {
-    SearchSuggestionView("title")
+fun SearchSuggestionPreview() = AppTheme {
+    SearchSuggestion("title")
 }

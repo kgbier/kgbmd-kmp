@@ -13,6 +13,8 @@ import dev.kgbier.kgbmd.ui.di.RootModule
 import dev.kgbier.kgbmd.ui.nav.Nav
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
+import dev.kgbier.kgbmd.ui.util.LocalSizeClass
+import dev.kgbier.kgbmd.ui.util.computeSizeClass
 
 @Composable
 fun MainRoot() = AppTheme {
@@ -38,7 +40,7 @@ fun MainRoot() = AppTheme {
                 when (val route = router.currentRoute) {
                     AppRoute.Main -> MainScreen(router.navigator)
                     AppRoute.Search -> SearchScreen(router.navigator)
-                    is AppRoute.Details -> DetailsScreen(id = route.id)
+                    is AppRoute.Details -> DetailsScreen(id = route.id, navigator = router.navigator)
                     AppRoute.Settings -> SettingsScreen()
                 }
             }

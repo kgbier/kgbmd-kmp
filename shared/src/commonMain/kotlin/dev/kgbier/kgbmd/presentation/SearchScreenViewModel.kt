@@ -21,16 +21,15 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newCoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
@@ -47,6 +46,7 @@ data class SuggestionItem(
 )
 
 sealed interface SearchAction {
+    data object StartSearch : SearchAction
     data class ReceiveSearchResults(val suggestions: List<Suggestion>) : SearchAction
     data class ReceiveRatings(val ratings: Map<MediaEntityId, RatingState>) : SearchAction
 }
@@ -59,9 +59,16 @@ class SearchScreenViewModel(
     private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
 
     private data class SearchScreenState(
+        val isLoading: Boolean = false,
         val suggestions: List<Suggestion> = emptyList(),
         val ratings: Map<MediaEntityId, RatingState> = emptyMap(),
     )
+
+    sealed interface SearchScreenViewState {
+        data object Idle : SearchScreenViewState
+        data object Loading : SearchScreenViewState
+        data class Items(val items: List<SuggestionItem>) : SearchScreenViewState
+    }
 
     interface Factory {
         fun createSearchScreenViewModelFactory(scope: CoroutineScope): SearchScreenViewModel
@@ -81,16 +88,18 @@ class SearchScreenViewModel(
             }
         }
 
-        val searchResultsFlow = searchQuery
+        val searchResultsFlow: Flow<SearchAction> = searchQuery
             .debounce(200.milliseconds)
             .filter { it.isNotBlank() }
-            .mapLatest { query ->
+            .transformLatest { query ->
+                emit(SearchAction.StartSearch)
+
                 runCatching { mediaInfoRepo.getSearchResults(query) }
                     .onSuccess {
                         backgroundScope.launch { resultsJobQueue.send(it) }
-                    }.getOrNull()
-            }.filterNotNull()
-            .map { SearchAction.ReceiveSearchResults(it) }
+                        emit(SearchAction.ReceiveSearchResults(it))
+                    }
+            }
 
         val ratingResultsFlow = resultsJobQueue.receiveAsFlow()
             .flatMapMerge(concurrency = 16) { it.asFlow() }.buffer()
@@ -125,16 +134,32 @@ class SearchScreenViewModel(
     private val state = actions
         .scan(SearchScreenState()) { state, action ->
             when (action) {
-                is SearchAction.ReceiveRatings -> state.copy(ratings = action.ratings)
+                SearchAction.StartSearch -> state.copy(isLoading = true)
+                is SearchAction.ReceiveRatings -> state.copy(
+                    ratings = action.ratings,
+                    isLoading = false,
+                )
+
                 is SearchAction.ReceiveSearchResults -> state.copy(suggestions = action.suggestions)
             }
         }.stateIn(backgroundScope, started = SharingStarted.WhileSubscribed(), SearchScreenState())
 
-    val viewState: StateFlow<List<SuggestionItem>> = state.map { state ->
-        state.suggestions.map {
-            SuggestionItem(it, state.ratings[it.id] ?: RatingState.None)
+    val viewState: StateFlow<SearchScreenViewState> = state.map { state ->
+        when {
+            state.isLoading && state.suggestions.isEmpty() -> SearchScreenViewState.Loading
+            state.suggestions.isNotEmpty() -> SearchScreenViewState.Items(
+                state.suggestions.map {
+                    SuggestionItem(it, state.ratings[it.id] ?: RatingState.None)
+                }
+            )
+
+            else -> SearchScreenViewState.Idle
         }
-    }.stateIn(backgroundScope, started = SharingStarted.WhileSubscribed(), emptyList())
+    }.stateIn(
+        backgroundScope,
+        started = SharingStarted.WhileSubscribed(),
+        SearchScreenViewState.Idle
+    )
 
     fun search(query: String) {
         backgroundScope.launch { searchQuery.emit(query) }

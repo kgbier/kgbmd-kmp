@@ -33,7 +33,7 @@ data class TitleDetails(
     data class PrincipalCredit(
         val id: MediaEntityId,
         val name: String,
-        val thumbnailUrl: String?,
+        val photo: Image?,
     )
 
     data class CastMember(

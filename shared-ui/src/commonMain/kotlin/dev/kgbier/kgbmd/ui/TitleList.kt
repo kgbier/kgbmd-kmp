@@ -25,10 +25,14 @@ import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
+import dev.kgbier.kgbmd.ui.component.ShimmerEffect
+import dev.kgbier.kgbmd.ui.component.rememberShimmerState
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Navigator
 import dev.kgbier.kgbmd.ui.route.AppRoute
+import dev.kgbier.kgbmd.ui.util.LocalSizeClass
 import dev.kgbier.kgbmd.ui.util.ScrollToTopHandler
+import dev.kgbier.kgbmd.ui.util.SizeClass
 import kotlinx.coroutines.CoroutineScope
 
 /**
