@@ -39,7 +39,7 @@ fun CreditPortrait(
     size: Dp = 80.dp,
     onClick: (() -> Unit)? = null,
     creditImageUrl: String? = null,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),

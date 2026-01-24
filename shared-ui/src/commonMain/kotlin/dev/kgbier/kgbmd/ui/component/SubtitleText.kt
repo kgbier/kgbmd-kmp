@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun SubtitleText(
     title: String,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) = Text(
     title,
     style = MaterialTheme.typography.labelSmall,

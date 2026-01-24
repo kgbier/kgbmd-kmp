@@ -143,7 +143,13 @@ fun SearchScreen(
             if (state is SearchScreenViewModel.SearchScreenViewState.Loading) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            bottom = WindowInsets.safeDrawing
+                                .asPaddingValues()
+                                .calculateBottomPadding()
+                        )
                 ) {
                     LoadingIndicator()
                 }

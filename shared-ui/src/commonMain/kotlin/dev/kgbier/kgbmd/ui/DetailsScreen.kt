@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -44,6 +47,7 @@ import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
 import dev.kgbier.kgbmd.ui.component.CreditPortrait
 import dev.kgbier.kgbmd.ui.component.LazyHeadingRow
 import dev.kgbier.kgbmd.ui.component.SubtitleText
+import dev.kgbier.kgbmd.ui.component.Tag
 import dev.kgbier.kgbmd.ui.component.TitledContent
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Navigator
@@ -70,7 +74,17 @@ fun DetailsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             Surface(
-                modifier = Modifier.fillMaxHeight().widthIn(max = ExpandedWidth.dp)
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = ExpandedWidth.dp)
+                    .padding(
+                        top = WindowInsets.safeDrawing
+                            .asPaddingValues()
+                            .calculateTopPadding(),
+                        bottom = WindowInsets.safeDrawing
+                            .asPaddingValues()
+                            .calculateBottomPadding(),
+                    )
             ) {
                 if (state == null) {
                     Box(
@@ -143,85 +157,82 @@ private fun TitleDetails(
 fun TitleDetailsHeading(
     title: TitleDetails,
     modifier: Modifier = Modifier,
+) = Column(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    modifier = modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        val heading = buildAnnotatedString {
-            append(title.name)
-            title.yearReleased?.let {
-                pushStyle(
-                    MaterialTheme.typography.titleMedium.toSpanStyle()
-                        .copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
-                )
-                append("${Typography.nbsp}(${title.yearReleased})")
-            }
+    val heading = buildAnnotatedString {
+        append(title.name)
+        title.yearReleased?.let {
+            pushStyle(
+                MaterialTheme.typography.titleMedium.toSpanStyle()
+                    .copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+            )
+            append("${Typography.nbsp}(${title.yearReleased})")
         }
-        Text(
-            text = heading,
-            style = MaterialTheme.typography.headlineSmall,
-        )
+    }
+    Text(
+        text = heading,
+        style = MaterialTheme.typography.headlineSmall,
+    )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            title.contentRating?.let { contentRating ->
-                Text(
-                    text = contentRating,
-                    style = MaterialTheme.typography.labelSmall,
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        title.contentRating?.let { contentRating ->
+            Tag { Text(contentRating) }
+        }
+        title.duration?.let {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Schedule,
+                    contentDescription = null,
+                    modifier = Modifier.size(MaterialTheme.typography.labelSmall.fontSize.value.dp)
                 )
+                Spacer(Modifier.width(4.dp))
+                Text(text = it, style = MaterialTheme.typography.labelSmall)
             }
-            title.duration?.let {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Default.Schedule,
-                        contentDescription = null,
-                        modifier = Modifier.size(MaterialTheme.typography.labelSmall.fontSize.value.dp)
+        }
+    }
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        title.rating?.let { rating ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                // modifier = Modifier.align(Alignment.End)
+            ) {
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text(
+                        text = rating.value, style = MaterialTheme.typography.titleLarge
                     )
-                    Spacer(Modifier.width(4.dp))
-                    Text(text = it, style = MaterialTheme.typography.labelSmall)
+                    RatingStarView(
+                        ratingText = " / ${rating.best}",
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        textColour = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                rating.count?.let { count ->
+                    Text(
+                        text = count,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            title.rating?.let { rating ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    // modifier = Modifier.align(Alignment.End)
-                ) {
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            text = rating.value, style = MaterialTheme.typography.titleLarge
-                        )
-                        RatingStarView(
-                            ratingText = " / ${rating.best}",
-                            textStyle = MaterialTheme.typography.titleMedium,
-                            textColour = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    rating.count?.let { count ->
-                        Text(
-                            text = count,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-            title.poster?.thumbnailUrl?.let { thumbnailUrl ->
-                PosterView(
-                    thumbnailUrl = null,
-                    imageUrl = thumbnailUrl,
-                    onClick = { },
-                    enabled = false,
-                    shape = MaterialTheme.shapes.extraSmall,
-                    modifier = Modifier.size(40.dp, 58.dp).align(Alignment.CenterVertically)
-                )
-            }
+        title.poster?.thumbnailUrl?.let { thumbnailUrl ->
+            PosterView(
+                thumbnailUrl = null,
+                imageUrl = thumbnailUrl,
+                onClick = { },
+                enabled = false,
+                shape = MaterialTheme.shapes.extraSmall,
+                modifier = Modifier.size(40.dp, 58.dp).align(Alignment.CenterVertically)
+            )
         }
     }
 }

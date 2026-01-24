@@ -12,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun TitledContent(
     title: String,
     body: String,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) = Column(
     modifier = modifier
 ) {
