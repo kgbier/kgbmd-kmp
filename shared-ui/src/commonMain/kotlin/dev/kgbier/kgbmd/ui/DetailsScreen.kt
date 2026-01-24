@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -21,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
@@ -38,8 +38,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
@@ -52,6 +62,7 @@ import dev.kgbier.kgbmd.ui.component.TitledContent
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Navigator
 import dev.kgbier.kgbmd.ui.route.AppRoute
+import dev.kgbier.kgbmd.ui.theme.Tonal
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
 import kotlinx.coroutines.CoroutineScope
 
@@ -77,14 +88,6 @@ fun DetailsScreen(
                 modifier = Modifier
                     .fillMaxHeight()
                     .widthIn(max = ExpandedWidth.dp)
-                    .padding(
-                        top = WindowInsets.safeDrawing
-                            .asPaddingValues()
-                            .calculateTopPadding(),
-                        bottom = WindowInsets.safeDrawing
-                            .asPaddingValues()
-                            .calculateBottomPadding(),
-                    )
             ) {
                 if (state == null) {
                     Box(
@@ -97,7 +100,13 @@ fun DetailsScreen(
 
                 val screenScrollState = rememberScrollState()
                 Column(
-                    modifier = Modifier.verticalScroll(screenScrollState),
+                    modifier = Modifier
+                        .verticalScroll(screenScrollState)
+                        .padding(
+                            bottom = WindowInsets.safeDrawing
+                                .asPaddingValues()
+                                .calculateBottomPadding(),
+                        )
                 ) {
                     when (val state = state) {
                         is TitleDetails -> TitleDetails(state, navigator)
@@ -114,6 +123,15 @@ fun DetailsScreen(
 
 @Composable
 private fun NameDetails(name: NameDetails) {
+    Spacer(
+        modifier = Modifier
+            .padding(
+                top = WindowInsets.safeDrawing
+                    .asPaddingValues()
+                    .calculateTopPadding(),
+            )
+    )
+
     Text(
         text = name.name,
         style = MaterialTheme.typography.headlineSmall,
@@ -131,19 +149,44 @@ private fun NameDetails(name: NameDetails) {
 
 @Composable
 private fun TitleDetails(
-    title: TitleDetails, navigator: Navigator<AppRoute>
+    title: TitleDetails,
+    navigator: Navigator<AppRoute>
+) = Column(
+    verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
+    val shadowSize = 16.dp
     TitleDetailsHeading(
-        title = title, modifier = Modifier.fillMaxWidth().padding(16.dp)
+        title = title,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clipToBounds()
+            .dropShadow(GenericShape { size, _ ->
+                addRect(
+                    Rect(
+                        size = size.copy(height = shadowSize.value * 2),
+                        offset = Offset(x = 0f, y = size.height - (shadowSize.value / 2))
+                    )
+                )
+            }, Shadow(shadowSize))
+            .padding(16.dp)
+            .padding(
+                top = WindowInsets.safeDrawing
+                    .asPaddingValues()
+                    .calculateTopPadding(),
+            )
     )
 
-    TitlePrincipalCredits(title, navigator)
+    TitlePrincipalCredits(
+        title = title,
+        navigator = navigator,
+    )
 
     title.description?.let { description ->
         TitledContent(
-            title = "Summary", body = description, modifier = Modifier.padding(horizontal = 16.dp)
+            title = "Summary",
+            body = description,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
     }
 
     Text(
@@ -155,6 +198,42 @@ private fun TitleDetails(
 
 @Composable
 fun TitleDetailsHeading(
+    title: TitleDetails,
+    modifier: Modifier = Modifier,
+) = Box(
+    modifier = Modifier.fillMaxSize()
+) {
+    TitleDetailsHeadingBackground(
+        title = title,
+        modifier = Modifier
+            .matchParentSize()
+    )
+    TitleDetailsHeadingForeground(
+        title = title,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun TitleDetailsHeadingBackground(
+    title: TitleDetails,
+    modifier: Modifier = Modifier,
+) = AsyncImage(
+    model = title.poster?.thumbnailUrl,
+    contentDescription = null,
+    contentScale = ContentScale.Crop,
+    colorFilter = ColorFilter.tint(
+        color = Tonal.scrimDark.copy(alpha = 0.7f),
+        blendMode = BlendMode.Darken,
+    ),
+    modifier = modifier.blur(
+        radiusX = 20.dp,
+        radiusY = 20.dp,
+    )
+)
+
+@Composable
+private fun TitleDetailsHeadingForeground(
     title: TitleDetails,
     modifier: Modifier = Modifier,
 ) = Column(
@@ -203,7 +282,6 @@ fun TitleDetailsHeading(
         title.rating?.let { rating ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                // modifier = Modifier.align(Alignment.End)
             ) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
@@ -239,7 +317,9 @@ fun TitleDetailsHeading(
 
 @Composable
 private fun TitlePrincipalCredits(
-    title: TitleDetails, navigator: Navigator<AppRoute>
+    title: TitleDetails,
+    navigator: Navigator<AppRoute>,
+    modifier: Modifier = Modifier,
 ) {
     val headings = remember(title.principalCreditsByGroup) {
         var lastLength = 0
@@ -254,16 +334,15 @@ private fun TitlePrincipalCredits(
     LazyHeadingRow(
         headings = headings,
         contentPadding = PaddingValues(
-            start = 10.dp,
-            end = 10.dp,
-            bottom = 10.dp,
+            horizontal = 10.dp,
         ),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         headingContent = { heading ->
             SubtitleText(
                 heading, modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
             )
-        }
+        },
+        modifier = modifier,
     ) {
         items(principalCredits) { item ->
             CreditPortrait(

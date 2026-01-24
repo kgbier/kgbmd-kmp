@@ -33,7 +33,7 @@ fun Tag(
 ) {
     CompositionLocalProvider(
         LocalTextStyle provides MaterialTheme.typography.labelSmall
-            .copy(fontWeight = FontWeight.Black),
+            .copy(fontWeight = FontWeight.ExtraBold),
         LocalContentColor provides MaterialTheme.colorScheme.inverseOnSurface,
     ) {
         startContent()

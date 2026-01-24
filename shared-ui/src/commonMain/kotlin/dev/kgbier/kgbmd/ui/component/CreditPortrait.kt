@@ -31,7 +31,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
+import coil3.request.ImageRequest
 
 @Composable
 fun CreditPortrait(
@@ -49,13 +52,16 @@ fun CreditPortrait(
             .clickable(
                 enabled = onClick != null,
                 onClick = onClick ?: {},
-            )
-            .padding(6.dp)
+            ).padding(6.dp)
     ) {
         val contentScale = ContentScale.Crop
 
+        val sizeResolver = rememberConstraintsSizeResolver()
         val painter = rememberAsyncImagePainter(
-            model = creditImageUrl,
+            model = ImageRequest.Builder(LocalPlatformContext.current)
+                .data(creditImageUrl)
+                .size(sizeResolver)
+                .build(),
             contentScale = contentScale,
         )
         val painterState by painter.state.collectAsState()
@@ -66,6 +72,7 @@ fun CreditPortrait(
                 contentScale = contentScale,
                 alignment = BiasAlignment(0f, -0.62f),
                 modifier = Modifier
+                    .then(sizeResolver)
                     .size(size)
                     .clip(CircleShape)
             )
@@ -73,6 +80,7 @@ fun CreditPortrait(
             else -> Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
+                    .then(sizeResolver)
                     .size(size)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
