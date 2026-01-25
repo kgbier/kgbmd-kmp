@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -45,15 +46,14 @@ fun RatingStarView(
 ) = Row(
     modifier = modifier
         .height(intrinsicSize = IntrinsicSize.Max),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(spacing),
 ) {
     Text(
         text = ratingText,
         style = textStyle,
         color = textColour,
     )
-
-    Spacer(modifier = Modifier.width(spacing))
 
     val starImage: Painter = painterResource(Res.drawable.ic_star)
 

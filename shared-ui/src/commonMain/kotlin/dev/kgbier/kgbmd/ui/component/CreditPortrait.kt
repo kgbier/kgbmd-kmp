@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,7 +27,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -39,7 +37,6 @@ import coil3.request.ImageRequest
 @Composable
 fun CreditPortrait(
     name: String,
-    size: Dp = 80.dp,
     onClick: (() -> Unit)? = null,
     creditImageUrl: String? = null,
     modifier: Modifier = Modifier,
@@ -54,45 +51,11 @@ fun CreditPortrait(
                 onClick = onClick ?: {},
             ).padding(6.dp)
     ) {
-        val contentScale = ContentScale.Crop
 
-        val sizeResolver = rememberConstraintsSizeResolver()
-        val painter = rememberAsyncImagePainter(
-            model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(creditImageUrl)
-                .size(sizeResolver)
-                .build(),
-            contentScale = contentScale,
+        Portrait(
+            creditImageUrl = creditImageUrl,
+            modifier = Modifier.size(80.dp)
         )
-        val painterState by painter.state.collectAsState()
-        when (painterState) {
-            is AsyncImagePainter.State.Success -> Image(
-                painter = painter,
-                contentDescription = null,
-                contentScale = contentScale,
-                alignment = BiasAlignment(0f, -0.62f),
-                modifier = Modifier
-                    .then(sizeResolver)
-                    .size(size)
-                    .clip(CircleShape)
-            )
-
-            else -> Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .then(sizeResolver)
-                    .size(size)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.fillMaxSize(0.62f)
-                )
-            }
-        }
 
         Text(
             text = name,
@@ -100,8 +63,54 @@ fun CreditPortrait(
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.width(size)
         )
+    }
+}
+
+@Composable
+fun Portrait(
+    creditImageUrl: String? = null,
+    modifier: Modifier = Modifier,
+) = Box(
+    modifier = modifier
+        .clip(CircleShape)
+) {
+    val contentScale = ContentScale.Crop
+
+    val sizeResolver = rememberConstraintsSizeResolver()
+    val painter = rememberAsyncImagePainter(
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(creditImageUrl)
+            .size(sizeResolver)
+            .build(),
+        contentScale = contentScale,
+    )
+    val painterState by painter.state.collectAsState()
+    when (painterState) {
+        is AsyncImagePainter.State.Success -> Image(
+            painter = painter,
+            contentDescription = null,
+            contentScale = contentScale,
+            alignment = BiasAlignment(0f, -0.62f),
+            modifier = Modifier
+                .matchParentSize()
+                .then(sizeResolver)
+        )
+
+        else -> Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .matchParentSize()
+                .then(sizeResolver)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.fillMaxSize(0.62f)
+            )
+        }
     }
 }
 
