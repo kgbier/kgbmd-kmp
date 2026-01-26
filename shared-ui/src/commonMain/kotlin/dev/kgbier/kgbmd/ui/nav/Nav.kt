@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.SeekableTransitionState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -17,8 +18,8 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -39,6 +40,7 @@ fun <TRoute : Route> Nav(
     parentRouter: Router<*>? = null,
     routeHandler: @Composable (route: TRoute, navigator: Navigator<TRoute>) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     val navState = rememberNavigationEventState(NavigationEventInfo.None)
 
     val router: Router<TRoute> = rememberRouter(
@@ -56,27 +58,29 @@ fun <TRoute : Route> Nav(
         }
     }
 
-
+    // Set up the Transition
+    val seekableTransitionState = remember { SeekableTransitionState(router.currentRoute) }
+    val transition = rememberTransition(seekableTransitionState, label = "navTransition")
+    var predictiveBackEdge by remember { mutableIntStateOf(NavigationEvent.EDGE_NONE) }
 
     NavigationBackHandler(
         state = navState,
         isBackEnabled = router.hasBackstack,
         onBackCancelled = {
-            // Process the canceled back gesture
+            // iOS behaviour appears to call cancel immediately, when this occurs, the transition state stops reporting progress.
+            // This requires to play an animation to smoothly restore the current route.
+
+            onBackCancelledHandler(scope, seekableTransitionState, router)
+
+            // Android behaviour appears to drive the progress in reverse fully until the transition is complete and the current route restored.
+            // No cleanup/animation required.
         },
         onBackCompleted = {
             router.navigator.pop()
         }
     )
 
-    // Set up the Transition
-    val seekableTransitionState = remember { SeekableTransitionState(router.currentRoute) }
-    val transition = rememberTransition(seekableTransitionState, label = "navTransition")
-    var predictiveBackEdge by remember { mutableIntStateOf(NavigationEvent.EDGE_NONE) }
-    var navigatingBackwards by remember { mutableStateOf(false) }
-
     LaunchedEffect(router.currentRoute) {
-        navigatingBackwards = false
         seekableTransitionState.animateTo(router.currentRoute)
     }
 
@@ -86,13 +90,10 @@ fun <TRoute : Route> Nav(
 
         if (transitionState is NavigationEventTransitionState.InProgress) {
             // Predictive Back is happening
-            navigatingBackwards = true
             predictiveBackEdge = transitionState.latestEvent.swipeEdge
             val progress = transitionState.latestEvent.progress
 
             seekableTransitionState.seekTo(progress, previousRoute)
-        } else {
-            navigatingBackwards = false
         }
     }
 
@@ -105,7 +106,12 @@ fun <TRoute : Route> Nav(
                 scaleIn(
                     animationSpec = spring(stiffness = Spring.StiffnessMedium),
                     initialScale = 0.9f,
-                ) togetherWith slideOut { fullSize ->
+                ) togetherWith slideOut(
+                    animationSpec = spring(
+                        stiffness = Spring.StiffnessMediumLow,
+                        visibilityThreshold = IntOffset.VisibilityThreshold,
+                    ),
+                ) { fullSize ->
                     val xOffset = if (predictiveBackEdge == NavigationEvent.EDGE_RIGHT) {
                         -fullSize.width
                     } else {
