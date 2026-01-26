@@ -13,13 +13,13 @@ import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.CreditPortrait
 import dev.kgbier.kgbmd.ui.component.LazyHeadingRow
 import dev.kgbier.kgbmd.ui.component.SubtitleText
-import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 
 @Composable
 fun TitlePrincipalCredits(
     title: TitleDetails,
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
 ) {
     val headings = remember(title.principalCreditsByGroup) {
@@ -49,7 +49,7 @@ fun TitlePrincipalCredits(
         items(principalCredits) { item ->
             CreditPortrait(
                 name = item.name,
-                onClick = { navigator.push(AppRoute.Details(item.id)) },
+                onClick = { router.push(AppRoute.Details(item.id)) },
                 creditImageUrl = item.photo?.thumbnailUrl,
                 modifier = Modifier.sizeIn(maxWidth = 90.dp)
             )

@@ -36,7 +36,7 @@ import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
 import dev.kgbier.kgbmd.ui.component.TitledContent
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
-import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
 import kotlinx.coroutines.CoroutineScope
@@ -44,7 +44,7 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun DetailsScreen(
     id: MediaEntityId,
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
     viewModelFactory: DetailsScreenViewModel.Factory = LocalViewModelModule.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: DetailsScreenViewModel = remember(id) {
@@ -84,9 +84,9 @@ fun DetailsScreen(
                         )
                 ) {
                     when (val state = state) {
-                        is TitleDetails -> TitleDetails(state, navigator)
+                        is TitleDetails -> TitleDetails(state, router)
 
-                        is NameDetails -> NameDetails(state, navigator)
+                        is NameDetails -> NameDetails(state, router)
 
                         null -> Unit // Loading
                     }
@@ -99,7 +99,7 @@ fun DetailsScreen(
 @Composable
 private fun NameDetails(
     name: NameDetails,
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
 ) = Column(
     verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
@@ -135,7 +135,7 @@ private fun NameDetails(
 @Composable
 private fun TitleDetails(
     title: TitleDetails,
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
 ) = Column(
     verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
@@ -152,7 +152,7 @@ private fun TitleDetails(
 
     TitlePrincipalCredits(
         title = title,
-        navigator = navigator,
+        router = router,
     )
 
     title.description?.let { description ->

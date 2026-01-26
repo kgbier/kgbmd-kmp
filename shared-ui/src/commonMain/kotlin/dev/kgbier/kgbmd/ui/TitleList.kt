@@ -28,7 +28,7 @@ import dev.kgbier.kgbmd.presentation.TitleListViewModel
 import dev.kgbier.kgbmd.ui.component.ShimmerEffect
 import dev.kgbier.kgbmd.ui.component.rememberShimmerState
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
-import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.LocalSizeClass
 import dev.kgbier.kgbmd.ui.util.ScrollToTopHandler
@@ -40,7 +40,7 @@ import kotlinx.coroutines.CoroutineScope
  */
 @Composable
 fun TitleList(
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
     viewModelFactory: TitleListViewModel.Factory = LocalViewModelModule.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     contentPadding: PaddingValues = PaddingValues(),
@@ -50,7 +50,7 @@ fun TitleList(
 ) {
     val state: TitleListViewModel.TitleListState by viewModel.titleList.collectAsState()
     TitleListView(
-        navigate = { navigator.push(it) },
+        navigate = { router.push(it) },
         state = state,
         contentPadding = contentPadding,
     )

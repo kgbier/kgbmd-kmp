@@ -50,14 +50,14 @@ import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.ui.component.SearchSuggestion
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
-import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.ScrollToTopHandler
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun SearchScreen(
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
     viewModelFactory: SearchScreenViewModel.Factory = LocalViewModelModule.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: SearchScreenViewModel = remember {
@@ -177,7 +177,7 @@ fun SearchScreen(
                                 ratingState = item.ratingState,
                                 modifier = Modifier
                                     .clickable(
-                                        onClick = { navigator.push(AppRoute.Details(item.suggestion.id)) }
+                                        onClick = { router.push(AppRoute.Details(item.suggestion.id)) }
                                     ).padding(16.dp, 8.dp)
                             )
                         }

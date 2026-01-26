@@ -6,42 +6,42 @@ import androidx.compose.runtime.remember
 
 interface Route
 
-interface Navigator<TRoute : Route> {
+interface Router<TRoute : Route> {
     fun push(route: TRoute)
     fun dismiss()
     fun pop()
 }
 
-interface Router<TRoute : Route> {
-    val navigator: Navigator<TRoute>
+interface Navigator<TRoute : Route> {
+    val router: Router<TRoute>
 
     val currentRoute: TRoute
     val previousRoute: TRoute?
 
     val backstackSize: Int
-
     val hasBackstack: Boolean
 }
 
-fun <TRoute : Route> Router(
+fun <TRoute : Route> Navigator(
     initialRoute: TRoute,
-    parentRouter: Router<*>? = null,
-): Router<TRoute> = StackRouter(initialRoute = initialRoute, parentRouter = parentRouter)
+    parentNavigator: Navigator<*>? = null,
+): Navigator<TRoute> =
+    StackNavigator(initialRoute = initialRoute, parentNavigator = parentNavigator)
 
 @Composable
-fun <TRoute : Route> rememberRouter(
+fun <TRoute : Route> rememberNavigator(
     initialRoute: TRoute,
-    parentRouter: Router<*>? = null,
-): Router<TRoute> = remember(initialRoute, parentRouter) {
-    Router(initialRoute, parentRouter)
+    parentNavigator: Navigator<*>? = null,
+): Navigator<TRoute> = remember(initialRoute, parentNavigator) {
+    Navigator(initialRoute, parentNavigator)
 }
 
-class StackRouter<TRoute : Route>(
+class StackNavigator<TRoute : Route>(
     initialRoute: TRoute,
-    private val parentRouter: Router<*>? = null,
-) : Router<TRoute> {
+    private val parentNavigator: Navigator<*>? = null,
+) : Navigator<TRoute> {
 
-    override val navigator: Navigator<TRoute> = StackNavigator()
+    override val router: Router<TRoute> = StackRouter()
 
     private val backstack = mutableStateListOf(initialRoute)
 
@@ -51,7 +51,7 @@ class StackRouter<TRoute : Route>(
     override val backstackSize: Int get() = backstack.size
     override val hasBackstack: Boolean get() = backstack.size > 1
 
-    private inner class StackNavigator : Navigator<TRoute> {
+    private inner class StackRouter : Router<TRoute> {
         override fun push(route: TRoute) {
             backstack.add(route)
         }
@@ -61,7 +61,7 @@ class StackRouter<TRoute : Route>(
         }
 
         override fun dismiss() {
-            parentRouter?.navigator?.pop()
+            parentNavigator?.router?.pop()
         }
     }
 }

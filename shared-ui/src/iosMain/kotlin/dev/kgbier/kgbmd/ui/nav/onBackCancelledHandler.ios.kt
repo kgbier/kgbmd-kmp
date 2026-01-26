@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 actual fun <TRoute : Route> onBackCancelledHandler(
     scope: CoroutineScope,
     seekableTransitionState: SeekableTransitionState<TRoute>,
-    router: Router<TRoute>
+    navigator: Navigator<TRoute>
 ) {
-    scope.launch { seekableTransitionState.animateTo(router.currentRoute) }
+    scope.launch { seekableTransitionState.animateTo(navigator.currentRoute) }
 }

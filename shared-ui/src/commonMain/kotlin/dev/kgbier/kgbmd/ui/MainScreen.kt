@@ -38,13 +38,13 @@ import androidx.compose.ui.zIndex
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
-import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun MainScreen(
-    navigator: Navigator<AppRoute>,
+    router: Router<AppRoute>,
     viewModelFactory: MainScreenViewModel.Factory = LocalViewModelModule.current,
     scope: CoroutineScope = rememberCoroutineScope(),
     viewModel: MainScreenViewModel = remember {
@@ -87,7 +87,7 @@ fun MainScreen(
                     )
                 }
                 FilledIconButton(
-                    onClick = { navigator.push(AppRoute.Search) },
+                    onClick = { router.push(AppRoute.Search) },
                     modifier = Modifier
                         .width(IconButtonDefaults.smallContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide).width),
                 ) {
@@ -96,7 +96,7 @@ fun MainScreen(
                         contentDescription = "Localized description",
                     )
                 }
-                IconButton(onClick = { navigator.push(AppRoute.Settings) }) {
+                IconButton(onClick = { router.push(AppRoute.Settings) }) {
                     Icon(
                         Icons.Default.Tune,
                         contentDescription = "Localized description",
@@ -105,7 +105,7 @@ fun MainScreen(
             }
 
             TitleList(
-                navigator = navigator,
+                router = router,
                 scope = scope,
                 contentPadding = innerPadding,
             )

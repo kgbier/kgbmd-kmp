@@ -35,11 +35,11 @@ fun MainRoot() = AppTheme {
             LocalSizeClass provides computeSizeClass(),
             LocalViewModelModule provides di.viewModelModule,
         ) {
-            Nav<AppRoute>(initialRoute = AppRoute.Main) { route, navigator ->
+            Nav<AppRoute>(initialRoute = AppRoute.Main) { route, router ->
                 when (route) {
-                    AppRoute.Main -> MainScreen(navigator)
-                    AppRoute.Search -> SearchScreen(navigator)
-                    is AppRoute.Details -> DetailsScreen(id = route.id, navigator = navigator)
+                    AppRoute.Main -> MainScreen(router)
+                    AppRoute.Search -> SearchScreen(router)
+                    is AppRoute.Details -> DetailsScreen(id = route.id, router = router)
                     AppRoute.Settings -> SettingsScreen()
                 }
             }

@@ -6,5 +6,5 @@ import kotlinx.coroutines.CoroutineScope
 actual fun <TRoute : Route> onBackCancelledHandler(
     scope: CoroutineScope,
     seekableTransitionState: SeekableTransitionState<TRoute>,
-    router: Router<TRoute>
+    navigator: Navigator<TRoute>
 ) = Unit

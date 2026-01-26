@@ -37,15 +37,15 @@ val LocalDirectNavigationEventInput = staticCompositionLocalOf { DirectNavigatio
 @Composable
 fun <TRoute : Route> Nav(
     initialRoute: TRoute,
-    parentRouter: Router<*>? = null,
-    routeHandler: @Composable (route: TRoute, navigator: Navigator<TRoute>) -> Unit,
+    parentNavigator: Navigator<*>? = null,
+    routeHandler: @Composable (route: TRoute, router: Router<TRoute>) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val navState = rememberNavigationEventState(NavigationEventInfo.None)
 
-    val router: Router<TRoute> = rememberRouter(
+    val navigator: Navigator<TRoute> = rememberNavigator(
         initialRoute = initialRoute,
-        parentRouter = parentRouter,
+        parentNavigator = parentNavigator,
     )
 
     val owner = LocalNavigationEventDispatcherOwner.current
@@ -59,34 +59,34 @@ fun <TRoute : Route> Nav(
     }
 
     // Set up the Transition
-    val seekableTransitionState = remember { SeekableTransitionState(router.currentRoute) }
+    val seekableTransitionState = remember { SeekableTransitionState(navigator.currentRoute) }
     val transition = rememberTransition(seekableTransitionState, label = "navTransition")
     var predictiveBackEdge by remember { mutableIntStateOf(NavigationEvent.EDGE_NONE) }
 
     NavigationBackHandler(
         state = navState,
-        isBackEnabled = router.hasBackstack,
+        isBackEnabled = navigator.hasBackstack,
         onBackCancelled = {
             // iOS behaviour appears to call cancel immediately, when this occurs, the transition state stops reporting progress.
             // This requires to play an animation to smoothly restore the current route.
 
-            onBackCancelledHandler(scope, seekableTransitionState, router)
+            onBackCancelledHandler(scope, seekableTransitionState, navigator)
 
             // Android behaviour appears to drive the progress in reverse fully until the transition is complete and the current route restored.
             // No cleanup/animation required.
         },
         onBackCompleted = {
-            router.navigator.pop()
+            navigator.router.pop()
         }
     )
 
-    LaunchedEffect(router.currentRoute) {
-        seekableTransitionState.animateTo(router.currentRoute)
+    LaunchedEffect(navigator.currentRoute) {
+        seekableTransitionState.animateTo(navigator.currentRoute)
     }
 
     LaunchedEffect(navState.transitionState) {
         val transitionState = navState.transitionState
-        val previousRoute = router.previousRoute ?: return@LaunchedEffect
+        val previousRoute = navigator.previousRoute ?: return@LaunchedEffect
 
         if (transitionState is NavigationEventTransitionState.InProgress) {
             // Predictive Back is happening
@@ -100,7 +100,7 @@ fun <TRoute : Route> Nav(
     transition.AnimatedContent(
         transitionSpec = {
             // Determine if the transition spec will apply to the previous or current content
-            val isPreviousContent = targetState == router.previousRoute
+            val isPreviousContent = targetState == navigator.previousRoute
 
             if (isPreviousContent) {
                 scaleIn(
@@ -122,7 +122,7 @@ fun <TRoute : Route> Nav(
             } else {
                 fadeIn() togetherWith ExitTransition.None
             }.apply {
-                val backstackIndex = router.backstackSize
+                val backstackIndex = navigator.backstackSize
                 // Previous content should be drawn below the current content
                 val adjustedBackstackIndex =
                     if (isPreviousContent) backstackIndex - 1 else backstackIndex
@@ -130,6 +130,6 @@ fun <TRoute : Route> Nav(
             }
         },
     ) { route ->
-        routeHandler(route, router.navigator)
+        routeHandler(route, navigator.router)
     }
 }

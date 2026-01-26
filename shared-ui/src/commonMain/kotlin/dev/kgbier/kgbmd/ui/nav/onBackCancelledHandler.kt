@@ -6,5 +6,5 @@ import kotlinx.coroutines.CoroutineScope
 expect fun <TRoute : Route> onBackCancelledHandler(
     scope: CoroutineScope,
     seekableTransitionState: SeekableTransitionState<TRoute>,
-    router: Router<TRoute>
+    navigator: Navigator<TRoute>
 )
