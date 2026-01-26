@@ -16,6 +16,10 @@ interface Router<TRoute : Route> {
     val navigator: Navigator<TRoute>
 
     val currentRoute: TRoute
+    val previousRoute: TRoute?
+
+    val backstackSize: Int
+
     val hasBackstack: Boolean
 }
 
@@ -42,6 +46,9 @@ class StackRouter<TRoute : Route>(
     private val backstack = mutableStateListOf(initialRoute)
 
     override val currentRoute: TRoute get() = backstack.last()
+    override val previousRoute: TRoute? get() = backstack.getOrNull(backstack.lastIndex - 1)
+
+    override val backstackSize: Int get() = backstack.size
     override val hasBackstack: Boolean get() = backstack.size > 1
 
     private inner class StackNavigator : Navigator<TRoute> {
