@@ -11,14 +11,32 @@ import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.job
+
+fun CoroutineScope.createChild(): CoroutineScope = CoroutineScope(coroutineContext + Job(parent = coroutineContext.job))
 
 class RootModule {
+    val coroutinesModule = CoroutinesModule()
     val storageModule = StorageModule()
     val ktorModule = KtorModule()
     val serviceModule = ServiceModule(ktorModule)
     val repoModule = RepoModule(serviceModule)
     val viewModelModule = ViewModelModule(this)
+}
+
+class CoroutinesModule {
+    val rootScope = CoroutineScope(
+        Dispatchers.Default
+            .plus(Job())
+            .plus(CoroutineExceptionHandler { context, throwable ->
+                println("Fatal exception in $context: $throwable")
+                throw throwable
+            })
+    )
 }
 
 class StorageModule {
