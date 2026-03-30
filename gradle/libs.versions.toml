@@ -3,8 +3,8 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 
-agp = "9.0.0"                   # https://developer.android.com/build/releases/about-agp
-kotlin = "2.3.20"               # https://github.com/jetbrains/kotlin/releases
+agp = "9.1.0"                   # https://developer.android.com/build/releases/about-agp
+kotlin = "2.3.21"               # https://github.com/jetbrains/kotlin/releases
 
 junit = "4.13.2"
 
@@ -14,7 +14,7 @@ compose-multiplatform = "1.10.3" # https://github.com/JetBrains/compose-multipla
 androidx-activity = "1.13.0"    # https://developer.android.com/jetpack/androidx/releases/activity
 androidx-appcompat = "1.7.1"    # https://developer.android.com/jetpack/androidx/releases/appcompat
 
-ktor = "3.4.1"                  # https://github.com/ktorio/ktor/releases
+ktor = "3.4.3"                  # https://github.com/ktorio/ktor/releases
 coil = "3.4.0"                  # https://github.com/coil-kt/coil/releases
 
 [libraries]
