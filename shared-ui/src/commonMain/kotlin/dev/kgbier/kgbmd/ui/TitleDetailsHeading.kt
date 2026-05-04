@@ -25,8 +25,9 @@ import coil3.compose.AsyncImage
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.HeroRatingView
-import dev.kgbier.kgbmd.ui.component.Portrait
-import dev.kgbier.kgbmd.ui.component.Tag
+import dev.kgbier.kgbmd.ui.component.PosterView
+import dev.kgbier.kgbmd.ui.component.atom.Portrait
+import dev.kgbier.kgbmd.ui.component.atom.Tag
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable

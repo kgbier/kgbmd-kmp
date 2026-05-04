@@ -6,12 +6,14 @@ data class NameDetails(
     val name: String,
     val headshot: Image?,
     val description: String?,
-    val filmography: Map<FilmographicCategory, List<Title>>,
+    val topCredits: List<TopCredit>,
 ) : MediaEntityDetails {
-    data class Title(
+    data class TopCredit(
         val id: MediaEntityId,
-        val name: String?,
+        val name: String,
+        val poster: Image?,
         val year: String?,
+        val rating: String?,
         val role: String?,
     )
 }
@@ -21,25 +23,23 @@ data class TitleDetails(
     val poster: Image?,
     val contentRating: String?,
     val genre: String,
-    val principalCreditsByGroup: Map<String, List<PrincipalCredit>>,
+    val principalCreditsByGroup: Map<String, List<NameProfile>>,
     val description: String?,
     val yearReleased: String?,
     val rating: Rating?,
     val duration: String?,
-    val castMembers: List<CastMember>,
+    val topCast: TopCast?,
 ) : MediaEntityDetails {
     data class Rating(val value: String, val best: String, val count: String?)
 
-    data class PrincipalCredit(
-        val id: MediaEntityId,
-        val name: String,
-        val photo: Image?,
+    data class TopCast(
+        val topCast: List<CastCredit>,
+        val isMore: Boolean,
+        val groupingId: CreditGroupingId,
     )
 
-    data class CastMember(
-        val thumbnailUrl: String?,
-        val name: String?,
-        val role: String?,
-        val nameId: String?,
+    data class CastCredit(
+        val nameProfile: NameProfile,
+        val roles: List<String>,
     )
 }

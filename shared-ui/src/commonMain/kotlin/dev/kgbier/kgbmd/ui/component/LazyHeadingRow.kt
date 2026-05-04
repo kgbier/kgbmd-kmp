@@ -1,27 +1,41 @@
 package dev.kgbier.kgbmd.ui.component
 
 import androidx.compose.foundation.OverscrollEffect
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberOverscrollEffect
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastMaxOfOrDefault
 import kotlin.math.max
 import kotlin.math.min
@@ -85,132 +99,160 @@ fun LazyHeadingRow(
     overscrollEffect: OverscrollEffect? = rememberOverscrollEffect(),
     headingContent: @Composable (String) -> Unit,
     content: LazyListScope.() -> Unit,
-) = Column(modifier = modifier) {
+) {
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    Column(modifier = modifier.onGloballyPositioned { size = it.size }) {
 
-    /**
-     * Memoise a spanned variant of all headings
-     */
-    val groups = remember(headings) {
-        headings.mapIndexed { ordinal, heading ->
-            val nextIndexOrNull = headings.getOrNull(ordinal + 1)?.index
-            val span = if (nextIndexOrNull == null) {
-                null
-            } else {
-                nextIndexOrNull - ordinal
+        /**
+         * Memoise a spanned variant of all headings
+         */
+        val groups = remember(headings) {
+            headings.mapIndexed { ordinal, heading ->
+                val nextIndexOrNull = headings.getOrNull(ordinal + 1)?.index
+                val span = if (nextIndexOrNull == null) {
+                    null
+                } else {
+                    nextIndexOrNull - heading.index
+                }
+                Group(heading.index, span, heading.name)
             }
-            Group(heading.index, span, heading.name)
-        }
-    }
-
-    /**
-     * Subcompose the headings
-     */
-    SubcomposeLayout(
-        modifier = Modifier
-            .padding(
-                top = contentPadding.calculateTopPadding(),
-                start = contentPadding.calculateStartPadding(LocalLayoutDirection.current),
-                end = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
-            )
-    ) { constraints ->
-        val visibleItems = state.layoutInfo.visibleItemsInfo
-
-        val firstVisibleItem = visibleItems.firstOrNull()
-        val lastVisibleItem = visibleItems.lastOrNull()
-        if (firstVisibleItem == null || lastVisibleItem == null) {
-            return@SubcomposeLayout layout(0, 0) {}
         }
 
         /**
-         * Determine which headings are visible, and record which list items are candidates for
-         * header-position reference points
+         * Subcompose the headings
          */
-        val candidateHeaderItems = groups.mapNotNull { targetGroup ->
-            val isSpanless = targetGroup.span == null
-            val isTargetGroupCandidate = if (isSpanless) {
-                true
-            } else {
-                val maxStartOverlap = max(targetGroup.index, firstVisibleItem.index)
-                val minEndOverlap =
-                    min(targetGroup.index + (targetGroup.span - 1), lastVisibleItem.index)
-
-                val doesOverlap = maxStartOverlap <= minEndOverlap
-
-                doesOverlap
-            }
-
-            val candidateHeaderOffsetItem = if (isTargetGroupCandidate) {
-                visibleItems.firstOrNull { it.index >= targetGroup.index }
-            } else null
-
-            candidateHeaderOffsetItem?.let { targetGroup to it }
-        }
-
-        /**
-         * Measure and places all heading views, recording any relevant heading metadata
-         */
-        val placeables = candidateHeaderItems.flatMap { (group, candidate) ->
-            subcompose(slotId = candidate.index) {
-                headingContent(group.name)
-            }.map { measurable ->
-                OffsetPlaceable(
-                    index = candidate.index,
-                    offset = candidate.offset,
-                    placeable = measurable.measure(constraints),
+        SubcomposeLayout(
+            modifier = Modifier
+                .padding(
+                    top = contentPadding.calculateTopPadding(),
+                    start = contentPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    end = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
                 )
+        ) { constraints ->
+            val visibleItems = state.layoutInfo.visibleItemsInfo
+
+            val firstVisibleItem = visibleItems.firstOrNull()
+            val lastVisibleItem = visibleItems.lastOrNull()
+            if (firstVisibleItem == null || lastVisibleItem == null) {
+                return@SubcomposeLayout layout(0, 0) {}
             }
-        }
 
-        // Identify the first heading view to draw
-        val firstSlotId = placeables.firstOrNull()?.index
+            /**
+             * Determine which headings are visible, and record which list items are candidates for
+             * header-position reference points
+             */
+            val candidateHeaderItems = groups.mapNotNull { targetGroup ->
+                val isSpanless = targetGroup.span == null
+                val isTargetGroupCandidate = if (isSpanless) {
+                    true
+                } else {
+                    val maxStartOverlap = max(targetGroup.index, firstVisibleItem.index)
+                    val minEndOverlap =
+                        min(targetGroup.index + (targetGroup.span - 1), lastVisibleItem.index)
 
-        layout(
-            width = constraints.maxWidth,
-            height = placeables.fastMaxOfOrDefault(defaultValue = 0) { it.placeable.height },
-        ) {
-            // Draw all placeables
-            placeables.forEach { offsetPlaceable ->
-                val firstHeadingOffset = max(0 + offsetPlaceable.offset, 0)
+                    val doesOverlap = maxStartOverlap <= minEndOverlap
 
-                // Prepare for a nudge offset for the first (leading) heading,
-                // so as to avoid colliding with the next heading.
-                val isFirstHeader = offsetPlaceable.index == firstSlotId
+                    doesOverlap
+                }
 
-                // Determine if the first heading overlaps, and compute how much the overlap is
-                val thisNudgeValue = if (isFirstHeader) {
-                    val firstHeadingWidth = offsetPlaceable.placeable.width
-                    val firstHeadingEnd = firstHeadingWidth + firstHeadingOffset
-                    val secondHeadingOffset =
-                        candidateHeaderItems.getOrNull(1)?.second?.offset ?: Int.MAX_VALUE
+                val candidateHeaderOffsetItem = if (isTargetGroupCandidate) {
+                    visibleItems.firstOrNull { it.index >= targetGroup.index }
+                } else null
 
-                    val headingOverlap = if (firstHeadingEnd > secondHeadingOffset) {
-                        firstHeadingEnd - secondHeadingOffset
+                candidateHeaderOffsetItem?.let { targetGroup to it }
+            }
+
+            /**
+             * Measure and places all heading views, recording any relevant heading metadata
+             */
+            val placeables = candidateHeaderItems.flatMap { (group, candidate) ->
+                subcompose(slotId = candidate.index) {
+                    headingContent(group.name)
+                }.map { measurable ->
+                    OffsetPlaceable(
+                        index = candidate.index,
+                        offset = candidate.offset,
+                        placeable = measurable.measure(constraints),
+                    )
+                }
+            }
+
+            // Identify the first heading view to draw
+            val firstSlotId = placeables.firstOrNull()?.index
+
+            layout(
+                width = constraints.maxWidth,
+                height = placeables.fastMaxOfOrDefault(defaultValue = 0) { it.placeable.height },
+            ) {
+                // Draw all placeables
+                placeables.forEach { offsetPlaceable ->
+                    val firstHeadingOffset = max(0 + offsetPlaceable.offset, 0)
+
+                    // Prepare for a nudge offset for the first (leading) heading,
+                    // so as to avoid colliding with the next heading.
+                    val isFirstHeader = offsetPlaceable.index == firstSlotId
+
+                    // Determine if the first heading overlaps, and compute how much the overlap is
+                    val thisNudgeValue = if (isFirstHeader) {
+                        val firstHeadingWidth = offsetPlaceable.placeable.width
+                        val firstHeadingEnd = firstHeadingWidth + firstHeadingOffset
+                        val secondHeadingOffset =
+                            candidateHeaderItems.getOrNull(1)?.second?.offset ?: Int.MAX_VALUE
+
+                        val headingOverlap = if (firstHeadingEnd > secondHeadingOffset) {
+                            firstHeadingEnd - secondHeadingOffset
+                        } else 0
+
+                        headingOverlap
                     } else 0
 
-                    headingOverlap
-                } else 0
-
-                offsetPlaceable.placeable.place(
-                    x = firstHeadingOffset - thisNudgeValue,
-                    y = 0,
-                )
+                    offsetPlaceable.placeable.place(
+                        x = firstHeadingOffset - thisNudgeValue,
+                        y = 0,
+                    )
+                }
             }
         }
-    }
 
-    LazyRow(
-        state = state,
-        contentPadding = PaddingValues(
-            start = contentPadding.calculateStartPadding(LocalLayoutDirection.current),
-            end = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
-            bottom = contentPadding.calculateBottomPadding(),
+        LazyRow(
+            state = state,
+            contentPadding = PaddingValues(
+                start = contentPadding.calculateStartPadding(LocalLayoutDirection.current),
+                end = contentPadding.calculateEndPadding(LocalLayoutDirection.current),
+                bottom = contentPadding.calculateBottomPadding(),
+            ),
+            reverseLayout = reverseLayout,
+            horizontalArrangement = horizontalArrangement,
+            verticalAlignment = verticalAlignment,
+            flingBehavior = flingBehavior,
+            userScrollEnabled = userScrollEnabled,
+            overscrollEffect = overscrollEffect,
+            content = content,
+            modifier = with(LocalDensity.current) { Modifier.width(size.toSize().width.toDp()) }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LazyHeadingRowPreview() = MaterialTheme {
+    LazyHeadingRow(
+        headings = listOf(
+            LazyHeadingRow.Heading(0, "H1"),
+            LazyHeadingRow.Heading(2, "H2"),
+            LazyHeadingRow.Heading(4, "H3"),
         ),
-        reverseLayout = reverseLayout,
-        horizontalArrangement = horizontalArrangement,
-        verticalAlignment = verticalAlignment,
-        flingBehavior = flingBehavior,
-        userScrollEnabled = userScrollEnabled,
-        overscrollEffect = overscrollEffect,
-        content = content,
-    )
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(8.dp),
+        headingContent = { Text(it) },
+    ) {
+        items(10) {
+            Box(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(100.dp)
+                    .background(MaterialTheme.colorScheme.background)
+            )
+        }
+    }
 }

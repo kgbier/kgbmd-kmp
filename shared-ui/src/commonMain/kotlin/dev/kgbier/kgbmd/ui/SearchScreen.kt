@@ -116,6 +116,8 @@ fun SearchScreen(
 
                     },
                     trailingIcon = {
+                        if(textFieldState.text.isEmpty()) return@InputField
+
                         TooltipBox(
                             positionProvider =
                                 TooltipDefaults.rememberTooltipPositionProvider(

@@ -1,15 +1,12 @@
-package dev.kgbier.kgbmd.ui
+package dev.kgbier.kgbmd.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +25,8 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import dev.kgbier.kgbmd.domain.model.MoviePoster
+import dev.kgbier.kgbmd.ui.component.atom.PosterCard
+import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
@@ -102,26 +101,6 @@ fun PosterView(
         }
     }
 }
-
-@Composable
-fun PosterCard(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    shape: Shape = CardDefaults.shape,
-    content: @Composable ColumnScope.() -> Unit,
-) = Card(
-    onClick = onClick,
-    enabled = enabled,
-    shape = shape,
-    elevation = CardDefaults.cardElevation(
-        defaultElevation = 2.dp,
-        pressedElevation = 8.dp,
-    ),
-    content = content,
-    modifier = modifier
-        .aspectRatio(100f / 148f) // Poster aspect ratio
-)
 
 @Composable
 private fun BottomTitle(title: String, modifier: Modifier) = Text(

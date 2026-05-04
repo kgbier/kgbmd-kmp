@@ -1,7 +1,7 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
-import dev.kgbier.kgbmd.domain.model.MediaEntityId
+import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import kotlinx.serialization.Serializable
 
@@ -23,7 +23,8 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val ratingsSummary: RatingsSummary,
             val runtime: Runtime?,
             val titleGenres: TitleGenres,
-            val principalCreditsV2: List<PrincipalCreditsForGrouping>,
+            val principalCredits: List<PrincipalCreditsForGrouping>,
+            val topCast: List<TopCastCredits>,
             val outline: Plot,
         ) {
             @Serializable
@@ -74,18 +75,32 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
                 data class Grouping(val text: String)
 
                 @Serializable
-                data class Credit(val name: Name) {
-                    @Serializable
-                    data class Name(
-                        val id: String,
-                        val nameText: NameText,
-                        val primaryImage: PrimaryImage?,
-                    ) {
-                        @Serializable
-                        data class NameText(val text: String)
+                data class Credit(val name: NameProfileCreditFragment)
+            }
 
+            @Serializable
+            data class TopCastCredits(
+                val totalCredits: Int,
+                val grouping: Grouping,
+                val credits: List<Credit>,
+            ) {
+                @Serializable
+                data class Grouping(
+                    val groupingId: String,
+                )
+
+                @Serializable
+                data class Credit(
+                    val name: NameProfileCreditFragment,
+                    val creditedRoles: CreditedRoles,
+                ) {
+                    @Serializable
+                    data class CreditedRoles(val edges: List<Edge>) {
                         @Serializable
-                        data class PrimaryImage(val url: String?)
+                        data class Edge(val node: Node) {
+                            @Serializable
+                            data class Node(val text: String?)
+                        }
                     }
                 }
             }
@@ -144,18 +159,26 @@ query TitleDetails($id: ID!) {
         }
       }
     }
-    principalCreditsV2(filter: { mode: "DEFAULT" }) {
+    principalCredits: principalCreditsV2(filter: { mode: "DEFAULT" }) {
       grouping {
         text
       }
-      credits {
-        name {
-          id
-          nameText {
-            text
-          }
-          primaryImage {
-            url
+      credits(limit: 5) {
+        ...$${NameProfileCreditFragment.name}
+      }
+    }
+    topCast: principalCreditsV2(filter: { mode: "TOP_CAST" }) {
+      totalCredits
+      grouping {
+        groupingId
+      }
+      credits(limit: 10) {
+        ...$${NameProfileCreditFragment.name}
+        creditedRoles(first: 10) {
+          edges {
+            node {
+              text
+            }
           }
         }
       }
@@ -169,6 +192,8 @@ query TitleDetails($id: ID!) {
     }
   }
 }
+
+$${NameProfileCreditFragment.fragment}
 
 fragment PlotData on Plot {
   plotText {
@@ -184,8 +209,8 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
         poster = primaryImage?.url?.let(::transformImageUrl),
         contentRating = certificate?.rating,
         genre = titleGenres.genres.joinToString { it.genre.text },
-        principalCreditsByGroup = principalCreditsV2.associate { groupedCredits ->
-            groupedCredits.grouping.text to groupedCredits.credits.map { it.toPrincipalCredit() }
+        principalCreditsByGroup = principalCredits.associate { groupedCredits ->
+            groupedCredits.grouping.text to groupedCredits.credits.map { it.name.toNameProfile() }
         },
         description = outline.edges.firstOrNull()?.node?.plotText?.plainText,
         yearReleased = releaseYear.year?.toString(),
@@ -197,13 +222,21 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
             )
         },
         duration = runtime?.displayableProperty?.value?.plainText,
-        castMembers = emptyList(), // Load lazily
+        topCast = topCast.toTopCast(),
     )
 }
 
-private fun TitleDetailsQuery.Result.Title.PrincipalCreditsForGrouping.Credit.toPrincipalCredit(
-) = TitleDetails.PrincipalCredit(
-    id = MediaEntityId(name.id),
-    name = name.nameText.text,
-    photo = name.primaryImage?.url?.let(::transformImageUrl),
-)
+private fun List<TitleDetailsQuery.Result.Title.TopCastCredits>.toTopCast(): TitleDetails.TopCast? {
+    val topCastGrouping = firstOrNull() ?: return null
+
+    return TitleDetails.TopCast(
+        topCast = topCastGrouping.credits.map { castCredit ->
+            TitleDetails.CastCredit(
+                nameProfile = castCredit.name.toNameProfile(),
+                roles = castCredit.creditedRoles.edges.mapNotNull { it.node.text },
+            )
+        },
+        isMore = topCastGrouping.totalCredits > topCastGrouping.credits.size,
+        groupingId = CreditGroupingId(topCastGrouping.grouping.groupingId),
+    )
+}

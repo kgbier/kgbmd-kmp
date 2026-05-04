@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui.component
+package dev.kgbier.kgbmd.ui.component.atom
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.RepeatMode
@@ -28,7 +28,7 @@ fun rememberShimmerState(): Float {
             repeatMode = RepeatMode.Restart,
             animation = tween(
                 durationMillis = 1200,
-                easing = CubicBezierEasing(0.2f, 0.9f, 0.2f, 0.9f),
+                easing = CubicBezierEasing(0.05f, 0.3f, 1.0f, 0.8f),
             ),
         ),
         label = "shimmer",

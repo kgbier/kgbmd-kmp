@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.TitleDetails
-import dev.kgbier.kgbmd.ui.component.CreditPortrait
+import dev.kgbier.kgbmd.ui.component.FeaturedCreditCard
 import dev.kgbier.kgbmd.ui.component.LazyHeadingRow
-import dev.kgbier.kgbmd.ui.component.SubtitleText
+import dev.kgbier.kgbmd.ui.component.atom.SubtitleText
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 
@@ -37,17 +38,17 @@ fun TitlePrincipalCredits(
         contentPadding = PaddingValues(
             horizontal = 10.dp,
         ),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
         headingContent = { heading ->
             SubtitleText(
-                heading,
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
+                text = heading,
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
             )
         },
         modifier = modifier,
     ) {
         items(principalCredits) { item ->
-            CreditPortrait(
+            FeaturedCreditCard(
                 name = item.name,
                 onClick = { router.push(AppRoute.Details(item.id)) },
                 creditImageUrl = item.photo?.thumbnailUrl,

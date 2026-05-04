@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui.component
+package dev.kgbier.kgbmd.ui.component.molecule
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dev.kgbier.kgbmd.ui.component.atom.SubtitleText
 
 
 @Composable
@@ -16,7 +17,7 @@ fun TitledContent(
 ) = Column(
     modifier = modifier
 ) {
-    SubtitleText(title)
+    SubtitleText(title,)
     Text(
         text = body,
         style = MaterialTheme.typography.bodyMedium,

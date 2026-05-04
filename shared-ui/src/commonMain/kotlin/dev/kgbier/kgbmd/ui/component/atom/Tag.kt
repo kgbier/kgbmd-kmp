@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.ui.component
+package dev.kgbier.kgbmd.ui.component.atom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

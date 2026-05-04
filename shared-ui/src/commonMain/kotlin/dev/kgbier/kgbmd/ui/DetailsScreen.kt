@@ -2,10 +2,8 @@
 
 package dev.kgbier.kgbmd.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,7 +19,6 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,7 +31,6 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
-import dev.kgbier.kgbmd.ui.component.TitledContent
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
@@ -84,9 +80,9 @@ fun DetailsScreen(
                         )
                 ) {
                     when (val state = state) {
-                        is TitleDetails -> TitleDetails(state, router)
+                        is TitleDetails -> TitleDetailsScreen(state, router)
 
-                        is NameDetails -> NameDetails(state, router)
+                        is NameDetails -> NameDetailsScreen(state, router)
 
                         null -> Unit // Loading
                     }
@@ -94,78 +90,4 @@ fun DetailsScreen(
             }
         }
     }
-}
-
-@Composable
-private fun NameDetails(
-    name: NameDetails,
-    router: Router<AppRoute>,
-) = Column(
-    verticalArrangement = Arrangement.spacedBy(16.dp)
-) {
-    NameDetailsHeader(
-        name = name,
-        modifier = Modifier
-            .padding(16.dp)
-            .padding(
-                top = WindowInsets.safeDrawing
-                    .asPaddingValues()
-                    .calculateTopPadding(),
-            )
-    )
-
-    name.description?.let { description ->
-        TitledContent(
-            title = "Description",
-            body = description,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    }
-
-    Spacer(
-        modifier = Modifier
-            .padding(
-                top = WindowInsets.safeDrawing
-                    .asPaddingValues()
-                    .calculateTopPadding(),
-            )
-    )
-}
-
-@Composable
-private fun TitleDetails(
-    title: TitleDetails,
-    router: Router<AppRoute>,
-) = Column(
-    verticalArrangement = Arrangement.spacedBy(16.dp)
-) {
-    TitleDetailsHeader(
-        title = title,
-        modifier = Modifier
-            .padding(16.dp)
-            .padding(
-                top = WindowInsets.safeDrawing
-                    .asPaddingValues()
-                    .calculateTopPadding(),
-            )
-    )
-
-    TitlePrincipalCredits(
-        title = title,
-        router = router,
-    )
-
-    title.description?.let { description ->
-        TitledContent(
-            title = "Summary",
-            body = description,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-    }
-
-    Text(
-        text = "Cast",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
 }

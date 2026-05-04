@@ -10,7 +10,7 @@ data class PaginationFragment(
     companion object {
         const val name = "Pagination"
         const val fragment = """
-fragment Pagination on PageInfo {
+fragment $name on PageInfo {
   hasNextPage
   endCursor
 }

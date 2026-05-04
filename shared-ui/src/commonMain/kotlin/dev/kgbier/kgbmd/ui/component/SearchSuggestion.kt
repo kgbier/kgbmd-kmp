@@ -13,10 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.SearchSuggestionType
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.presentation.RatingState
-import dev.kgbier.kgbmd.ui.PosterView
-import dev.kgbier.kgbmd.ui.RatingStarView
+import dev.kgbier.kgbmd.ui.component.atom.Portrait
+import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 
 @Composable
@@ -27,7 +28,7 @@ fun SearchSuggestion(
 ) = with(suggestion) {
     SearchSuggestion(
         title = title,
-        modifier = modifier,
+        suggestionType = type,
         year = year,
         tidbit = tidbit,
         thumbnailUrl = thumbnailUrl,
@@ -36,13 +37,16 @@ fun SearchSuggestion(
             else -> null
         },
         isRatingLoading = ratingState == RatingState.Loading,
+        modifier = modifier,
     )
 }
+
 
 @Composable
 fun SearchSuggestion(
     title: String,
     modifier: Modifier = Modifier,
+    suggestionType: SearchSuggestionType? = null,
     year: String? = null,
     tidbit: String? = null,
     thumbnailUrl: String? = null,
@@ -51,8 +55,19 @@ fun SearchSuggestion(
 ) = Row(modifier = modifier) {
     if (thumbnailUrl == null) {
         Spacer(Modifier.size(40.dp))
-    } else {
-        PosterView(
+    } else when (suggestionType) {
+        SearchSuggestionType.CastOrCrew -> Portrait(
+            creditImageUrl = thumbnailUrl,
+            modifier = Modifier
+                .size(40.dp)
+                .align(Alignment.CenterVertically)
+        )
+
+        SearchSuggestionType.Movie,
+        SearchSuggestionType.Game,
+        SearchSuggestionType.TvShow,
+        null,
+            -> PosterView(
             thumbnailUrl = null,
             imageUrl = thumbnailUrl,
             onClick = { },
