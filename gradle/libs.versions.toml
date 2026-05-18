@@ -69,7 +69,7 @@ coil = [
 ]
 
 [plugins]
-ksp = "com.google.devtools.ksp:2.3.4"
+ksp = "com.google.devtools.ksp:2.3.8" # https://github.com/google/ksp/releases
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

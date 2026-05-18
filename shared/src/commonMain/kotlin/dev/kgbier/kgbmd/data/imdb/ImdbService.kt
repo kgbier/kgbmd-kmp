@@ -25,8 +25,8 @@ import kotlinx.serialization.serializer
 
 interface ImdbService {
 
-    suspend fun getHotMovies(): MostPopularListQuery.Result
-    suspend fun getHotShows(): MostPopularListQuery.Result
+    suspend fun getHotMovies(page: String?): MostPopularListQuery.Result
+    suspend fun getHotShows(page: String?): MostPopularListQuery.Result
     suspend fun search(query: String): SuggestionResponse?
     suspend fun getRating(ttid: MediaEntityId): RatingResponse?
     suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
@@ -66,16 +66,25 @@ class KtorImdbService(
 
     private suspend fun getHotList(
         type: MostPopularListQuery.Params.ChartTitleType,
+        page: String?,
     ) = graphqlQuery(
         query = MostPopularListQuery(),
-        params = MostPopularListQuery.Params(count = 100, type = type),
+        params = MostPopularListQuery.Params(count = 100, type = type, after = page),
     )
 
-    override suspend fun getHotMovies() =
-        getHotList(MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_MOVIES)
+    override suspend fun getHotMovies(
+        page: String?,
+    ) = getHotList(
+        type = MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_MOVIES,
+        page = page
+    )
 
-    override suspend fun getHotShows() =
-        getHotList(MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_TV_SHOWS)
+    override suspend fun getHotShows(
+        page: String?,
+    ) = getHotList(
+        type = MostPopularListQuery.Params.ChartTitleType.MOST_POPULAR_TV_SHOWS,
+        page = page
+    )
 
     override suspend fun search(query: String): SuggestionResponse? {
         val validatedQuery = query

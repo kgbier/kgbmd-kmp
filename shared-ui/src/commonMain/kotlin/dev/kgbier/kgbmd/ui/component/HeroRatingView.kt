@@ -19,7 +19,9 @@ fun HeroRatingView(
 ) {
     Row(verticalAlignment = Alignment.Bottom) {
         Text(
-            text = rating, style = MaterialTheme.typography.titleLarge
+            text = rating,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         RatingStarView(
             ratingText = " / $bestRating",

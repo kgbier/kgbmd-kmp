@@ -117,7 +117,7 @@ fun TitleListView(
                 is TitleListViewModel.TitleListState.Loaded -> items(items = state.items) { item ->
                     PosterView(
                         poster = item,
-                        onClick = { navigate(AppRoute.Details(item.ttId)) },
+                        onClick = { navigate(AppRoute.Details(item.id)) },
                     )
                 }
 
@@ -145,7 +145,7 @@ fun TitleListViewPreview() {
                 state = TitleListViewModel.TitleListState.Loaded(
                     items = listOf(
                         MoviePoster(
-                            ttId = MediaEntityId("id"),
+                            id = MediaEntityId("id"),
                             title = "Hello Sailor",
                             rating = null,
                             thumbnailUrl = "url",

@@ -1,3 +1,5 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package dev.kgbier.kgbmd.util.logger
 
 import dev.kgbier.kgbmd.util.logger.Logger.Level

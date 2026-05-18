@@ -15,7 +15,6 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
         @Serializable
         data class Title(
             val titleText: TitleText,
-            val originalTitleText: OriginalTitleText,
             val titleType: TitleType,
             val primaryImage: PrimaryImage?,
             val releaseYear: ReleaseYear,
@@ -23,15 +22,15 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val ratingsSummary: RatingsSummary,
             val runtime: Runtime?,
             val titleGenres: TitleGenres,
+            val seriesSeasonEpisode: SeriesSeasonEpisodeFragment?,
+            val series: Series?,
+            val episodes: Episodes?,
             val principalCredits: List<PrincipalCreditsForGrouping>,
             val topCast: List<TopCastCredits>,
             val outline: Plot,
         ) {
             @Serializable
             data class TitleText(val text: String)
-
-            @Serializable
-            data class OriginalTitleText(val text: String)
 
             @Serializable
             data class TitleType(val id: String)
@@ -63,6 +62,48 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
                 data class Genre(val genre: GenreText) {
                     @Serializable
                     data class GenreText(val text: String)
+                }
+            }
+
+            @Serializable
+            data class Series(
+                val seriesTitle: SeriesTitle,
+                val nextEpisode: AdjacentEpisodeTitle?,
+                val previousEpisode: AdjacentEpisodeTitle?,
+            ) {
+                @Serializable
+                data class SeriesTitle(
+                    val id: String,
+                    val titleText: TitleText,
+                ) {
+                    @Serializable
+                    data class TitleText(val text: String)
+                }
+
+                @Serializable
+                data class AdjacentEpisodeTitle(val id: String)
+            }
+
+            @Serializable
+            data class Episodes(
+                val isOngoing: Boolean,
+                val episodes: EpisodeConnection,
+            ) {
+                @Serializable
+                data class EpisodeConnection(
+                    val total: Int,
+                    val topEpisodes: List<Edge>,
+                ) {
+                    @Serializable
+                    data class Edge(
+                        val poster: TitlePosterFragment,
+                        val node: Node,
+                    ) {
+                        @Serializable
+                        data class Node(
+                            val seriesSeasonEpisode: SeriesSeasonEpisodeFragment,
+                        )
+                    }
                 }
             }
 
@@ -125,9 +166,6 @@ query TitleDetails($id: ID!) {
     titleText {
       text
     }
-    originalTitleText {
-      text
-    }
     titleType {
       id
     }
@@ -159,6 +197,39 @@ query TitleDetails($id: ID!) {
         }
       }
     }
+    seriesSeasonEpisode: series {
+      ...$${SeriesSeasonEpisodeFragment.name}
+    }
+    series {
+      seriesTitle: series {
+        id
+        titleText {
+          text
+        }
+      }
+      nextEpisode {
+        id
+      }
+      previousEpisode {
+        id
+      }
+    }
+    episodes {
+      isOngoing
+      episodes(first: 10, sort: { order: DESC, by: RATING }) {
+        total
+        topEpisodes: edges {
+          poster: node {
+            ...$${TitlePosterFragment.name}
+          }
+          node {
+            seriesSeasonEpisode: series {
+              ...$${SeriesSeasonEpisodeFragment.name}
+            }
+          }
+        }
+      }
+    }
     principalCredits: principalCreditsV2(filter: { mode: "DEFAULT" }) {
       grouping {
         text
@@ -186,20 +257,42 @@ query TitleDetails($id: ID!) {
     outline: plots(first: 1, filter: { type: OUTLINE }) {
       edges {
         node {
-          ...PlotData
+          plotText {
+            plainText
+          }
         }
+      }
+    }
+    prestigiousAwardSummary {
+      awardNomination {
+        award {
+          text
+        }
+      }
+      wins
+      nominations
+    }
+    awardWins: awardNominations(first: 0, filter: { wins: WINS_ONLY }) {
+      total
+    }
+    awardNominations: awardNominations(
+      first: 0
+      filter: { wins: EXCLUDE_WINS }
+    ) {
+      total
+    }
+    productionBudget {
+      budget {
+        amount
+        currency
       }
     }
   }
 }
 
+$${TitlePosterFragment.fragment}
 $${NameProfileCreditFragment.fragment}
-
-fragment PlotData on Plot {
-  plotText {
-    plainText
-  }
-}
+$${SeriesSeasonEpisodeFragment.fragment}
 """
 }
 
@@ -213,7 +306,20 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
             groupedCredits.grouping.text to groupedCredits.credits.map { it.name.toNameProfile() }
         },
         description = outline.edges.firstOrNull()?.node?.plotText?.plainText,
-        yearReleased = releaseYear.year?.toString(),
+        yearReleased = run {
+            val releaseYearDate = releaseYear.year ?: return@run null
+
+            if (episodes != null) {
+                val endYear = releaseYear.endYear
+                if (endYear == null) {
+                    "${releaseYearDate}—"
+                } else {
+                    "${releaseYearDate}–${endYear}"
+                }
+            } else {
+                releaseYearDate.toString()
+            }
+        },
         rating = ratingsSummary.aggregateRating?.toString()?.let { aggregate ->
             TitleDetails.Rating(
                 value = aggregate,
@@ -222,7 +328,19 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
             )
         },
         duration = runtime?.displayableProperty?.value?.plainText,
+        episodeMetadata = run {
+            val series = series ?: return@run null
+            val seriesSeasonEpisode = seriesSeasonEpisode ?: return@run null
+
+            TitleDetails.EpisodeMetadata(
+                seriesTitle = series.seriesTitle.titleText.text,
+                season = seriesSeasonEpisode.displayableEpisodeNumber.displayableSeason.text,
+                number = seriesSeasonEpisode.displayableEpisodeNumber.episodeNumber.text,
+            )
+        },
+        genres = titleGenres.genres.map { it.genre.text },
         topCast = topCast.toTopCast(),
+        topEpisodes = episodes?.toTopEpisodes(),
     )
 }
 
@@ -236,7 +354,21 @@ private fun List<TitleDetailsQuery.Result.Title.TopCastCredits>.toTopCast(): Tit
                 roles = castCredit.creditedRoles.edges.mapNotNull { it.node.text },
             )
         },
-        isMore = topCastGrouping.totalCredits > topCastGrouping.credits.size,
+        castTotal = topCastGrouping.totalCredits,
+        hasMore = topCastGrouping.totalCredits > topCastGrouping.credits.size,
         groupingId = CreditGroupingId(topCastGrouping.grouping.groupingId),
+    )
+}
+
+private fun TitleDetailsQuery.Result.Title.Episodes.toTopEpisodes(): TitleDetails.TopEpisodes {
+    return TitleDetails.TopEpisodes(
+        episodeCount = episodes.total,
+        episodes = episodes.topEpisodes.map { topEpisode ->
+            TitleDetails.TopEpisode(
+                moviePoster = topEpisode.poster.toMoviePoster(),
+                season = topEpisode.node.seriesSeasonEpisode.displayableEpisodeNumber.displayableSeason.text,
+                number = topEpisode.node.seriesSeasonEpisode.displayableEpisodeNumber.episodeNumber.text,
+            )
+        }
     )
 }

@@ -3,17 +3,13 @@
 package dev.kgbier.kgbmd.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
@@ -60,31 +56,26 @@ fun DetailsScreen(
                     .fillMaxHeight()
                     .widthIn(max = ExpandedWidth.dp)
             ) {
-                if (state == null) {
-                    Box(
+                when (val state = state) {
+                    is TitleDetails -> TitleDetailsScreen(
+                        title = state,
+                        router = router,
+                        contentPadding = WindowInsets.safeDrawing
+                            .asPaddingValues(),
+                    )
+
+                    is NameDetails -> NameDetailsScreen(
+                        name = state,
+                        router = router,
+                        contentPadding = WindowInsets.safeDrawing
+                            .asPaddingValues(),
+                    )
+
+                    null -> Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         LoadingIndicator()
-                    }
-                }
-
-                val screenScrollState = rememberScrollState()
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(screenScrollState)
-                        .padding(
-                            bottom = WindowInsets.safeDrawing
-                                .asPaddingValues()
-                                .calculateBottomPadding(),
-                        )
-                ) {
-                    when (val state = state) {
-                        is TitleDetails -> TitleDetailsScreen(state, router)
-
-                        is NameDetails -> NameDetailsScreen(state, router)
-
-                        null -> Unit // Loading
                     }
                 }
             }

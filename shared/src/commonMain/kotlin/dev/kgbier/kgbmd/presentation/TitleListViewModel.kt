@@ -63,10 +63,10 @@ class TitleListViewModel(
         val state = runCatching {
             when (titleCategory) {
                 TitleCategory.Movie ->
-                    mediaInfoRepo.getMovieHotListPosters()
+                    mediaInfoRepo.getMovieHotListPosters(null)
 
                 TitleCategory.TvShow ->
-                    mediaInfoRepo.getTvShowHotListPosters()
+                    mediaInfoRepo.getTvShowHotListPosters(null)
             }
         }.fold(
             onSuccess = { TitleListState.Loaded(it) },

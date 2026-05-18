@@ -1,7 +1,6 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
-import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import kotlinx.serialization.Serializable
 
@@ -35,27 +34,9 @@ class NameDetailsQuery : GraphqlQuery<NameDetailsQuery.Params, NameDetailsQuery.
             data class KnownFor(val credits: List<Credit>) {
                 @Serializable
                 data class Credit(
-                    val title: Title,
+                    val poster: TitlePosterFragment,
                     val creditedRoles: CreditedRoles,
                 ) {
-                    @Serializable
-                    data class Title(
-                        val id: String,
-                        val titleText: TitleText,
-                        val primaryImage: PrimaryImage?,
-                        val releaseYear: ReleaseYear?,
-                        val ratingsSummary: RatingsSummary?,
-                    ) {
-                        @Serializable
-                        data class TitleText(val text: String)
-
-                        @Serializable
-                        data class ReleaseYear(val year: Int, val endYear: Int?)
-
-                        @Serializable
-                        data class RatingsSummary(val aggregateRating: String?)
-                    }
-
                     @Serializable
                     data class CreditedRoles(val edges: List<Edge>) {
                         @Serializable
@@ -88,17 +69,8 @@ query NameDetails($id: ID!) {
     }
     knownForV2(limit: 10) {
       credits {
-        title {
-          id
-          titleText {
-            text
-          }
-          primaryImage {
-            url
-          }
-          ratingsSummary {
-            aggregateRating
-          }
+        poster: title {
+          ...$${TitlePosterFragment.name}
         }
         creditedRoles(first: 1) {
           edges {
@@ -115,7 +87,7 @@ query NameDetails($id: ID!) {
     }
   }
 }
-
+$${TitlePosterFragment.fragment}
 """
 }
 
@@ -125,11 +97,8 @@ fun NameDetailsQuery.Result.Name.toNameDetails() = NameDetails(
     description = bio.text.plainText,
     topCredits = knownForV2.credits.map { credit ->
         NameDetails.TopCredit(
-            id = MediaEntityId(credit.title.id),
-            name = credit.title.titleText.text,
-            year = credit.title.releaseYear?.year?.toString(),
-            poster = credit.title.primaryImage?.url?.let(::transformImageUrl),
-            rating = credit.title.ratingsSummary?.aggregateRating,
+            poster = credit.poster.toMoviePoster(),
+//            year = credit.title.releaseYear?.year?.toString(),
             role = credit.creditedRoles.edges.first().let { edge ->
                 val role = edge.node
                 role.text?.replaceFirstChar(Char::uppercaseChar)

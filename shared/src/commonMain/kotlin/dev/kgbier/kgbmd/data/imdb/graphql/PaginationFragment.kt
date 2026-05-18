@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PaginationFragment(
-    val endCursor: String,
     val hasNextPage: Boolean,
+    val endCursor: String,
 ) {
     companion object {
         const val name = "Pagination"

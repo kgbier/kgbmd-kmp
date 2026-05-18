@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
@@ -26,8 +29,10 @@ import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.HeroRatingView
 import dev.kgbier.kgbmd.ui.component.PosterView
+import dev.kgbier.kgbmd.ui.component.TagGroup
 import dev.kgbier.kgbmd.ui.component.atom.Portrait
 import dev.kgbier.kgbmd.ui.component.atom.Tag
+import dev.kgbier.kgbmd.ui.theme.AppTheme
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
@@ -46,6 +51,7 @@ fun NameDetailsHeader(
         Text(
             text = name.name,
             style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
 
@@ -78,8 +84,19 @@ fun TitleDetailsHeader(
             }
         }
     }
+
+    val episodeMetadata = title.episodeMetadata
+    if (episodeMetadata != null) {
+        Text(
+            text = "${episodeMetadata.seriesTitle} - S${episodeMetadata.season}:E${episodeMetadata.number}",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall,
+        )
+    }
+
     Text(
         text = heading,
+        color = MaterialTheme.colorScheme.onSurface,
         style = MaterialTheme.typography.headlineSmall,
     )
 
@@ -93,6 +110,16 @@ fun TitleDetailsHeader(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
+        TagGroup(
+            tags = title.genres,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .align(Alignment.Bottom)
+                .weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
         title.rating?.let { rating ->
             HeroRatingView(
                 rating = rating.value,
@@ -135,9 +162,14 @@ private fun TitleSubheadingDetails(
             Icon(
                 Icons.Default.Schedule,
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(MaterialTheme.typography.labelSmall.fontSize.value.dp)
             )
-            Text(text = it, style = MaterialTheme.typography.labelSmall)
+            Text(
+                text = it,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.labelSmall,
+            )
         }
     }
 }
@@ -148,15 +180,19 @@ fun DetailsHeader(
     imageUrl: String? = null,
     content: @Composable () -> Unit,
 ) = Box {
-    DetailsHeaderBackground(
-        imageUrl = imageUrl,
-        modifier = Modifier
-            .matchParentSize()
-    )
-    DetailsHeaderForeground(
-        modifier = modifier
+    AppTheme(
+        darkTheme = true,
     ) {
-        content()
+        DetailsHeaderBackground(
+            imageUrl = imageUrl,
+            modifier = Modifier
+                .matchParentSize()
+        )
+        DetailsHeaderForeground(
+            modifier = modifier
+        ) {
+            content()
+        }
     }
 }
 

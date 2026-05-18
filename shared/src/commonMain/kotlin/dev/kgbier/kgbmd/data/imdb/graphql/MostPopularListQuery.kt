@@ -1,15 +1,16 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
-import dev.kgbier.kgbmd.domain.imdb.operation.ImageResizer
-import dev.kgbier.kgbmd.domain.model.MediaEntityId
-import dev.kgbier.kgbmd.domain.model.MoviePoster
 import kotlinx.serialization.Serializable
 
 class MostPopularListQuery :
     GraphqlQuery<MostPopularListQuery.Params, MostPopularListQuery.Result> {
 
     @Serializable
-    data class Params(val count: Int, val type: ChartTitleType) {
+    data class Params(
+        val count: Int,
+        val type: ChartTitleType,
+        val after: String? = null,
+    ) {
         @Serializable
         enum class ChartTitleType {
             MOST_POPULAR_TV_SHOWS,
@@ -20,78 +21,35 @@ class MostPopularListQuery :
     @Serializable
     data class Result(val chartTitles: ChartTitles) {
         @Serializable
-        data class ChartTitles(val pageInfo: PaginationFragment, val edges: List<Edge>) {
+        data class ChartTitles(
+            val total: Int,
+            val pageInfo: PaginationFragment,
+            val edges: List<Edge>,
+        ) {
             @Serializable
-            data class Edge(val currentRank: Int, val node: Node) {
-                @Serializable
-                data class Node(
-                    val id: String,
-                    val titleText: TitleText,
-                    val primaryImage: PrimaryImage?,
-                    val ratingsSummary: RatingsSummary,
-                ) {
-                    @Serializable
-                    data class TitleText(val text: String)
-
-                    @Serializable
-                    data class PrimaryImage(val url: String)
-
-                    @Serializable
-                    data class RatingsSummary(val aggregateRating: Double?)
-                }
-            }
+            data class Edge(
+                val currentRank: Int,
+                val poster: TitlePosterFragment
+            )
         }
     }
 
     override val document: String = $$"""
-query MostPopularList($count: Int!, $type: ChartTitleType!) {
-  chartTitles(first: $count, chart: { chartType: $type }) {
+query MostPopularList($count: Int!, $type: ChartTitleType!, $after: String) {
+  chartTitles(first: $count, after: $after, chart: { chartType: $type }) {
+    total
     pageInfo {
       ...$${PaginationFragment.name}
     }
-
     edges {
       currentRank
-      node {
-        id
-        titleText {
-          text
-        }
-        primaryImage {
-          url
-        }
-        ratingsSummary {
-          aggregateRating
-        }
+      poster: node {
+        ...$${TitlePosterFragment.name}
       }
     }
   }
 }
 $${PaginationFragment.fragment}
+$${TitlePosterFragment.fragment}
 """
 }
-
-fun MostPopularListQuery.Result.ChartTitles.Edge.toMoviePoster() = MoviePoster(
-    ttId = MediaEntityId(node.id),
-    title = node.titleText.text,
-    rating = node.ratingsSummary.aggregateRating
-        ?.takeUnless { it == 0.0 }?.toString(),
-    thumbnailUrl = node.primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_THUMBNAIL,
-        )
-    },
-    posterUrlSmall = node.primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_MEDIUM,
-        )
-    },
-    posterUrlLarge = node.primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_LARGE,
-        )
-    }
-)

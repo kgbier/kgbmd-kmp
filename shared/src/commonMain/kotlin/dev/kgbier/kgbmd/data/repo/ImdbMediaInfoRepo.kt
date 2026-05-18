@@ -17,11 +17,11 @@ class ImdbMediaInfoRepo(
     private val imdbService: ImdbService,
 ) : MediaInfoRepo {
 
-    override suspend fun getMovieHotListPosters(): List<MoviePoster> =
-        imdbService.getHotMovies().transform()
+    override suspend fun getMovieHotListPosters(page: String?): List<MoviePoster> =
+        imdbService.getHotMovies(page).transform()
 
-    override suspend fun getTvShowHotListPosters(): List<MoviePoster> =
-        imdbService.getHotShows().transform()
+    override suspend fun getTvShowHotListPosters(page: String?): List<MoviePoster> =
+        imdbService.getHotShows(page).transform()
 
     override suspend fun getSearchResults(query: String): List<Suggestion> =
         imdbService.search(query)?.transform() ?: emptyList()
@@ -35,7 +35,7 @@ class ImdbMediaInfoRepo(
         else -> null
     }
 
-    fun MostPopularListQuery.Result.transform() = chartTitles.edges.map { it.toMoviePoster() }
+    fun MostPopularListQuery.Result.transform() = chartTitles.edges.map { it.poster.toMoviePoster() }
 
     companion object {
         private const val NAME_ID_PREFIX = "nm"
