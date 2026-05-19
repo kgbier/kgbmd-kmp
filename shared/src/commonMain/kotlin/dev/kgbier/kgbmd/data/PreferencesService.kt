@@ -10,7 +10,7 @@ interface PreferencesService {
 }
 
 class StubPreferencesService : PreferencesService {
-    private val titleCategoryState = MutableStateFlow(TitleCategory.TvShow)
+    private val titleCategoryState = MutableStateFlow(TitleCategory.Movie)
 
     override val mainTitleCategory: Flow<TitleCategory> = titleCategoryState
 

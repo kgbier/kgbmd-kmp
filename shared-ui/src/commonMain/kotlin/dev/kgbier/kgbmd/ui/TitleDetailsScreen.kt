@@ -34,6 +34,7 @@ fun TitleDetailsScreen(
     title: TitleDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
+    onShowModal: (DetailsModalRoute) -> Unit,
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
@@ -87,7 +88,9 @@ fun TitleDetailsScreen(
                 )
 
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = {}) {
+                TextButton(onClick = {
+                    onShowModal(DetailsModalRoute.Episodes(title.id))
+                }) {
                     Text("All")
                     Spacer(modifier = Modifier.width(8.dp))
                     Tag(
@@ -131,7 +134,9 @@ fun TitleDetailsScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = {}) {
+                TextButton(onClick = {
+                    onShowModal(DetailsModalRoute.CastAndCrew(title.id))
+                }) {
                     Text("Full credits")
                 }
             }

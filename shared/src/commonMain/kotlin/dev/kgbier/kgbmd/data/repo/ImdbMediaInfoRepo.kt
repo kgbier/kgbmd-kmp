@@ -2,10 +2,12 @@ package dev.kgbier.kgbmd.data.repo
 
 import dev.kgbier.kgbmd.data.imdb.ImdbService
 import dev.kgbier.kgbmd.data.imdb.graphql.MostPopularListQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.toCreditGrouping
 import dev.kgbier.kgbmd.data.imdb.graphql.toMoviePoster
 import dev.kgbier.kgbmd.data.imdb.graphql.toNameDetails
 import dev.kgbier.kgbmd.data.imdb.graphql.toTitleDetails
 import dev.kgbier.kgbmd.data.imdb.model.transform
+import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.MediaEntityDetails
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
@@ -34,6 +36,9 @@ class ImdbMediaInfoRepo(
         id.id.startsWith(TITLE_ID_PREFIX) -> imdbService.getTitleDetails(id).title.toTitleDetails()
         else -> null
     }
+
+    override suspend fun getCreditGroupsForTitle(id: MediaEntityId): List<CreditGrouping> =
+        imdbService.getTitleCreditCategories(id).title.creditGroupings.edges.map { it.toCreditGrouping() }
 
     fun MostPopularListQuery.Result.transform() = chartTitles.edges.map { it.poster.toMoviePoster() }
 

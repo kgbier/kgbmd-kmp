@@ -3,6 +3,7 @@ package dev.kgbier.kgbmd.data.imdb
 import dev.kgbier.kgbmd.data.imdb.graphql.GraphqlQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.MostPopularListQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.NameDetailsQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditCategoriesQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import dev.kgbier.kgbmd.data.imdb.model.SuggestionResponse
@@ -31,6 +32,7 @@ interface ImdbService {
     suspend fun getRating(ttid: MediaEntityId): RatingResponse?
     suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
     suspend fun getNameDetails(nmid: MediaEntityId): NameDetailsQuery.Result
+    suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result
 }
 
 class KtorImdbService(
@@ -116,6 +118,12 @@ class KtorImdbService(
     override suspend fun getNameDetails(nmid: MediaEntityId) =
         graphqlQuery(NameDetailsQuery(), NameDetailsQuery.Params(nmid.id))
 
+    override suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result =
+        graphqlQuery(TitleCreditCategoriesQuery(), TitleCreditCategoriesQuery.Params(
+            id = ttid.id,
+            count = 50,
+        ))
+
     private suspend inline fun <reified Params, reified Result> graphqlQuery(
         query: GraphqlQuery<Params, Result>,
         params: Params?,
@@ -126,7 +134,7 @@ class KtorImdbService(
         resultSerializer = serializer<GraphqlResponse<Result>>(),
     )
 
-    val json = Json {
+    private val json = Json {
         ignoreUnknownKeys = true
         isLenient = true
         explicitNulls = false

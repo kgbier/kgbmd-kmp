@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -179,19 +180,21 @@ fun DetailsHeader(
     modifier: Modifier = Modifier,
     imageUrl: String? = null,
     content: @Composable () -> Unit,
-) = Box {
-    AppTheme(
-        darkTheme = true,
-    ) {
-        DetailsHeaderBackground(
-            imageUrl = imageUrl,
-            modifier = Modifier
-                .matchParentSize()
-        )
-        DetailsHeaderForeground(
-            modifier = modifier
-        ) {
-            content()
+) = AppTheme(
+    darkTheme = true,
+) {
+    Surface {
+        Box {
+            DetailsHeaderBackground(
+                imageUrl = imageUrl,
+                modifier = Modifier
+                    .matchParentSize()
+            )
+            DetailsHeaderForeground(
+                modifier = modifier
+            ) {
+                content()
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,7 @@ class NameDetailsQuery : GraphqlQuery<NameDetailsQuery.Params, NameDetailsQuery.
     data class Result(val name: Name) {
         @Serializable
         data class Name(
+            val id: String,
             val nameText: NameText,
             val bio: Bio,
             val primaryImage: PrimaryImage?,
@@ -56,6 +58,7 @@ class NameDetailsQuery : GraphqlQuery<NameDetailsQuery.Params, NameDetailsQuery.
     override val document: String = $$"""
 query NameDetails($id: ID!) {
   name(id: $id) {
+    id
     nameText {
       text
     }
@@ -92,6 +95,7 @@ $${TitlePosterFragment.fragment}
 }
 
 fun NameDetailsQuery.Result.Name.toNameDetails() = NameDetails(
+    id = MediaEntityId(id),
     name = nameText.text,
     headshot = primaryImage?.url?.let(::transformImageUrl),
     description = bio.text.plainText,

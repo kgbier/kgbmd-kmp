@@ -3,6 +3,7 @@ package dev.kgbier.kgbmd.domain.model
 sealed interface MediaEntityDetails
 
 data class NameDetails(
+    val id: MediaEntityId,
     val name: String,
     val headshot: Image?,
     val description: String?,
@@ -15,6 +16,7 @@ data class NameDetails(
 }
 
 data class TitleDetails(
+    val id: MediaEntityId,
     val name: String,
     val poster: Image?,
     val contentRating: String?,

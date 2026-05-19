@@ -2,6 +2,7 @@ package dev.kgbier.kgbmd.data.imdb.graphql
 
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import kotlinx.serialization.Serializable
 
@@ -14,6 +15,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
     data class Result(val title: Title) {
         @Serializable
         data class Title(
+            val id: String,
             val titleText: TitleText,
             val titleType: TitleType,
             val primaryImage: PrimaryImage?,
@@ -163,6 +165,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
     override val document: String = $$"""
 query TitleDetails($id: ID!) {
   title(id: $id) {
+    id
     titleText {
       text
     }
@@ -298,6 +301,7 @@ $${SeriesSeasonEpisodeFragment.fragment}
 
 fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
     return TitleDetails(
+        id = MediaEntityId(id),
         name = titleText.text,
         poster = primaryImage?.url?.let(::transformImageUrl),
         contentRating = certificate?.rating,

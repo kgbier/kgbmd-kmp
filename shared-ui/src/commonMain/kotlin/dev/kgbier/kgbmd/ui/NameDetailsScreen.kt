@@ -27,6 +27,7 @@ fun NameDetailsScreen(
     name: NameDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
+    onShowModal: (DetailsModalRoute) -> Unit,
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
