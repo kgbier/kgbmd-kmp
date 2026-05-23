@@ -8,4 +8,6 @@
 .cxx
 .kotlin
 
+gradle-daemon-jvm.properties
+
 .DS_Store
