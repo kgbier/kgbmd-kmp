@@ -119,10 +119,12 @@ class KtorImdbService(
         graphqlQuery(NameDetailsQuery(), NameDetailsQuery.Params(nmid.id))
 
     override suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result =
-        graphqlQuery(TitleCreditCategoriesQuery(), TitleCreditCategoriesQuery.Params(
-            id = ttid.id,
-            count = 50,
-        ))
+        graphqlQuery(
+            TitleCreditCategoriesQuery(), TitleCreditCategoriesQuery.Params(
+                id = ttid.id,
+                count = 50,
+            )
+        )
 
     private suspend inline fun <reified Params, reified Result> graphqlQuery(
         query: GraphqlQuery<Params, Result>,
@@ -153,12 +155,14 @@ class KtorImdbService(
         resultSerializer: KSerializer<GraphqlResponse<Result>>,
     ): Result {
         val graphqlRequest = GraphqlRequest(
-            query = query.document
-                .replace('\n', ' ')
-                .replace("  ", ""),
+            query = query.document.lineSequence()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && !it.startsWith("#") }
+                .joinToString(" ")
+                .replace(Regex("\\s+"), " "),
             variables = params,
         )
-        val bodyText = Json.encodeToString(
+        val bodyText = json.encodeToString(
             serializer = requestSerializer,
             value = graphqlRequest,
         )

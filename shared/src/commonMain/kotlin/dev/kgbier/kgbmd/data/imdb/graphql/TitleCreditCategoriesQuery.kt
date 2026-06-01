@@ -61,7 +61,7 @@ query TitleCreditCategories($id: ID!, $after: String, $count: Int!) {
         }
       }
       pageInfo {
-        ...$${PaginationFragment.fragment}
+        ...$${PaginationFragment.name}
       }
     }
   }
