@@ -2,12 +2,15 @@ package dev.kgbier.kgbmd.data.repo
 
 import dev.kgbier.kgbmd.data.imdb.ImdbService
 import dev.kgbier.kgbmd.data.imdb.graphql.MostPopularListQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.toCastCredit
 import dev.kgbier.kgbmd.data.imdb.graphql.toCreditGrouping
 import dev.kgbier.kgbmd.data.imdb.graphql.toMoviePoster
 import dev.kgbier.kgbmd.data.imdb.graphql.toNameDetails
 import dev.kgbier.kgbmd.data.imdb.graphql.toTitleDetails
 import dev.kgbier.kgbmd.data.imdb.model.transform
+import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
+import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityDetails
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
@@ -40,7 +43,15 @@ class ImdbMediaInfoRepo(
     override suspend fun getCreditGroupsForTitle(id: MediaEntityId): List<CreditGrouping> =
         imdbService.getTitleCreditCategories(id).title.creditGroupings.edges.map { it.toCreditGrouping() }
 
-    fun MostPopularListQuery.Result.transform() = chartTitles.edges.map { it.poster.toMoviePoster() }
+    override suspend fun getCreditsForTitleGroup(
+        id: MediaEntityId,
+        groupingId: CreditGroupingId,
+    ): List<CastCredit> = imdbService.getTitleCredits(id, groupingId)
+        .title.creditGroupings.edges.firstOrNull()?.node?.credits?.edges
+        ?.map { it.node.toCastCredit() } ?: emptyList()
+
+    fun MostPopularListQuery.Result.transform() =
+        chartTitles.edges.map { it.poster.toMoviePoster() }
 
     companion object {
         private const val NAME_ID_PREFIX = "nm"

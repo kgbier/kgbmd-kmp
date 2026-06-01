@@ -1,5 +1,6 @@
 package dev.kgbier.kgbmd.domain.repo
 
+import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityDetails
@@ -16,7 +17,10 @@ interface MediaInfoRepo {
 
     suspend fun getCreditGroupsForTitle(id: MediaEntityId): List<CreditGrouping>
 //    suspend fun getCreditGroupsForName(id: MediaEntityId): List<CreditGrouping>
-//
-//    suspend fun getCastCrewForCreditGroup(id: CreditGroupingId): List<CreditGrouping>
-//    suspend fun getTitlesForCreditGroup(id: CreditGroupingId): List<CreditGrouping>
+
+    suspend fun getCreditsForTitleGroup(
+        id: MediaEntityId,
+        groupingId: CreditGroupingId,
+    ): List<CastCredit>
+    // suspend fun getCreditsForNameGroup(id: MediaEntityId, groupingId: CreditGroupingId): List<TitleCredit>
 }

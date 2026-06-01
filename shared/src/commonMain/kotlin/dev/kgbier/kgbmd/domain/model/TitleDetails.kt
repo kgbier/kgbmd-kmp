@@ -56,9 +56,4 @@ data class TitleDetails(
         val hasMore: Boolean,
         val groupingId: CreditGroupingId,
     )
-
-    data class CastCredit(
-        val nameProfile: NameProfile,
-        val roles: List<String>,
-    )
 }

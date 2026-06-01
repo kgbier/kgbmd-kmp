@@ -4,10 +4,12 @@ import dev.kgbier.kgbmd.data.imdb.graphql.GraphqlQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.MostPopularListQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.NameDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditCategoriesQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import dev.kgbier.kgbmd.data.imdb.model.SuggestionResponse
 import dev.kgbier.kgbmd.data.operation.JsonP
+import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -33,6 +35,7 @@ interface ImdbService {
     suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
     suspend fun getNameDetails(nmid: MediaEntityId): NameDetailsQuery.Result
     suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result
+    suspend fun getTitleCredits(ttid: MediaEntityId, groupingId: CreditGroupingId): TitleCreditsQuery.Result
 }
 
 class KtorImdbService(
@@ -123,6 +126,18 @@ class KtorImdbService(
             TitleCreditCategoriesQuery(), TitleCreditCategoriesQuery.Params(
                 id = ttid.id,
                 count = 50,
+            )
+        )
+
+    override suspend fun getTitleCredits(
+        ttid: MediaEntityId,
+        groupingId: CreditGroupingId,
+    ): TitleCreditsQuery.Result =
+        graphqlQuery(
+            TitleCreditsQuery, TitleCreditsQuery.Params(
+                id = ttid.id,
+                groupingId = groupingId.id,
+                count = 150,
             )
         )
 

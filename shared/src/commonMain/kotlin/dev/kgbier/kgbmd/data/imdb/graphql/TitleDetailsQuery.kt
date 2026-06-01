@@ -125,27 +125,12 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             data class TopCastCredits(
                 val totalCredits: Int,
                 val grouping: Grouping,
-                val credits: List<Credit>,
+                val credits: List<RoleCreditFragment>,
             ) {
                 @Serializable
                 data class Grouping(
                     val groupingId: String,
                 )
-
-                @Serializable
-                data class Credit(
-                    val name: NameProfileCreditFragment,
-                    val creditedRoles: CreditedRoles,
-                ) {
-                    @Serializable
-                    data class CreditedRoles(val edges: List<Edge>) {
-                        @Serializable
-                        data class Edge(val node: Node) {
-                            @Serializable
-                            data class Node(val text: String?)
-                        }
-                    }
-                }
             }
 
             @Serializable
@@ -247,14 +232,7 @@ query TitleDetails($id: ID!) {
         groupingId
       }
       credits(limit: 10) {
-        ...$${NameProfileCreditFragment.name}
-        creditedRoles(first: 10) {
-          edges {
-            node {
-              text
-            }
-          }
-        }
+        ...$${RoleCreditFragment.name}
       }
     }
     outline: plots(first: 1, filter: { type: OUTLINE }) {
@@ -295,6 +273,7 @@ query TitleDetails($id: ID!) {
 
 $${TitlePosterFragment.fragment}
 $${NameProfileCreditFragment.fragment}
+$${RoleCreditFragment.fragment}
 $${SeriesSeasonEpisodeFragment.fragment}
 """
 }
@@ -352,12 +331,7 @@ private fun List<TitleDetailsQuery.Result.Title.TopCastCredits>.toTopCast(): Tit
     val topCastGrouping = firstOrNull() ?: return null
 
     return TitleDetails.TopCast(
-        topCast = topCastGrouping.credits.map { castCredit ->
-            TitleDetails.CastCredit(
-                nameProfile = castCredit.name.toNameProfile(),
-                roles = castCredit.creditedRoles.edges.mapNotNull { it.node.text },
-            )
-        },
+        topCast = topCastGrouping.credits.map { castCredit -> castCredit.toCastCredit() },
         castTotal = topCastGrouping.totalCredits,
         hasMore = topCastGrouping.totalCredits > topCastGrouping.credits.size,
         groupingId = CreditGroupingId(topCastGrouping.grouping.groupingId),

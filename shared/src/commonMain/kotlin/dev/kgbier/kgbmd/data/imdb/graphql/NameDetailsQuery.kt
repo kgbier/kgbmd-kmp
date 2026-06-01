@@ -102,7 +102,6 @@ fun NameDetailsQuery.Result.Name.toNameDetails() = NameDetails(
     topCredits = knownForV2.credits.map { credit ->
         NameDetails.TopCredit(
             poster = credit.poster.toMoviePoster(),
-//            year = credit.title.releaseYear?.year?.toString(),
             role = credit.creditedRoles.edges.first().let { edge ->
                 val role = edge.node
                 role.text?.replaceFirstChar(Char::uppercaseChar)
