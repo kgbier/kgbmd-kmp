@@ -112,7 +112,9 @@ fun DetailsScreen(
                 contentWindowInsets = { WindowInsets.safeDrawing.only(WindowInsetsSides.Top) },
             ) {
                 when (val state = bottomSheetState) {
-                    is DetailsModalRoute.CastAndCrew -> GroupedCreditsList(
+                    is DetailsModalRoute.CastAndCrew -> GroupedCreditsScreen(
+                        id = state.id,
+                        router = router,
                         contentPadding = WindowInsets.safeDrawing
                             .only(WindowInsetsSides.Bottom)
                             .asPaddingValues()

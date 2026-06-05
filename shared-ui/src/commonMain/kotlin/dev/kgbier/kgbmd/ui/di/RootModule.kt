@@ -8,6 +8,7 @@ import dev.kgbier.kgbmd.di.ServiceModule
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
+import dev.kgbier.kgbmd.presentation.GroupedCreditsViewModel
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
@@ -54,6 +55,7 @@ class ViewModelModule(
     TitleListViewModel.Factory,
     MainScreenViewModel.Factory,
     DetailsScreenViewModel.Factory,
+    GroupedCreditsViewModel.Factory,
     SearchScreenViewModel.Factory {
 
     override fun createTitleListViewModelFactory(
@@ -82,6 +84,15 @@ class ViewModelModule(
         scope: CoroutineScope,
         id: MediaEntityId,
     ): DetailsScreenViewModel = DetailsScreenViewModel(
+        scope = scope,
+        id = id,
+        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+    )
+
+    override fun createGroupedCreditsViewModel(
+        scope: CoroutineScope,
+        id: MediaEntityId,
+    ): GroupedCreditsViewModel = GroupedCreditsViewModel(
         scope = scope,
         id = id,
         mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
