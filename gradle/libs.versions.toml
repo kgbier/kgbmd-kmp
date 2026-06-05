@@ -4,12 +4,12 @@ android-minSdk = "24"
 android-targetSdk = "37"
 
 agp = "9.2.1"                   # https://developer.android.com/build/releases/about-agp
-kotlin = "2.3.21"               # https://github.com/jetbrains/kotlin/releases
+kotlin = "2.4.0"               # https://github.com/jetbrains/kotlin/releases
 
 junit = "4.13.2"
 
 kotlinx-coroutines = "1.11.0"   # https://github.com/Kotlin/kotlinx.coroutines/releases
-compose-multiplatform = "1.11.0" # https://github.com/JetBrains/compose-multiplatform/releases
+compose-multiplatform = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases
 
 androidx-activity = "1.13.0"    # https://developer.android.com/jetpack/androidx/releases/activity
 androidx-appcompat = "1.7.1"    # https://developer.android.com/jetpack/androidx/releases/appcompat
@@ -38,7 +38,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 leakcanary-android = "com.squareup.leakcanary:leakcanary-android:2.14"
 kermit = "co.touchlab:kermit:2.1.0"                     # https://github.com/touchlab/Kermit/releases
-logback = "ch.qos.logback:logback-classic:1.5.32"       # https://github.com/qos-ch/logback/releases
+logback = "ch.qos.logback:logback-classic:1.5.34"       # https://github.com/qos-ch/logback/releases
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
