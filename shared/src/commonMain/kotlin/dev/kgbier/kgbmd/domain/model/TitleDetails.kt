@@ -25,13 +25,27 @@ data class TitleDetails(
     val description: String?,
     val yearReleased: String?,
     val rating: Rating?,
+    val ratingsBreakdown: RatingsBreakdown?,
     val duration: String?,
     val episodeMetadata: EpisodeMetadata?,
     val genres: List<String>,
     val topEpisodes: TopEpisodes?,
     val topCast: TopCast?,
 ) : MediaEntityDetails {
-    data class Rating(val value: String, val best: String, val count: String?)
+    data class Rating(
+        val value: String,
+        val best: String,
+        val count: String?,
+    )
+
+    data class RatingsBreakdown(
+        val values: List<RatingValue>
+    ) {
+        data class RatingValue(
+            val rating: String,
+            val count: Long,
+        )
+    }
 
     data class EpisodeMetadata(
         val seriesTitle: String,

@@ -30,6 +30,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val principalCredits: List<PrincipalCreditsForGrouping>,
             val topCast: List<TopCastCredits>,
             val outline: Plot,
+            val aggregateRatingsBreakdown: AggregateRatingsBreakdown?,
         ) {
             @Serializable
             data class TitleText(val text: String)
@@ -142,6 +143,20 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
                         @Serializable
                         data class PlotText(val plainText: String)
                     }
+                }
+            }
+
+            @Serializable
+            data class AggregateRatingsBreakdown(
+                val histogram: Histogram?,
+            ) {
+                @Serializable
+                data class Histogram(val histogramValues: List<Values>) {
+                    @Serializable
+                    data class Values(
+                        val rating: Int,
+                        val voteCount: Long,
+                    )
                 }
             }
         }
@@ -262,6 +277,14 @@ query TitleDetails($id: ID!) {
     ) {
       total
     }
+    aggregateRatingsBreakdown {
+      histogram {
+        histogramValues {
+          rating
+          voteCount
+        }
+      }
+    }
     productionBudget {
       budget {
         amount
@@ -312,6 +335,14 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
                 },
                 count = ratingsSummary.voteCount?.toString(),
             )
+        },
+        ratingsBreakdown = aggregateRatingsBreakdown?.histogram?.let { histogram ->
+            TitleDetails.RatingsBreakdown(histogram.histogramValues.map {
+                TitleDetails.RatingsBreakdown.RatingValue(
+                    rating = it.rating.toString(),
+                    count = it.voteCount,
+                )
+            })
         },
         duration = runtime?.displayableProperty?.value?.plainText,
         episodeMetadata = run {
