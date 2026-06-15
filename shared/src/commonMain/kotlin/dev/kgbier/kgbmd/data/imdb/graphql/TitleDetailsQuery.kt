@@ -19,7 +19,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val titleText: TitleText,
             val titleType: TitleType,
             val primaryImage: PrimaryImage?,
-            val releaseYear: ReleaseYear,
+            val releaseYear: ReleaseYear?,
             val certificate: Certificate?,
             val ratingsSummary: RatingsSummary,
             val runtime: Runtime?,
@@ -290,7 +290,7 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
         },
         description = outline.edges.firstOrNull()?.node?.plotText?.plainText,
         yearReleased = run {
-            val releaseYearDate = releaseYear.year ?: return@run null
+            val releaseYearDate = releaseYear?.year ?: return@run null
 
             if (episodes != null) {
                 val endYear = releaseYear.endYear
@@ -306,7 +306,10 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
         rating = ratingsSummary.aggregateRating?.toString()?.let { aggregate ->
             TitleDetails.Rating(
                 value = aggregate,
-                best = "10",
+                best = when (id) {
+                    "tt0088258" -> "11" // "Well, it's one louder, isn't it?"
+                    else -> "10"
+                },
                 count = ratingsSummary.voteCount?.toString(),
             )
         },
