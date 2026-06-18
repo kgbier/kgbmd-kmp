@@ -17,7 +17,6 @@ data class NameProfileCreditFragment(
     @Serializable
     data class PrimaryImage(val url: String?)
 
-
     companion object {
         const val name = "NameProfileCredit"
         const val fragment = """

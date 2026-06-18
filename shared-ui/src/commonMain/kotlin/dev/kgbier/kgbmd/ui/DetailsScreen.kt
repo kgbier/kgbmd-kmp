@@ -46,6 +46,7 @@ import kotlinx.coroutines.CoroutineScope
 sealed interface DetailsModalRoute {
     data object None : DetailsModalRoute
     data class CastAndCrew(val id: MediaEntityId) : DetailsModalRoute
+    data class Filmography(val id: MediaEntityId) : DetailsModalRoute
     data class Episodes(val id: MediaEntityId) : DetailsModalRoute
 }
 
@@ -112,7 +113,15 @@ fun DetailsScreen(
                 contentWindowInsets = { WindowInsets.safeDrawing.only(WindowInsetsSides.Top) },
             ) {
                 when (val state = bottomSheetState) {
-                    is DetailsModalRoute.CastAndCrew -> GroupedCreditsScreen(
+                    is DetailsModalRoute.CastAndCrew -> GroupedCreditsForTitleScreen(
+                        id = state.id,
+                        router = router,
+                        contentPadding = WindowInsets.safeDrawing
+                            .only(WindowInsetsSides.Bottom)
+                            .asPaddingValues()
+                    )
+
+                    is DetailsModalRoute.Filmography -> GroupedCreditsForNameScreen(
                         id = state.id,
                         router = router,
                         contentPadding = WindowInsets.safeDrawing

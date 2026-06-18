@@ -2,6 +2,8 @@ package dev.kgbier.kgbmd.data.imdb
 
 import dev.kgbier.kgbmd.data.imdb.graphql.GraphqlQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.MostPopularListQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.NameCreditCategoriesQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.NameCreditsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.NameDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditCategoriesQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditsQuery
@@ -34,8 +36,18 @@ interface ImdbService {
     suspend fun getRating(ttid: MediaEntityId): RatingResponse?
     suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
     suspend fun getNameDetails(nmid: MediaEntityId): NameDetailsQuery.Result
+
     suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result
-    suspend fun getTitleCredits(ttid: MediaEntityId, groupingId: CreditGroupingId): TitleCreditsQuery.Result
+    suspend fun getTitleCredits(
+        ttid: MediaEntityId,
+        groupingId: CreditGroupingId
+    ): TitleCreditsQuery.Result
+
+    suspend fun getNameCreditCategories(ttid: MediaEntityId): NameCreditCategoriesQuery.Result
+    suspend fun getNameCredits(
+        ttid: MediaEntityId,
+        groupingId: CreditGroupingId
+    ): NameCreditsQuery.Result
 }
 
 class KtorImdbService(
@@ -132,14 +144,36 @@ class KtorImdbService(
     override suspend fun getTitleCredits(
         ttid: MediaEntityId,
         groupingId: CreditGroupingId,
-    ): TitleCreditsQuery.Result =
-        graphqlQuery(
-            TitleCreditsQuery, TitleCreditsQuery.Params(
-                id = ttid.id,
-                groupingId = groupingId.id,
-                count = 150,
-            )
+    ): TitleCreditsQuery.Result = graphqlQuery(
+        query = TitleCreditsQuery,
+        params = TitleCreditsQuery.Params(
+            id = ttid.id,
+            groupingId = groupingId.id,
+            count = 150,
         )
+    )
+
+    override suspend fun getNameCreditCategories(
+        ttid: MediaEntityId,
+    ): NameCreditCategoriesQuery.Result = graphqlQuery(
+        query = NameCreditCategoriesQuery,
+        params = NameCreditCategoriesQuery.Params(
+            id = ttid.id,
+            count = 150,
+        ),
+    )
+
+    override suspend fun getNameCredits(
+        ttid: MediaEntityId,
+        groupingId: CreditGroupingId
+    ): NameCreditsQuery.Result = graphqlQuery(
+        query = NameCreditsQuery,
+        params = NameCreditsQuery.Params(
+            id = ttid.id,
+            groupingId = groupingId.id,
+            count = 150,
+        )
+    )
 
     private suspend inline fun <reified Params, reified Result> graphqlQuery(
         query: GraphqlQuery<Params, Result>,

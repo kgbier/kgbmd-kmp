@@ -14,16 +14,16 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.newCoroutineContext
 
-sealed interface CreditGroupUiState {
-    data object Loading : CreditGroupUiState
-    data class Items(val items: List<GroupedCreditListItem>) : CreditGroupUiState
-    data class Error(val error: Throwable) : CreditGroupUiState
+sealed interface GroupedCreditsForTitleListUiState {
+    data object Loading : GroupedCreditsForTitleListUiState
+    data class Items(val items: List<GroupedCreditsForTitleListItem>) : GroupedCreditsForTitleListUiState
+    data class Error(val error: Throwable) : GroupedCreditsForTitleListUiState
 }
 
-sealed interface GroupedCreditListItem {
+sealed interface GroupedCreditsForTitleListItem {
     val groupingId: CreditGroupingId
 
-    data class Grouping(val grouping: CreditGrouping) : GroupedCreditListItem {
+    data class Grouping(val grouping: CreditGrouping) : GroupedCreditsForTitleListItem {
         override val groupingId: CreditGroupingId
             get() = grouping.id
     }
@@ -31,24 +31,24 @@ sealed interface GroupedCreditListItem {
     data class Credit(
         override val groupingId: CreditGroupingId,
         val credit: CastCredit,
-    ) : GroupedCreditListItem
+    ) : GroupedCreditsForTitleListItem
 
     data class Loading(
         override val groupingId: CreditGroupingId,
-    ) : GroupedCreditListItem
+    ) : GroupedCreditsForTitleListItem
 }
 
-class GroupedCreditsViewModel(
+class GroupedCreditsForTitleViewModel(
     scope: CoroutineScope,
     private val id: MediaEntityId,
     private val mediaInfoRepo: MediaInfoRepo,
 ) {
 
     interface Factory {
-        fun createGroupedCreditsViewModel(
+        fun createGroupedCreditsForTitleViewModel(
             scope: CoroutineScope,
             id: MediaEntityId
-        ): GroupedCreditsViewModel
+        ): GroupedCreditsForTitleViewModel
     }
 
     private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
@@ -72,35 +72,35 @@ class GroupedCreditsViewModel(
     val expandedGroups
         get() = groupedCreditsState.expandedGroups
 
-    val state: StateFlow<CreditGroupUiState> = combine(
+    val state: StateFlow<GroupedCreditsForTitleListUiState> = combine(
         groupedCreditsState.groups,
         groupedCreditsState.groupedCredits,
         groupedCreditsState.groupStates,
     ) { groups, groupedCredits, groupStates ->
         if (groups.isNotEmpty()) {
-            val list = mutableListOf<GroupedCreditListItem>()
+            val list = mutableListOf<GroupedCreditsForTitleListItem>()
             groups.forEach { currentGroup ->
-                list.add(GroupedCreditListItem.Grouping(currentGroup))
+                list.add(GroupedCreditsForTitleListItem.Grouping(currentGroup))
                 groupedCredits[currentGroup.id]?.forEach { currentCredit ->
                     list.add(
-                        GroupedCreditListItem.Credit(
+                        GroupedCreditsForTitleListItem.Credit(
                             groupingId = currentGroup.id,
                             credit = currentCredit,
                         )
                     )
                 }
                 if (groupStates[currentGroup.id] == GroupedListState.GroupState.Loading) {
-                    list.add(GroupedCreditListItem.Loading(currentGroup.id))
+                    list.add(GroupedCreditsForTitleListItem.Loading(currentGroup.id))
                 }
             }
-            CreditGroupUiState.Items(list.toList())
-        } else CreditGroupUiState.Loading
+            GroupedCreditsForTitleListUiState.Items(list.toList())
+        } else GroupedCreditsForTitleListUiState.Loading
     }.catch {
-        emit(CreditGroupUiState.Error(it))
+        emit(GroupedCreditsForTitleListUiState.Error(it))
     }.stateIn(
         scope = scope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = CreditGroupUiState.Loading,
+        initialValue = GroupedCreditsForTitleListUiState.Loading,
     )
 
     fun load() = groupedCreditsState.load()

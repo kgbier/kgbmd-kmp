@@ -8,7 +8,8 @@ import dev.kgbier.kgbmd.di.ServiceModule
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
-import dev.kgbier.kgbmd.presentation.GroupedCreditsViewModel
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameViewModel
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleViewModel
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
@@ -18,7 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.job
 
-fun CoroutineScope.createChild(): CoroutineScope = CoroutineScope(coroutineContext + Job(parent = coroutineContext.job))
+fun CoroutineScope.createChild(): CoroutineScope =
+    CoroutineScope(coroutineContext + Job(parent = coroutineContext.job))
 
 class RootModule {
     val coroutinesModule = CoroutinesModule()
@@ -55,7 +57,8 @@ class ViewModelModule(
     TitleListViewModel.Factory,
     MainScreenViewModel.Factory,
     DetailsScreenViewModel.Factory,
-    GroupedCreditsViewModel.Factory,
+    GroupedCreditsForTitleViewModel.Factory,
+    GroupedCreditsForNameViewModel.Factory,
     SearchScreenViewModel.Factory {
 
     override fun createTitleListViewModelFactory(
@@ -89,10 +92,19 @@ class ViewModelModule(
         mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
     )
 
-    override fun createGroupedCreditsViewModel(
+    override fun createGroupedCreditsForTitleViewModel(
         scope: CoroutineScope,
-        id: MediaEntityId,
-    ): GroupedCreditsViewModel = GroupedCreditsViewModel(
+        id: MediaEntityId
+    ): GroupedCreditsForTitleViewModel = GroupedCreditsForTitleViewModel(
+        scope = scope,
+        id = id,
+        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+    )
+
+    override fun createGroupedCreditsForNameViewModel(
+        scope: CoroutineScope,
+        id: MediaEntityId
+    ): GroupedCreditsForNameViewModel = GroupedCreditsForNameViewModel(
         scope = scope,
         id = id,
         mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,

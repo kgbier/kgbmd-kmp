@@ -18,15 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.kgbier.kgbmd.domain.model.CreditGrouping
-import dev.kgbier.kgbmd.presentation.GroupedCreditListItem
 import dev.kgbier.kgbmd.ui.component.atom.Tag
 
 @Composable
 fun GroupingHeaderRow(
-    item: GroupedCreditListItem.Grouping,
     isExpanded: Boolean,
-    onClick: (CreditGrouping) -> Unit = {},
+    onClick: () -> Unit,
+    text: String,
+    label: String
 ) {
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 90f else 0f,
@@ -36,14 +35,14 @@ fun GroupingHeaderRow(
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier
-            .clickable { onClick(item.grouping) }
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
-                text = item.grouping.name,
+                text = text,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -55,7 +54,7 @@ fun GroupingHeaderRow(
             Tag(
                 modifier = Modifier.alignByBaseline()
             ) {
-                Text(item.grouping.count.toString())
+                Text(label)
             }
             Spacer(Modifier.width(8.dp))
             Icon(

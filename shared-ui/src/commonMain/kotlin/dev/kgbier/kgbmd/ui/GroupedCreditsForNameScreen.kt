@@ -20,29 +20,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
-import dev.kgbier.kgbmd.presentation.CreditGroupUiState
-import dev.kgbier.kgbmd.presentation.GroupedCreditListItem
-import dev.kgbier.kgbmd.presentation.GroupedCreditsViewModel
-import dev.kgbier.kgbmd.ui.component.CastCreditRow
+import dev.kgbier.kgbmd.domain.model.TitleCredit
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameListItem
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameListUiState
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameViewModel
 import dev.kgbier.kgbmd.ui.component.GroupingHeaderRow
+import dev.kgbier.kgbmd.ui.component.TitleCreditRow
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun GroupedCreditsScreen(
+fun GroupedCreditsForNameScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModelFactory: GroupedCreditsViewModel.Factory = LocalViewModelModule.current,
+    viewModelFactory: GroupedCreditsForNameViewModel.Factory = LocalViewModelModule.current,
     scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: GroupedCreditsViewModel = remember(id) {
-        viewModelFactory.createGroupedCreditsViewModel(scope, id)
+    viewModel: GroupedCreditsForNameViewModel = remember(id) {
+        viewModelFactory.createGroupedCreditsForNameViewModel(scope, id)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -53,35 +53,35 @@ fun GroupedCreditsScreen(
     }
 
     when (val state = state) {
-        is CreditGroupUiState.Loading -> Box(
+        is GroupedCreditsForNameListUiState.Loading -> Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth().padding(32.dp)
         ) {
             LoadingIndicator()
         }
 
-        is CreditGroupUiState.Error -> Box(
+        is GroupedCreditsForNameListUiState.Error -> Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.fillMaxWidth().padding(32.dp)
         ) {
             Text("Failed to load credits")
         }
 
-        is CreditGroupUiState.Items -> GroupedCreditsList(
+        is GroupedCreditsForNameListUiState.Items -> GroupedCreditsForNameList(
             state = state,
             expandedGroups = expandedGroups,
             onGroupClick = { viewModel.toggleGroupExpanded(it.id) },
-            onCreditRowClick = { router.push(AppRoute.Details(it.nameProfile.id)) },
+            onCreditRowClick = { router.push(AppRoute.Details(it.moviePoster.id)) },
             contentPadding = contentPadding,
         )
     }
 }
 
 @Composable
-fun GroupedCreditsList(
-    state: CreditGroupUiState.Items,
+fun GroupedCreditsForNameList(
+    state: GroupedCreditsForNameListUiState.Items,
     expandedGroups: Set<CreditGroupingId>,
-    onCreditRowClick: (CastCredit) -> Unit = {},
+    onCreditRowClick: (TitleCredit) -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(),
     onGroupClick: (CreditGrouping) -> Unit = {},
 ) {
@@ -93,26 +93,30 @@ fun GroupedCreditsList(
             val isExpanded = expandedGroups.contains(item.groupingId)
 
             when (item) {
-                is GroupedCreditListItem.Grouping -> stickyHeader(
+                is GroupedCreditsForNameListItem.Grouping -> stickyHeader(
                     key = item.grouping.id.id,
-                    contentType = GroupedCreditListItem.Grouping::class
+                    contentType = GroupedCreditsForNameListItem.Grouping::class
                 ) {
                     GroupingHeaderRow(
-                        item = item,
                         isExpanded = isExpanded,
-                        onClick = onGroupClick,
+                        onClick = { onGroupClick(item.grouping) },
+                        text = item.grouping.name,
+                        label = item.grouping.count.toString(),
                     )
                 }
 
-                is GroupedCreditListItem.Credit -> if (isExpanded) {
+                is GroupedCreditsForNameListItem.Credit -> if (isExpanded) {
                     item(
-                        key = "${item.groupingId.id}:${item.credit.nameProfile.id.id}",
-                        contentType = GroupedCreditListItem.Credit::class,
+                        key = "${item.groupingId.id}:${item.credit.moviePoster.id.id}",
+                        contentType = GroupedCreditsForNameListItem.Credit::class,
                     ) {
-                        CastCreditRow(
-                            name = item.credit.nameProfile.name,
+                        TitleCreditRow(
+                            title = item.credit.moviePoster.title,
+                            rating = item.credit.moviePoster.rating,
+                            posterImageUrl = item.credit.moviePoster.thumbnailUrl,
+                            year = item.credit.year,
+                            status = item.credit.productionStatus,
                             roles = item.credit.roles,
-                            creditImageUrl = item.credit.nameProfile.photo?.thumbnailUrl,
                             onClick = { onCreditRowClick(item.credit) },
                             contentPadding = PaddingValues(
                                 horizontal = 16.dp,
@@ -121,13 +125,12 @@ fun GroupedCreditsList(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-
                 }
 
-                is GroupedCreditListItem.Loading -> if (isExpanded) {
+                is GroupedCreditsForNameListItem.Loading -> if (isExpanded) {
                     item(
                         key = "${item.groupingId.id}:loading",
-                        contentType = GroupedCreditListItem.Loading::class,
+                        contentType = GroupedCreditsForNameListItem.Loading::class,
                     ) {
                         Box(
                             contentAlignment = Alignment.Center,

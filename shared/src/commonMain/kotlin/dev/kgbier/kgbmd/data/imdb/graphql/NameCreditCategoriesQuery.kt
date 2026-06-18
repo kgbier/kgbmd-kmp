@@ -2,8 +2,8 @@ package dev.kgbier.kgbmd.data.imdb.graphql
 
 import kotlinx.serialization.Serializable
 
-class TitleCreditCategoriesQuery :
-    GraphqlQuery<TitleCreditCategoriesQuery.Params, TitleCreditCategoriesQuery.Result> {
+object NameCreditCategoriesQuery :
+    GraphqlQuery<NameCreditCategoriesQuery.Params, NameCreditCategoriesQuery.Result> {
 
     @Serializable
     data class Params(
@@ -13,20 +13,20 @@ class TitleCreditCategoriesQuery :
     )
 
     @Serializable
-    data class Result(val title: Title) {
+    data class Result(val name: Name) {
         @Serializable
-        data class Title(val creditGroupings: CreditGroupingsFragment)
+        data class Name(val creditGroupings: CreditGroupingsFragment)
     }
 
     override val document: String = $$"""
-query TitleCreditCategories($id: ID!, $after: String, $count: Int!) {
-  title(id: $id) {
+query NameCreditCategories($id: ID!, $after: String, $count: Int!) {
+  name(id: $id) {
     creditGroupings(first: $count, after: $after) {
       ...$${CreditGroupingsFragment.name}
     }
   }
 }
-$${CreditGroupingsFragment.fragment}
 $${PaginationFragment.fragment}
+$${CreditGroupingsFragment.fragment}
 """
 }
