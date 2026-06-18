@@ -63,17 +63,17 @@ fun ExpandableDescription(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
-                        .padding(4.dp)
                         .padding(contentPadding)
-                        .align(Alignment.BottomEnd)
+                        .align(if (state.isExpanded) Alignment.BottomStart else Alignment.BottomEnd)
                 )
             }
         },
         content = {
             Column(
                 modifier = modifier
-                    .clickable(enabled = state.isExpandable == true) { state.isExpanded = !state.isExpanded }
-                    .padding(contentPadding)
+                    .clickable(enabled = state.isExpandable == true) {
+                        state.isExpanded = !state.isExpanded
+                    }.padding(contentPadding)
             ) {
                 content()
                 // Add some spacing at the bottom when the content is expanded to
