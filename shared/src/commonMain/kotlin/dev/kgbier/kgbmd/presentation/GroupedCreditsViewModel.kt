@@ -7,14 +7,11 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.newCoroutineContext
 
 sealed interface CreditGroupUiState {
@@ -56,24 +53,29 @@ class GroupedCreditsViewModel(
 
     private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
 
-    private val _groups = MutableStateFlow<List<CreditGrouping>>(emptyList())
-    private val _groupedCredits =
-        MutableStateFlow<Map<CreditGroupingId, List<CastCredit>>>(emptyMap())
+    private inner class GroupedListStateDelegate :
+        GroupedListState.Delegate<CreditGroupingId, CreditGrouping, CastCredit> {
+        override suspend fun fetchGroups(): List<CreditGrouping> {
+            return mediaInfoRepo.getCreditGroupsForTitle(id)
+        }
 
-    private val _expandedGroups = MutableStateFlow(setOf<CreditGroupingId>())
-    val expandedGroups: StateFlow<Set<CreditGroupingId>> get() = _expandedGroups
-
-    private enum class GroupState {
-        Loading,
-        Finished,
+        override suspend fun fetchItems(groupId: CreditGroupingId): List<CastCredit> {
+            return mediaInfoRepo.getCreditsForTitleGroup(id, groupId)
+        }
     }
 
-    private val _groupStates = MutableStateFlow(mapOf<CreditGroupingId, GroupState>())
+    val groupedCreditsState = GroupedListState(
+        scope = backgroundScope,
+        delegate = GroupedListStateDelegate(),
+    )
+
+    val expandedGroups
+        get() = groupedCreditsState.expandedGroups
 
     val state: StateFlow<CreditGroupUiState> = combine(
-        _groups,
-        _groupedCredits,
-        _groupStates,
+        groupedCreditsState.groups,
+        groupedCreditsState.groupedCredits,
+        groupedCreditsState.groupStates,
     ) { groups, groupedCredits, groupStates ->
         if (groups.isNotEmpty()) {
             val list = mutableListOf<GroupedCreditListItem>()
@@ -87,7 +89,7 @@ class GroupedCreditsViewModel(
                         )
                     )
                 }
-                if (groupStates[currentGroup.id] == GroupState.Loading) {
+                if (groupStates[currentGroup.id] == GroupedListState.GroupState.Loading) {
                     list.add(GroupedCreditListItem.Loading(currentGroup.id))
                 }
             }
@@ -101,51 +103,8 @@ class GroupedCreditsViewModel(
         initialValue = CreditGroupUiState.Loading,
     )
 
-    fun load() {
-        backgroundScope.launch {
-            val initialGroups = mediaInfoRepo.getCreditGroupsForTitle(id)
-            _groups.update { initialGroups }
-        }
-    }
+    fun load() = groupedCreditsState.load()
 
-    fun toggleGroupExpanded(groupId: CreditGroupingId) {
-        backgroundScope.launch {
-            loadGroup(groupId)
-            // Toggle expanded state
-            _expandedGroups.update { set ->
-                if (set.contains(groupId)) {
-                    set - groupId
-                } else {
-                    set + groupId
-                }
-            }
-        }
-    }
-
-    private fun loadGroup(groupId: CreditGroupingId) {
-        backgroundScope.launch {
-            runCatching {
-                _groupStates.update { map ->
-                    when (map[groupId]) {
-                        GroupState.Loading -> return@launch
-                        GroupState.Finished -> return@launch
-                        null -> map.plus(groupId to GroupState.Loading)
-                    }
-                }
-
-                mediaInfoRepo.getCreditsForTitleGroup(id, groupId)
-            }.onSuccess { credits ->
-                _groupedCredits.update { map ->
-                    val newMap = map.toMutableMap()
-                    val list = (map[groupId] ?: emptyList()) + credits
-                    newMap[groupId] = list
-                    newMap.toMap()
-                }
-            }
-
-            _groupStates.update { map ->
-                map.plus(groupId to GroupState.Finished)
-            }
-        }
-    }
+    fun toggleGroupExpanded(groupId: CreditGroupingId) =
+        groupedCreditsState.toggleGroupExpanded(groupId)
 }
