@@ -2,7 +2,7 @@ package dev.kgbier.kgbmd.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 
 interface Route
 
@@ -32,7 +32,7 @@ fun <TRoute : Route> Navigator(
 fun <TRoute : Route> rememberNavigator(
     initialRoute: TRoute,
     parentNavigator: Navigator<*>? = null,
-): Navigator<TRoute> = remember(initialRoute, parentNavigator) {
+): Navigator<TRoute> = retain(initialRoute, parentNavigator) {
     Navigator(initialRoute, parentNavigator)
 }
 

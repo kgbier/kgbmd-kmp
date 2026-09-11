@@ -38,7 +38,7 @@ fun PortraitCard(
 
         Portrait(
             creditImageUrl = portraitImageUrl,
-            modifier = Modifier.size(80.dp)
+            modifier = Modifier.size(80.dp),
         )
 
         content()

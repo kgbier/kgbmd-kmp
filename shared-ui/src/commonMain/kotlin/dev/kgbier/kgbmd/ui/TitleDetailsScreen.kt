@@ -44,6 +44,7 @@ fun TitleDetailsScreen(
     item {
         TitleDetailsHeader(
             title = title,
+            router = router,
             modifier = Modifier
                 .padding(16.dp)
                 .padding(top = contentPadding.calculateTopPadding())

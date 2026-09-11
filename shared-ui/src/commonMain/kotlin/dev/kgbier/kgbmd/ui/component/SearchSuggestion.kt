@@ -60,7 +60,7 @@ fun SearchSuggestion(
             creditImageUrl = thumbnailUrl,
             modifier = Modifier
                 .size(40.dp)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.CenterVertically),
         )
 
         SearchSuggestionType.Movie,

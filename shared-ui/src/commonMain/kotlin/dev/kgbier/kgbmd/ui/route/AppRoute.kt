@@ -1,5 +1,6 @@
 package dev.kgbier.kgbmd.ui.route
 
+import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.ui.nav.Route
 
@@ -8,4 +9,5 @@ sealed interface AppRoute: Route {
     object Search : AppRoute
     data class Details(val id: MediaEntityId) : AppRoute
     object Settings : AppRoute
+    data class ImageViewer(val image: Image) : AppRoute
 }

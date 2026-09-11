@@ -39,7 +39,7 @@ fun CastCreditRow(
 
         Portrait(
             creditImageUrl = creditImageUrl,
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier.size(48.dp),
         )
 
         Column(

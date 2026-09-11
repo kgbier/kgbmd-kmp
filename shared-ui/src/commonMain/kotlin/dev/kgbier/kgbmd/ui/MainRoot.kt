@@ -41,6 +41,7 @@ fun MainRoot() = AppTheme {
                     AppRoute.Search -> SearchScreen(router)
                     is AppRoute.Details -> DetailsScreen(id = route.id, router = router)
                     AppRoute.Settings -> SettingsScreen()
+                    is AppRoute.ImageViewer -> ImageScreen(image = route.image)
                 }
             }
         }

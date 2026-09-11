@@ -37,6 +37,7 @@ fun NameDetailsScreen(
     item {
         NameDetailsHeader(
             name = name,
+            router = router,
             modifier = Modifier
                 .padding(16.dp)
                 .padding(top = contentPadding.calculateTopPadding())
@@ -75,7 +76,6 @@ fun NameDetailsScreen(
                     text = "Known For",
                     style = MaterialTheme.typography.titleLarge,
                 )
-
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = {
                     onShowModal(DetailsModalRoute.Filmography(name.id))

@@ -33,12 +33,15 @@ import dev.kgbier.kgbmd.ui.component.PosterView
 import dev.kgbier.kgbmd.ui.component.TagGroup
 import dev.kgbier.kgbmd.ui.component.atom.Portrait
 import dev.kgbier.kgbmd.ui.component.atom.Tag
+import dev.kgbier.kgbmd.ui.nav.Router
+import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
 fun NameDetailsHeader(
     name: NameDetails,
+    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
 ) = DetailsHeader(
     imageUrl = name.headshot?.thumbnailUrl,
@@ -56,10 +59,11 @@ fun NameDetailsHeader(
             modifier = Modifier.weight(1f)
         )
 
-        name.headshot?.thumbnailUrl?.let { thumbnailUrl ->
+        name.headshot?.let { image ->
             Portrait(
-                creditImageUrl = thumbnailUrl,
-                modifier = Modifier.size(64.dp)
+                creditImageUrl = image.thumbnailUrl,
+                onClick = { router.push(AppRoute.ImageViewer(image)) },
+                modifier = Modifier.size(64.dp),
             )
         }
     }
@@ -68,6 +72,7 @@ fun NameDetailsHeader(
 @Composable
 fun TitleDetailsHeader(
     title: TitleDetails,
+    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
 ) = DetailsHeader(
     imageUrl = title.poster?.thumbnailUrl,
@@ -128,14 +133,15 @@ fun TitleDetailsHeader(
                 ratings = rating.count,
             )
         }
-        title.poster?.thumbnailUrl?.let { thumbnailUrl ->
+        title.poster?.let { poster ->
             PosterView(
                 thumbnailUrl = null,
-                imageUrl = thumbnailUrl,
-                onClick = { },
-                enabled = false,
+                imageUrl = poster.thumbnailUrl,
+                onClick = { router.push(AppRoute.ImageViewer(poster)) },
+                enabled = true,
                 shape = MaterialTheme.shapes.extraSmall,
-                modifier = Modifier.size(40.dp, 58.dp)
+                modifier = Modifier
+                    .size(40.dp, 58.dp)
                     .align(Alignment.CenterVertically)
             )
         }

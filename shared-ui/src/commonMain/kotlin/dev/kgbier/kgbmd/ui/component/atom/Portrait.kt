@@ -2,6 +2,7 @@ package dev.kgbier.kgbmd.ui.component.atom
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -30,9 +31,11 @@ import coil3.request.ImageRequest
 fun Portrait(
     creditImageUrl: String? = null,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) = Box(
     modifier = modifier
         .clip(CircleShape)
+        .run { if (onClick != null) clickable(onClick = onClick) else this }
 ) {
     val contentScale = ContentScale.Crop
 
@@ -77,7 +80,6 @@ fun Portrait(
 @Composable
 private fun PortraitPlaceholderPreview() = MaterialTheme {
     Portrait(
-        creditImageUrl = null,
-        modifier = Modifier.size(64.dp)
+        modifier = Modifier.size(64.dp),
     )
 }
