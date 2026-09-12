@@ -1,6 +1,6 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
-import dev.kgbier.kgbmd.domain.imdb.operation.ImageResizer
+import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import kotlinx.serialization.Serializable
@@ -45,22 +45,5 @@ fun TitlePosterFragment.toMoviePoster() = MoviePoster(
     title = titleText.text,
     rating = ratingsSummary.aggregateRating
         ?.takeUnless { it == 0.0 }?.toString(),
-    thumbnailUrl = primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_THUMBNAIL,
-        )
-    },
-    posterUrlSmall = primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_MEDIUM,
-        )
-    },
-    posterUrlLarge = primaryImage?.let {
-        ImageResizer.resize(
-            imageUrl = it.url,
-            size = ImageResizer.SIZE_WIDTH_LARGE,
-        )
-    }
+    image = primaryImage?.url?.let(::transformImageUrl),
 )

@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
@@ -148,9 +149,7 @@ fun TitleListViewPreview() {
                             id = MediaEntityId("id"),
                             title = "Hello Sailor",
                             rating = null,
-                            thumbnailUrl = "url",
-                            posterUrlLarge = "url",
-                            posterUrlSmall = "url",
+                            image = Image("url"),
                         )
                     )
                 ),

@@ -38,8 +38,8 @@ fun PosterView(
 ) = PosterView(
     modifier = modifier,
     shape = shape,
-    thumbnailUrl = poster.thumbnailUrl,
-    imageUrl = poster.posterUrlSmall,
+    thumbnailUrl = poster.image?.thumbnailUrl,
+    imageUrl = poster.image?.largeUrl,
     title = poster.title,
     rating = poster.rating,
     onClick = onClick,

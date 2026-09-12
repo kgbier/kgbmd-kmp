@@ -22,7 +22,6 @@ import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
-import coil3.size.Dimension
 import coil3.size.Size
 import dev.kgbier.kgbmd.domain.model.Image
 
@@ -82,7 +81,7 @@ fun ImageViewerContainer(
             contentDescription = null,
             contentScale = ContentScale.Fit,
             model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data(image.largeUrl)
+                .data(image.originalUrl)
                 .size(Size.ORIGINAL)
                 .placeholderMemoryCacheKey(image.thumbnailUrl)
                 .build(),

@@ -113,7 +113,7 @@ fun GroupedCreditsForNameList(
                         TitleCreditRow(
                             title = item.credit.moviePoster.title,
                             rating = item.credit.moviePoster.rating,
-                            posterImageUrl = item.credit.moviePoster.thumbnailUrl,
+                            posterImageUrl = item.credit.moviePoster.image?.thumbnailUrl,
                             year = item.credit.year,
                             status = item.credit.productionStatus,
                             roles = item.credit.roles,
