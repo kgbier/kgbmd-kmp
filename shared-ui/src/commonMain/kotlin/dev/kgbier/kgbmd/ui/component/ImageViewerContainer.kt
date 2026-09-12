@@ -46,7 +46,7 @@ class ImageViewerState {
     }
 
     private companion object {
-        val defaultScale = 1f
+        const val defaultScale = 1f
         val defaultOffset = Offset.Zero
     }
 }
@@ -83,7 +83,7 @@ fun ImageViewerContainer(
             model = ImageRequest.Builder(LocalPlatformContext.current)
                 .data(image.originalUrl)
                 .size(Size.ORIGINAL)
-                .placeholderMemoryCacheKey(image.thumbnailUrl)
+                .placeholderMemoryCacheKey(image.largeUrl)
                 .build(),
             modifier = Modifier
                 .fillMaxSize()

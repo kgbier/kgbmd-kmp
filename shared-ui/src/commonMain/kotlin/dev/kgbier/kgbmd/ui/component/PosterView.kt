@@ -23,7 +23,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.useExistingImageAsPlaceholder
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.ui.component.atom.PosterCard
 import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
@@ -38,7 +41,7 @@ fun PosterView(
 ) = PosterView(
     modifier = modifier,
     shape = shape,
-    thumbnailUrl = poster.image?.thumbnailUrl,
+    thumbnailUrl = poster.image?.hintUrl,
     imageUrl = poster.image?.largeUrl,
     title = poster.title,
     rating = poster.rating,
@@ -67,8 +70,11 @@ fun PosterView(
                 contentDescription = title ?: "Movie Poster",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
+                placeholder = rememberAsyncImagePainter(thumbnailUrl),
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data(imageUrl)
+                    .placeholderMemoryCacheKey(thumbnailUrl)
+                    .crossfade(true)
                     .build()
             )
             rating?.let {

@@ -135,7 +135,7 @@ fun TitleDetailsHeader(
         }
         title.poster?.let { poster ->
             PosterView(
-                thumbnailUrl = null,
+                thumbnailUrl = poster.hintUrl,
                 imageUrl = poster.thumbnailUrl,
                 onClick = { router.push(AppRoute.ImageViewer(poster)) },
                 enabled = true,

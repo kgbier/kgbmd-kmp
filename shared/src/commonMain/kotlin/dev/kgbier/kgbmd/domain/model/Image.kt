@@ -9,7 +9,7 @@ value class Image(val rawUrl: String) {
         get() = ImageResizer.resize(rawUrl, ImageResizer.SIZE_WIDTH_HINT)
 
     val thumbnailUrl: String
-        get() = ImageResizer.resize(rawUrl, ImageResizer.SIZE_WIDTH_THUMBNAIL_CDN)
+        get() = ImageResizer.resize(rawUrl, ImageResizer.SIZE_WIDTH_THUMBNAIL)
 
     val largeUrl: String
         get() = ImageResizer.resize(rawUrl, ImageResizer.SIZE_WIDTH_LARGE)
