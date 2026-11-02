@@ -37,7 +37,7 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 leakcanary-android = "com.squareup.leakcanary:leakcanary-android:2.14" # https://github.com/square/leakcanary/releases
 kermit = "co.touchlab:kermit:2.2.0"                     # https://github.com/touchlab/Kermit/releases
-logback = "ch.qos.logback:logback-classic:1.6.5"        # https://github.com/qos-ch/logback/releases
+logback = "ch.qos.logback:logback-classic:1.6.6"        # https://github.com/qos-ch/logback/releases
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
