@@ -27,8 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,11 +35,10 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
+import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
-import kotlinx.coroutines.CoroutineScope
 
 sealed interface DetailsModalRoute {
     data object None : DetailsModalRoute
@@ -55,11 +52,9 @@ sealed interface DetailsModalRoute {
 fun DetailsScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
-    viewModelFactory: DetailsScreenViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: DetailsScreenViewModel = remember(id) {
-        viewModelFactory.createDetailsScreenViewModelFactory(scope, id)
-    }
+    viewModel: DetailsScreenViewModel = appViewModel(key = id.toString()) {
+        set(LifecycleViewModelModule.Key.mediaEntityId, id)
+    },
 ) {
     var bottomSheetState by mutableStateOf<DetailsModalRoute>(DetailsModalRoute.None)
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)

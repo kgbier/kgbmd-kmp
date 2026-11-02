@@ -3,6 +3,7 @@ package dev.kgbier.kgbmd.ui.nav
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 interface Route
 
@@ -14,6 +15,8 @@ interface Router<TRoute : Route> {
 
 interface Navigator<TRoute : Route> {
     val router: Router<TRoute>
+
+    val backstack: SnapshotStateList<TRoute>
 
     val currentRoute: TRoute
     val previousRoute: TRoute?
@@ -43,7 +46,7 @@ class StackNavigator<TRoute : Route>(
 
     override val router: Router<TRoute> = StackRouter()
 
-    private val backstack = mutableStateListOf(initialRoute)
+    override val backstack: SnapshotStateList<TRoute> = mutableStateListOf(initialRoute)
 
     override val currentRoute: TRoute get() = backstack.last()
     override val previousRoute: TRoute? get() = backstack.getOrNull(backstack.lastIndex - 1)

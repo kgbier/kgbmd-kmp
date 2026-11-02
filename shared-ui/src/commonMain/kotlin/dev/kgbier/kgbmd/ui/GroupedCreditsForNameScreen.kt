@@ -1,8 +1,7 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package dev.kgbier.kgbmd.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -30,20 +27,17 @@ import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameListUiState
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameViewModel
 import dev.kgbier.kgbmd.ui.component.GroupingHeaderRow
 import dev.kgbier.kgbmd.ui.component.TitleCreditRow
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
+import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun GroupedCreditsForNameScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModelFactory: GroupedCreditsForNameViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: GroupedCreditsForNameViewModel = remember(id) {
-        viewModelFactory.createGroupedCreditsForNameViewModel(scope, id)
+    viewModel: GroupedCreditsForNameViewModel = appViewModel(key = id.toString()) {
+        set(LifecycleViewModelModule.Key.mediaEntityId, id)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

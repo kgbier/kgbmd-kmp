@@ -1,22 +1,25 @@
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.plus
 
 sealed interface GroupedCreditsForTitleListUiState {
     data object Loading : GroupedCreditsForTitleListUiState
-    data class Items(val items: List<GroupedCreditsForTitleListItem>) : GroupedCreditsForTitleListUiState
+    data class Items(val items: List<GroupedCreditsForTitleListItem>) :
+        GroupedCreditsForTitleListUiState
+
     data class Error(val error: Throwable) : GroupedCreditsForTitleListUiState
 }
 
@@ -39,19 +42,11 @@ sealed interface GroupedCreditsForTitleListItem {
 }
 
 class GroupedCreditsForTitleViewModel(
-    scope: CoroutineScope,
     private val id: MediaEntityId,
     private val mediaInfoRepo: MediaInfoRepo,
-) {
+) : ViewModel() {
 
-    interface Factory {
-        fun createGroupedCreditsForTitleViewModel(
-            scope: CoroutineScope,
-            id: MediaEntityId
-        ): GroupedCreditsForTitleViewModel
-    }
-
-    private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     private inner class GroupedListStateDelegate :
         GroupedListState.Delegate<CreditGroupingId, CreditGrouping, CastCredit> {
@@ -98,7 +93,7 @@ class GroupedCreditsForTitleViewModel(
     }.catch {
         emit(GroupedCreditsForTitleListUiState.Error(it))
     }.stateIn(
-        scope = scope,
+        scope = backgroundScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = GroupedCreditsForTitleListUiState.Loading,
     )

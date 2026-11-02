@@ -1,10 +1,12 @@
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -17,17 +19,15 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlin.time.Duration.Companion.milliseconds
 
 class TitleListViewModel(
-    private val scope: CoroutineScope,
     preferencesRepo: PreferencesRepo,
     private val mediaInfoRepo: MediaInfoRepo,
-) {
+) : ViewModel() {
 
-    interface Factory {
-        fun createTitleListViewModelFactory(scope: CoroutineScope): TitleListViewModel
-    }
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     sealed interface TitleListState {
         data object Loading : TitleListState
@@ -36,7 +36,7 @@ class TitleListViewModel(
     }
 
     val titleCategory: Flow<TitleCategory> = preferencesRepo.subscribeToTitleCategory().shareIn(
-        scope = scope,
+        scope = backgroundScope,
         started = SharingStarted.WhileSubscribed(),
         replay = 1,
     )
@@ -52,11 +52,11 @@ class TitleListViewModel(
         }.onEach {
             titleList.value = TitleListState.Loading
             load(it)
-        }.launchIn(scope)
+        }.launchIn(backgroundScope)
     }
 
     fun retry() {
-        scope.launch { retryChannel.send(Unit) }
+        backgroundScope.launch { retryChannel.send(Unit) }
     }
 
     private suspend fun load(titleCategory: TitleCategory) {

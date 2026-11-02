@@ -1,18 +1,19 @@
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleCredit
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.plus
 
 sealed interface GroupedCreditsForNameListUiState {
     data object Loading : GroupedCreditsForNameListUiState
@@ -41,19 +42,11 @@ sealed interface GroupedCreditsForNameListItem {
 }
 
 class GroupedCreditsForNameViewModel(
-    scope: CoroutineScope,
     private val id: MediaEntityId,
     private val mediaInfoRepo: MediaInfoRepo,
-) {
+) : ViewModel() {
 
-    interface Factory {
-        fun createGroupedCreditsForNameViewModel(
-            scope: CoroutineScope,
-            id: MediaEntityId
-        ): GroupedCreditsForNameViewModel
-    }
-
-    private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     private inner class GroupedListStateDelegate :
         GroupedListState.Delegate<CreditGroupingId, CreditGrouping, TitleCredit> {
@@ -100,7 +93,7 @@ class GroupedCreditsForNameViewModel(
     }.catch {
         emit(GroupedCreditsForNameListUiState.Error(it))
     }.stateIn(
-        scope = scope,
+        scope = backgroundScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = GroupedCreditsForNameListUiState.Loading,
     )

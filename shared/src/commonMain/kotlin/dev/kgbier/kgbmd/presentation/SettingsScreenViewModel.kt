@@ -1,34 +1,30 @@
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.Country
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.plus
 
 class SettingsScreenViewModel(
-    private val scope: CoroutineScope,
     private val preferencesRepo: PreferencesRepo
-) {
-    interface Factory {
-        fun createSettingsScreenViewModelFactory(scope: CoroutineScope): SettingsScreenViewModel
-    }
+) : ViewModel() {
 
-    private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     val country = preferencesRepo.subscribeToCountry()
         .stateIn(
-            scope = scope,
+            scope = backgroundScope,
             started = SharingStarted.WhileSubscribed(),
             initialValue = null,
         )
 
     val postcode = preferencesRepo.subscribeToPostcode().stateIn(
-        scope = scope,
+        scope = backgroundScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = null,
     )

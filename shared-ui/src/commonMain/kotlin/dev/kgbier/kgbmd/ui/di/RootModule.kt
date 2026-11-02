@@ -2,6 +2,9 @@ package dev.kgbier.kgbmd.ui.di
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import dev.kgbier.kgbmd.di.CoreModule
 import dev.kgbier.kgbmd.di.KtorModule
 import dev.kgbier.kgbmd.di.RepoModule
@@ -37,86 +40,78 @@ class RootModule(
         serviceModule = serviceModule,
         storageModule = storageModule,
     )
-    val viewModelModule = ViewModelModule(this)
 }
 
-val LocalViewModelModule =
-    staticCompositionLocalOf<ViewModelModule> { error("ViewModelModule must be provided") }
+val LocalRootModule =
+    staticCompositionLocalOf<RootModule> { error("RootModule must be provided") }
 
-class ViewModelModule(
-    val rootModule: RootModule,
-) :
-    TitleListViewModel.Factory,
-    MainScreenViewModel.Factory,
-    DetailsScreenViewModel.Factory,
-    GroupedCreditsForTitleViewModel.Factory,
-    GroupedCreditsForNameViewModel.Factory,
-    SettingsScreenViewModel.Factory,
-    GroupedEpisodesForTitleViewModel.Factory,
-    SearchScreenViewModel.Factory {
+object LifecycleViewModelModule {
 
-    override fun createTitleListViewModelFactory(
-        scope: CoroutineScope,
-    ): TitleListViewModel = TitleListViewModel(
-        scope = scope,
-        preferencesRepo = rootModule.storageModule.preferencesRepo,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+    object Key {
+        val rootModule = CreationExtras.Key<RootModule>()
 
-    override fun createMainScreenViewModelFactory(
-        scope: CoroutineScope,
-    ): MainScreenViewModel = MainScreenViewModel(
-        scope = scope,
-        preferencesRepo = rootModule.storageModule.preferencesRepo
-    )
+        val mediaEntityId = CreationExtras.Key<MediaEntityId>()
+    }
 
-    override fun createSearchScreenViewModelFactory(
-        scope: CoroutineScope,
-    ): SearchScreenViewModel = SearchScreenViewModel(
-        scope = scope,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+    context(extras: CreationExtras)
+    private val rootModule: RootModule
+        get() = requireNotNull(extras[Key.rootModule]) { "Key `rootModule` in `CreationExtras` is missing." }
 
-    override fun createDetailsScreenViewModelFactory(
-        scope: CoroutineScope,
-        id: MediaEntityId,
-    ): DetailsScreenViewModel = DetailsScreenViewModel(
-        scope = scope,
-        id = id,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+    context(extras: CreationExtras)
+    private val mediaEntityId: MediaEntityId
+        get() = requireNotNull(extras[Key.mediaEntityId]) { "Key `mediaEntityId` in `CreationExtras` is missing." }
 
-    override fun createGroupedCreditsForTitleViewModel(
-        scope: CoroutineScope,
-        id: MediaEntityId
-    ): GroupedCreditsForTitleViewModel = GroupedCreditsForTitleViewModel(
-        scope = scope,
-        id = id,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+    val factory = viewModelFactory {
+        initializer {
+            MainScreenViewModel(
+                preferencesRepo = rootModule.storageModule.preferencesRepo
+            )
+        }
+        initializer {
+            SearchScreenViewModel(
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
 
-    override fun createGroupedCreditsForNameViewModel(
-        scope: CoroutineScope,
-        id: MediaEntityId
-    ): GroupedCreditsForNameViewModel = GroupedCreditsForNameViewModel(
-        scope = scope,
-        id = id,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+        initializer {
+            TitleListViewModel(
+                preferencesRepo = rootModule.storageModule.preferencesRepo,
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
 
-    override fun createGroupedEpisodesForTitleViewModel(
-        scope: CoroutineScope,
-        id: MediaEntityId
-    ): GroupedEpisodesForTitleViewModel = GroupedEpisodesForTitleViewModel(
-        scope = scope,
-        id = id,
-        mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
-    )
+        initializer {
+            DetailsScreenViewModel(
+                id = mediaEntityId,
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
 
-    override fun createSettingsScreenViewModelFactory(
-        scope: CoroutineScope,
-    ): SettingsScreenViewModel = SettingsScreenViewModel(
-        scope = scope,
-        preferencesRepo = rootModule.storageModule.preferencesRepo,
-    )
+        initializer {
+            GroupedCreditsForTitleViewModel(
+                id = mediaEntityId,
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
+
+        initializer {
+            GroupedCreditsForNameViewModel(
+                id = mediaEntityId,
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
+
+        initializer {
+            GroupedEpisodesForTitleViewModel(
+                id = mediaEntityId,
+                mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+            )
+        }
+
+        initializer {
+            SettingsScreenViewModel(
+                preferencesRepo = rootModule.storageModule.preferencesRepo,
+            )
+        }
+    }
 }

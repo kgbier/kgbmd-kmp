@@ -1,8 +1,7 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 
 package dev.kgbier.kgbmd.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,25 +22,22 @@ import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
-import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleListUiState
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleListItem
+import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleListUiState
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleViewModel
 import dev.kgbier.kgbmd.ui.component.CastCreditRow
 import dev.kgbier.kgbmd.ui.component.GroupingHeaderRow
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
+import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun GroupedCreditsForTitleScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModelFactory: GroupedCreditsForTitleViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: GroupedCreditsForTitleViewModel = remember(id) {
-        viewModelFactory.createGroupedCreditsForTitleViewModel(scope, id)
+    viewModel: GroupedCreditsForTitleViewModel = appViewModel(key = id.toString()) {
+        set(LifecycleViewModelModule.Key.mediaEntityId, id)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

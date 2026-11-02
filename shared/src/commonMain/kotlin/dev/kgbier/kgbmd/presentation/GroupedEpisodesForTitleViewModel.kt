@@ -1,5 +1,7 @@
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleEpisode
 import dev.kgbier.kgbmd.domain.model.TitleSeason
@@ -12,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.plus
 
 sealed interface GroupedEpisodesForTitleListUiState {
     data object Loading : GroupedEpisodesForTitleListUiState
@@ -41,19 +43,11 @@ sealed interface GroupedEpisodesForTitleListItem {
 }
 
 class GroupedEpisodesForTitleViewModel(
-    scope: CoroutineScope,
     private val id: MediaEntityId,
     private val mediaInfoRepo: MediaInfoRepo,
-) {
+) : ViewModel() {
 
-    interface Factory {
-        fun createGroupedEpisodesForTitleViewModel(
-            scope: CoroutineScope,
-            id: MediaEntityId
-        ): GroupedEpisodesForTitleViewModel
-    }
-
-    private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     private inner class GroupedListStateDelegate :
         GroupedListState.Delegate<TitleSeasonId, TitleSeason, TitleEpisode> {
@@ -100,7 +94,7 @@ class GroupedEpisodesForTitleViewModel(
     }.catch {
         emit(GroupedEpisodesForTitleListUiState.Error(it))
     }.stateIn(
-        scope = scope,
+        scope = backgroundScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = GroupedEpisodesForTitleListUiState.Loading,
     )

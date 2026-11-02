@@ -36,7 +36,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,21 +47,15 @@ import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.ui.component.SearchSuggestion
 import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.ScrollToTopHandler
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun SearchScreen(
     router: Router<AppRoute>,
-    viewModelFactory: SearchScreenViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: SearchScreenViewModel = remember {
-        viewModelFactory.createSearchScreenViewModelFactory(scope)
-    }
+    viewModel: SearchScreenViewModel = appViewModel(),
 ) {
     val state by viewModel.viewState.collectAsState()
     SearchScreen(

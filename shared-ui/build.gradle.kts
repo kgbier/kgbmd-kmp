@@ -62,6 +62,8 @@ kotlin {
             implementation(libs.jetbrains.compose.ui)
             implementation(libs.jetbrains.compose.resources)
             implementation(libs.jetbrains.compose.navigationevent)
+            implementation(libs.jetbrains.compose.nav3.ui)
+            implementation(libs.jetbrains.compose.lifecycle.viewmodel.nav3)
             implementation(libs.jetbrains.compose.preview)
 
             implementation(libs.bundles.coil)

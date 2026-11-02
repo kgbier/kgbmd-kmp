@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -29,13 +27,11 @@ import dev.kgbier.kgbmd.ui.component.atom.rememberShimmerState
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.component.preview.sampleMoviePoster
 import dev.kgbier.kgbmd.ui.component.toErrorMessage
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.LocalSizeClass
 import dev.kgbier.kgbmd.ui.util.ScrollToTopHandler
 import dev.kgbier.kgbmd.ui.util.SizeClass
-import kotlinx.coroutines.CoroutineScope
 
 /**
  * A scrollable grid of movie posters.
@@ -43,12 +39,8 @@ import kotlinx.coroutines.CoroutineScope
 @Composable
 fun TitleList(
     router: Router<AppRoute>,
-    viewModelFactory: TitleListViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
     contentPadding: PaddingValues = PaddingValues(),
-    viewModel: TitleListViewModel = remember {
-        viewModelFactory.createTitleListViewModelFactory(scope)
-    }
+    viewModel: TitleListViewModel = appViewModel(),
 ) {
     val state: TitleListViewModel.TitleListState by viewModel.titleList.collectAsState()
     TitleListView(

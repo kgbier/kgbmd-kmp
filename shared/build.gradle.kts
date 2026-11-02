@@ -48,6 +48,8 @@ kotlin {
 
             implementation(libs.kermit)
 
+            implementation(libs.jetbrains.compose.lifecycle.viewmodel.core)
+
             implementation(libs.bundles.androidx.datastore)
             implementation(libs.bundles.ktor.client)
         }

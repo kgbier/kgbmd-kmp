@@ -14,8 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,20 +27,17 @@ import dev.kgbier.kgbmd.presentation.GroupedEpisodesForTitleListUiState
 import dev.kgbier.kgbmd.presentation.GroupedEpisodesForTitleViewModel
 import dev.kgbier.kgbmd.ui.component.GroupingHeaderRow
 import dev.kgbier.kgbmd.ui.component.TitleCreditRow
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
+import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun GroupedEpisodesForTitleScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    viewModelFactory: GroupedEpisodesForTitleViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: GroupedEpisodesForTitleViewModel = remember(id) {
-        viewModelFactory.createGroupedEpisodesForTitleViewModel(scope, id)
+    viewModel: GroupedEpisodesForTitleViewModel = appViewModel(key = id.toString()) {
+        set(LifecycleViewModelModule.Key.mediaEntityId, id)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

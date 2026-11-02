@@ -2,12 +2,13 @@
 
 package dev.kgbier.kgbmd.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.SearchSuggestionType
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
 import dev.kgbier.kgbmd.util.cooperativelyCancel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -31,7 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.plus
 import kotlin.time.Duration.Companion.milliseconds
 
 sealed interface RatingState {
@@ -52,11 +53,10 @@ sealed interface SearchAction {
 }
 
 class SearchScreenViewModel(
-    scope: CoroutineScope,
     private val mediaInfoRepo: MediaInfoRepo,
-) {
+) : ViewModel() {
 
-    private val backgroundScope = CoroutineScope(scope.newCoroutineContext(Dispatchers.Default))
+    private val backgroundScope = viewModelScope + Dispatchers.Default
 
     private data class SearchScreenState(
         val isLoading: Boolean = false,
@@ -68,10 +68,6 @@ class SearchScreenViewModel(
         data object Idle : SearchScreenViewState
         data object Loading : SearchScreenViewState
         data class Items(val items: List<SuggestionItem>) : SearchScreenViewState
-    }
-
-    interface Factory {
-        fun createSearchScreenViewModelFactory(scope: CoroutineScope): SearchScreenViewModel
     }
 
     private val resultsJobQueue = Channel<List<Suggestion>>(capacity = 20)

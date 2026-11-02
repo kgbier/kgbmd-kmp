@@ -33,10 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kgbier.kgbmd.domain.model.Country
@@ -45,18 +43,12 @@ import dev.kgbier.kgbmd.ui.component.CountryPickerDialog
 import dev.kgbier.kgbmd.ui.component.TextFieldDialog
 import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
-import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun SettingsScreen(
-    viewModelFactory: SettingsScreenViewModel.Factory = LocalViewModelModule.current,
-    scope: CoroutineScope = rememberCoroutineScope(),
-    viewModel: SettingsScreenViewModel = remember {
-        viewModelFactory.createSettingsScreenViewModelFactory(scope)
-    }
+    viewModel: SettingsScreenViewModel = appViewModel()
 ) {
     val country by viewModel.country.collectAsStateWithLifecycle()
     val postcode by viewModel.postcode.collectAsStateWithLifecycle()
