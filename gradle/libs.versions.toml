@@ -3,19 +3,19 @@ android-compileSdk = "37"
 android-minSdk = "24"
 android-targetSdk = "37"
 
-agp = "9.4.0"                   # https://developer.android.com/build/releases/about-agp
-kotlin = "2.4.20"               # https://github.com/jetbrains/kotlin/releases
+agp = "9.4.1"                   # https://developer.android.com/build/releases/about-agp
+kotlin = "2.4.21"               # https://github.com/jetbrains/kotlin/releases
 
 junit = "4.13.2"
 
-kotlinx-coroutines = "1.11.0"   # https://github.com/Kotlin/kotlinx.coroutines/releases
-compose-multiplatform = "1.12.0" # https://github.com/JetBrains/compose-multiplatform/releases
+kotlinx-coroutines = "1.11.0"    # https://github.com/Kotlin/kotlinx.coroutines/releases
+compose-multiplatform = "1.12.2" # https://github.com/JetBrains/compose-multiplatform/releases
 
 androidx-activity = "1.13.0"    # https://developer.android.com/jetpack/androidx/releases/activity
 androidx-appcompat = "1.8.0"    # https://developer.android.com/jetpack/androidx/releases/appcompat
 
-ktor = "3.5.2"                  # https://github.com/ktorio/ktor/releases
-coil = "3.6.2"                  # https://github.com/coil-kt/coil/releases
+ktor = "3.6.0"                  # https://github.com/ktorio/ktor/releases
+coil = "3.6.3"                  # https://github.com/coil-kt/coil/releases
 
 [libraries]
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -26,9 +26,9 @@ androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref
 jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
-jetbrains-compose-material3 = "org.jetbrains.compose.material3:material3:1.11.0-alpha07"
+jetbrains-compose-material3 = "org.jetbrains.compose.material3:material3:1.12.0-alpha03"                    # Constrained by https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose-materialIconsExtended = "org.jetbrains.compose.material:material-icons-extended:1.7.3"
-jetbrains-compose-navigationevent = "org.jetbrains.androidx.navigationevent:navigationevent-compose:1.1.0"
+jetbrains-compose-navigationevent = "org.jetbrains.androidx.navigationevent:navigationevent-compose:1.1.0"  # Constrained by https://github.com/JetBrains/compose-multiplatform/releases
 jetbrains-compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 jetbrains-compose-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
 jetbrains-compose-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
@@ -36,9 +36,9 @@ jetbrains-compose-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", ve
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-leakcanary-android = "com.squareup.leakcanary:leakcanary-android:2.14"
+leakcanary-android = "com.squareup.leakcanary:leakcanary-android:2.14" # https://github.com/square/leakcanary/releases
 kermit = "co.touchlab:kermit:2.2.0"                     # https://github.com/touchlab/Kermit/releases
-logback = "ch.qos.logback:logback-classic:1.6.3"        # https://github.com/qos-ch/logback/releases
+logback = "ch.qos.logback:logback-classic:1.6.5"        # https://github.com/qos-ch/logback/releases
 
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }

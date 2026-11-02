@@ -36,8 +36,6 @@ kotlin {
     // common to share sources between related targets.
     // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
-        val desktopMain by getting
-
         commonMain.dependencies {
             implementation(libs.kotlin.stdlib)
 
