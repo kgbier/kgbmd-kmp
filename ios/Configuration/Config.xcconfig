@@ -1,5 +1,7 @@
 TEAM_ID=
 
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64
+
 PRODUCT_NAME=kgbmd
 PRODUCT_BUNDLE_IDENTIFIER=dev.kgbier.kgbmd$(TEAM_ID)
 
