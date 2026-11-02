@@ -8,6 +8,9 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.domain.model.TitleCredit
+import dev.kgbier.kgbmd.domain.model.TitleEpisode
+import dev.kgbier.kgbmd.domain.model.TitleSeason
+import dev.kgbier.kgbmd.domain.model.TitleSeasonId
 
 interface MediaInfoRepo {
     suspend fun getMovieHotListPosters(page: String?): List<MoviePoster>
@@ -18,6 +21,7 @@ interface MediaInfoRepo {
 
     suspend fun getCreditGroupsForTitle(id: MediaEntityId): List<CreditGrouping>
     suspend fun getCreditGroupsForName(id: MediaEntityId): List<CreditGrouping>
+    suspend fun getEpisodeSeasonsForTitle(id: MediaEntityId): List<TitleSeason>
 
     suspend fun getCreditsForTitleGroup(
         id: MediaEntityId,
@@ -26,6 +30,11 @@ interface MediaInfoRepo {
 
     suspend fun getCreditsForNameGroup(
         id: MediaEntityId,
-        groupingId: CreditGroupingId
+        groupingId: CreditGroupingId,
     ): List<TitleCredit>
+
+    suspend fun getEpisodesForTitleSeason(
+        id: MediaEntityId,
+        groupingId: TitleSeasonId,
+    ): List<TitleEpisode>
 }

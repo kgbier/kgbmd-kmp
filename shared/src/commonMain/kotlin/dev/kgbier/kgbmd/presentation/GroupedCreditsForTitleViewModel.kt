@@ -74,7 +74,7 @@ class GroupedCreditsForTitleViewModel(
 
     val state: StateFlow<GroupedCreditsForTitleListUiState> = combine(
         groupedCreditsState.groups,
-        groupedCreditsState.groupedCredits,
+        groupedCreditsState.groupedItems,
         groupedCreditsState.groupStates,
     ) { groups, groupedCredits, groupStates ->
         if (groups.isNotEmpty()) {

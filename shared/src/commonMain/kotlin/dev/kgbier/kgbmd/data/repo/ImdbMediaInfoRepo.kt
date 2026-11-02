@@ -8,6 +8,8 @@ import dev.kgbier.kgbmd.data.imdb.graphql.toMoviePoster
 import dev.kgbier.kgbmd.data.imdb.graphql.toNameDetails
 import dev.kgbier.kgbmd.data.imdb.graphql.toTitleCredit
 import dev.kgbier.kgbmd.data.imdb.graphql.toTitleDetails
+import dev.kgbier.kgbmd.data.imdb.graphql.toTitleEpisode
+import dev.kgbier.kgbmd.data.imdb.graphql.toTitleSeason
 import dev.kgbier.kgbmd.data.imdb.model.transform
 import dev.kgbier.kgbmd.domain.model.CastCredit
 import dev.kgbier.kgbmd.domain.model.CreditGrouping
@@ -17,6 +19,9 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.domain.model.TitleCredit
+import dev.kgbier.kgbmd.domain.model.TitleEpisode
+import dev.kgbier.kgbmd.domain.model.TitleSeason
+import dev.kgbier.kgbmd.domain.model.TitleSeasonId
 import dev.kgbier.kgbmd.domain.model.transformRatingResponse
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
 import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
@@ -55,6 +60,9 @@ class ImdbMediaInfoRepo(
     override suspend fun getCreditGroupsForName(id: MediaEntityId): List<CreditGrouping> =
         imdbService.getNameCreditCategories(id).name.creditGroupings.edges.map { it.toCreditGrouping() }
 
+    override suspend fun getEpisodeSeasonsForTitle(id: MediaEntityId): List<TitleSeason> =
+        imdbService.getTitleEpisodeSeasons(id).title.episodes.displayableSeasons.edges.map { it.toTitleSeason() }
+
     override suspend fun getCreditsForTitleGroup(
         id: MediaEntityId,
         groupingId: CreditGroupingId,
@@ -76,6 +84,13 @@ class ImdbMediaInfoRepo(
                 else -> 0
             }
         }?.map { it.toTitleCredit() } ?: emptyList()
+
+    override suspend fun getEpisodesForTitleSeason(
+        id: MediaEntityId,
+        groupingId: TitleSeasonId
+    ): List<TitleEpisode> = imdbService.getTitleEpisodes(id, groupingId)
+        .title.episodes.episodes.edges
+        .map { it.toTitleEpisode() }
 
     fun MostPopularListQuery.Result.transform() =
         chartTitles.edges.map { it.poster.toMoviePoster() }

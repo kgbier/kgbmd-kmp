@@ -103,6 +103,7 @@ fun GroupedCreditsForTitleList(
                         onClick = { onGroupClick(item.grouping) },
                         text = item.grouping.name,
                         label = item.grouping.count.toString(),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 

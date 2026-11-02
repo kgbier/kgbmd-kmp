@@ -8,6 +8,8 @@ import dev.kgbier.kgbmd.data.imdb.graphql.NameDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditCategoriesQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleDetailsQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.TitleEpisodeCategoriesQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.TitleEpisodesQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.model.toWatchOptionsLocation
 import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import dev.kgbier.kgbmd.data.imdb.model.SuggestionResponse
@@ -15,6 +17,7 @@ import dev.kgbier.kgbmd.data.operation.JsonP
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.Location
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
+import dev.kgbier.kgbmd.domain.model.TitleSeasonId
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -42,14 +45,20 @@ interface ImdbService {
     suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result
     suspend fun getTitleCredits(
         ttid: MediaEntityId,
-        groupingId: CreditGroupingId
+        groupingId: CreditGroupingId,
     ): TitleCreditsQuery.Result
 
     suspend fun getNameCreditCategories(ttid: MediaEntityId): NameCreditCategoriesQuery.Result
     suspend fun getNameCredits(
         ttid: MediaEntityId,
-        groupingId: CreditGroupingId
+        groupingId: CreditGroupingId,
     ): NameCreditsQuery.Result
+
+    suspend fun getTitleEpisodeSeasons(ttid: MediaEntityId): TitleEpisodeCategoriesQuery.Result
+    suspend fun getTitleEpisodes(
+        ttid: MediaEntityId,
+        groupingId: TitleSeasonId,
+    ): TitleEpisodesQuery.Result
 }
 
 class KtorImdbService(
@@ -180,6 +189,28 @@ class KtorImdbService(
         params = NameCreditsQuery.Params(
             id = ttid.id,
             groupingId = groupingId.id,
+            count = 150,
+        )
+    )
+
+    override suspend fun getTitleEpisodeSeasons(
+        ttid: MediaEntityId,
+    ): TitleEpisodeCategoriesQuery.Result = graphqlQuery(
+        query = TitleEpisodeCategoriesQuery,
+        params = TitleEpisodeCategoriesQuery.Params(
+            id = ttid.id,
+            count = 150,
+        ),
+    )
+
+    override suspend fun getTitleEpisodes(
+        ttid: MediaEntityId,
+        groupingId: TitleSeasonId
+    ): TitleEpisodesQuery.Result = graphqlQuery(
+        query = TitleEpisodesQuery,
+        params = TitleEpisodesQuery.Params(
+            id = ttid.id,
+            groupingIds = listOf(groupingId.id),
             count = 150,
         )
     )
