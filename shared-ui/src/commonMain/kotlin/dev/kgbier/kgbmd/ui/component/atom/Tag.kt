@@ -73,7 +73,6 @@ fun Tag(
     shape: Shape = RoundedCornerShape(4.dp),
     colors: TagColors = TagDefaults.filledTagColors(),
     border: BorderStroke? = null,
-//    fontStyle: FontStyle? = null,
     fontWeight: FontWeight? = FontWeight.ExtraBold,
     startContent: @Composable () -> Unit = {},
     endContent: @Composable () -> Unit = {},

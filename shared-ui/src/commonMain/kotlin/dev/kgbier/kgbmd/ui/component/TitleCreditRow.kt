@@ -21,14 +21,14 @@ import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 @Composable
 fun TitleCreditRow(
     title: String,
-    roles: List<String>,
+    modifier: Modifier = Modifier,
+    roles: List<String> = emptyList(),
     rating: String? = null,
     year: String? = null,
     status: String? = null,
     onClick: (() -> Unit)? = null,
     posterImageUrl: String? = null,
     contentPadding: PaddingValues = PaddingValues(6.dp),
-    modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),

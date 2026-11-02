@@ -3,7 +3,6 @@ package dev.kgbier.kgbmd.presentation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -25,32 +24,31 @@ class GroupedListState<TGroupId, TGrouping, TItem>(
     /*
      * A list of all separate Groups
      */
-    private val _groups = MutableStateFlow<List<TGrouping>>(emptyList())
-    val groups = _groups.asStateFlow()
+    val groups: StateFlow<List<TGrouping>>
+        field = MutableStateFlow<List<TGrouping>>(emptyList())
 
     /*
      * A map of all Groups and their list of Items
      */
-    private val _groupedCredits =
-        MutableStateFlow<Map<TGroupId, List<TItem>>>(emptyMap())
-    val groupedCredits = _groupedCredits.asStateFlow()
+    val groupedItems: StateFlow<Map<TGroupId, List<TItem>>>
+        field = MutableStateFlow<Map<TGroupId, List<TItem>>>(emptyMap())
 
     /*
      * A set of all groups that are expanded
      */
-    private val _expandedGroups = MutableStateFlow(setOf<TGroupId>())
-    val expandedGroups: StateFlow<Set<TGroupId>> get() = _expandedGroups
+    val expandedGroups: StateFlow<Set<TGroupId>>
+        field = MutableStateFlow(setOf<TGroupId>())
 
     /*
      * A map of all Groups and their respective states (Loading, etc.)
      */
-    private val _groupStates = MutableStateFlow(mapOf<TGroupId, GroupState>())
-    val groupStates = _groupStates.asStateFlow()
+    val groupStates: StateFlow<Map<TGroupId, GroupState>>
+        field = MutableStateFlow(mapOf<TGroupId, GroupState>())
 
     fun load() {
         scope.launch {
             val initialGroups = delegate.fetchGroups()
-            _groups.update { initialGroups }
+            groups.update { initialGroups }
         }
     }
 
@@ -59,7 +57,7 @@ class GroupedListState<TGroupId, TGrouping, TItem>(
             loadGroup(groupId)
 
             // Toggle expanded state
-            _expandedGroups.update { set ->
+            expandedGroups.update { set ->
                 if (set.contains(groupId)) {
                     set - groupId
                 } else {
@@ -72,7 +70,7 @@ class GroupedListState<TGroupId, TGrouping, TItem>(
     private fun loadGroup(groupId: TGroupId) {
         scope.launch {
             runCatching {
-                _groupStates.update { map ->
+                groupStates.update { map ->
                     when (map[groupId]) {
                         GroupState.Loading -> return@launch
                         GroupState.Finished -> return@launch
@@ -82,7 +80,7 @@ class GroupedListState<TGroupId, TGrouping, TItem>(
 
                 delegate.fetchItems(groupId)
             }.onSuccess { items ->
-                _groupedCredits.update { map ->
+                groupedItems.update { map ->
                     val newMap = map.toMutableMap()
                     val list = (map[groupId] ?: emptyList()) + items
                     newMap[groupId] = list
@@ -90,7 +88,7 @@ class GroupedListState<TGroupId, TGrouping, TItem>(
                 }
             }
 
-            _groupStates.update { map ->
+            groupStates.update { map ->
                 map.plus(groupId to GroupState.Finished)
             }
         }
