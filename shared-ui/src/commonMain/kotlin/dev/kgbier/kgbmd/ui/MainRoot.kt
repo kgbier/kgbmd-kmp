@@ -10,6 +10,7 @@ import coil3.request.crossfade
 import coil3.util.DebugLogger
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.di.RootModule
+import dev.kgbier.kgbmd.ui.di.rememberRootModule
 import dev.kgbier.kgbmd.ui.nav.Nav
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
@@ -27,7 +28,7 @@ fun MainRoot() = AppTheme {
             .build()
     }
 
-    val di = remember { RootModule() }
+    val di = rememberRootModule()
 
     BoxWithConstraints {
 

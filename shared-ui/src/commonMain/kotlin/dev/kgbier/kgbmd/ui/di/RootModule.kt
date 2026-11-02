@@ -1,51 +1,38 @@
 package dev.kgbier.kgbmd.ui.di
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-import dev.kgbier.kgbmd.data.StubPreferencesService
+import dev.kgbier.kgbmd.di.CoreModule
 import dev.kgbier.kgbmd.di.KtorModule
 import dev.kgbier.kgbmd.di.RepoModule
 import dev.kgbier.kgbmd.di.ServiceModule
+import dev.kgbier.kgbmd.di.StorageModule
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
-import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameViewModel
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleViewModel
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.job
+
+@Composable
+expect fun rememberRootModule(): RootModule
 
 fun CoroutineScope.createChild(): CoroutineScope =
     CoroutineScope(coroutineContext + Job(parent = coroutineContext.job))
 
-class RootModule {
-    val coroutinesModule = CoroutinesModule()
-    val storageModule = StorageModule()
+class RootModule(
+    val coreModule: CoreModule,
+) {
+    val coroutinesModule = coreModule.coroutinesModule
+    val storageModule = StorageModule(coreModule)
     val ktorModule = KtorModule()
     val serviceModule = ServiceModule(ktorModule)
     val repoModule = RepoModule(serviceModule)
     val viewModelModule = ViewModelModule(this)
-}
-
-class CoroutinesModule {
-    val rootScope = CoroutineScope(
-        Dispatchers.Default
-            .plus(Job())
-            .plus(CoroutineExceptionHandler { context, throwable ->
-                println("Fatal exception in $context: $throwable")
-                throw throwable
-            })
-    )
-}
-
-class StorageModule {
-    val preferencesRepo: PreferencesRepo by lazy {
-        PreferencesRepo(StubPreferencesService())
-    }
 }
 
 val LocalViewModelModule =

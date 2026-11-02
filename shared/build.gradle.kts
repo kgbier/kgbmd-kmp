@@ -41,6 +41,7 @@ kotlin {
 
             implementation(libs.kermit)
 
+            implementation(libs.bundles.androidx.datastore)
             implementation(libs.bundles.ktor.client)
         }
 
