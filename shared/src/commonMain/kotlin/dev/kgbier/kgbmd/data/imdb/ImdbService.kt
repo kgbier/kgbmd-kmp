@@ -8,10 +8,12 @@ import dev.kgbier.kgbmd.data.imdb.graphql.NameDetailsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditCategoriesQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleCreditsQuery
 import dev.kgbier.kgbmd.data.imdb.graphql.TitleDetailsQuery
+import dev.kgbier.kgbmd.data.imdb.graphql.model.toWatchOptionsLocation
 import dev.kgbier.kgbmd.data.imdb.model.RatingResponse
 import dev.kgbier.kgbmd.data.imdb.model.SuggestionResponse
 import dev.kgbier.kgbmd.data.operation.JsonP
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
+import dev.kgbier.kgbmd.domain.model.Location
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -34,7 +36,7 @@ interface ImdbService {
     suspend fun getHotShows(page: String?): MostPopularListQuery.Result
     suspend fun search(query: String): SuggestionResponse?
     suspend fun getRating(ttid: MediaEntityId): RatingResponse?
-    suspend fun getTitleDetails(ttid: MediaEntityId): TitleDetailsQuery.Result
+    suspend fun getTitleDetails(ttid: MediaEntityId, location: Location?): TitleDetailsQuery.Result
     suspend fun getNameDetails(nmid: MediaEntityId): NameDetailsQuery.Result
 
     suspend fun getTitleCreditCategories(ttid: MediaEntityId): TitleCreditCategoriesQuery.Result
@@ -127,8 +129,15 @@ class KtorImdbService(
         return json.decodeFromString(validatedJson)
     }
 
-    override suspend fun getTitleDetails(ttid: MediaEntityId) =
-        graphqlQuery(TitleDetailsQuery(), TitleDetailsQuery.Params(ttid.id))
+    override suspend fun getTitleDetails(
+        ttid: MediaEntityId,
+        location: Location?,
+    ) = graphqlQuery(
+        TitleDetailsQuery(), TitleDetailsQuery.Params(
+            id = ttid.id,
+            location = location?.toWatchOptionsLocation(),
+        )
+    )
 
     override suspend fun getNameDetails(nmid: MediaEntityId) =
         graphqlQuery(NameDetailsQuery(), NameDetailsQuery.Params(nmid.id))
@@ -216,7 +225,7 @@ class KtorImdbService(
             value = graphqlRequest,
         )
 
-        val response = ktor.post(graphqEndpoint) {
+        val response = ktor.post(graphqlEndpoint) {
             contentType(ContentType.Application.Json)
             setBody(bodyText)
         }
@@ -225,6 +234,6 @@ class KtorImdbService(
     }
 
     companion object {
-        private const val graphqEndpoint = "https://api.graphql.imdb.com/"
+        private const val graphqlEndpoint = "https://api.graphql.imdb.com/"
     }
 }

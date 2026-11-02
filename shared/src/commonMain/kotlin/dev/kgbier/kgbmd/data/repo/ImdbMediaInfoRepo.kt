@@ -19,9 +19,12 @@ import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.domain.model.TitleCredit
 import dev.kgbier.kgbmd.domain.model.transformRatingResponse
 import dev.kgbier.kgbmd.domain.repo.MediaInfoRepo
+import dev.kgbier.kgbmd.domain.repo.PreferencesRepo
+import kotlinx.coroutines.flow.firstOrNull
 
 class ImdbMediaInfoRepo(
     private val imdbService: ImdbService,
+    private val prefsRepo: PreferencesRepo,
 ) : MediaInfoRepo {
 
     override suspend fun getMovieHotListPosters(page: String?): List<MoviePoster> =
@@ -38,7 +41,11 @@ class ImdbMediaInfoRepo(
 
     override suspend fun getMediaEntityDetails(id: MediaEntityId): MediaEntityDetails? = when {
         id.id.startsWith(NAME_ID_PREFIX) -> imdbService.getNameDetails(id).name.toNameDetails()
-        id.id.startsWith(TITLE_ID_PREFIX) -> imdbService.getTitleDetails(id).title.toTitleDetails()
+        id.id.startsWith(TITLE_ID_PREFIX) -> imdbService.getTitleDetails(
+            ttid = id,
+            location = prefsRepo.subscribeToLocation().firstOrNull(),
+        ).title.toTitleDetails()
+
         else -> null
     }
 

@@ -63,12 +63,14 @@ val sampleTitleDetails = TitleDetails(
     genres = listOf("Horror", "Comedy"),
     topEpisodes = null,
     topCast = sampleTopCast,
-    watchOption = TitleDetails.WatchOption.Cinema,
-//    watchOption = TitleDetails.WatchOption.Watchable(
-//        title = "Netflix",
-//        description = "S1-8",
-//        image = sampleImage,
-//    ),
+//    watchOption = TitleDetails.PrimaryWatchOption(TitleDetails.WatchOption.Cinema, 3),
+    watchOption = TitleDetails.PrimaryWatchOption(
+        primary = TitleDetails.WatchOption.Watchable(
+            title = "Netflix",
+            description = "S1-8",
+            image = sampleImage,
+        ), additionalOptionCount = 3,
+    ),
 )
 
 val sampleNameDetails = NameDetails(

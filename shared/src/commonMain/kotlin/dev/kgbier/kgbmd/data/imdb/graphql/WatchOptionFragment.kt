@@ -1,5 +1,6 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
+import dev.kgbier.kgbmd.data.imdb.graphql.model.WatchOptionCategoryType
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import kotlinx.serialization.Serializable

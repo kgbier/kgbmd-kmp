@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -215,16 +217,27 @@ fun TitleDetailsScreen(
         itemSpacing(8.dp)
 
         item {
-            when(watchOption) {
+            when (val primary = watchOption.primary) {
                 TitleDetails.WatchOption.Cinema -> Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(start = 16.dp, end = 6.dp)
                 ) {
-                    Icon(Icons.ConfirmationNumber, contentDescription = "")
+                    Icon(
+                        imageVector = Icons.ConfirmationNumber,
+                        contentDescription = "",
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
                     Text("In Theatres")
+                    Spacer(modifier = Modifier.weight(1f))
+                    watchOption.additionalOptionCount?.let { count ->
+                        TextButton(onClick = {}) { Text("+${count} more") }
+                    }
                 }
+
                 is TitleDetails.WatchOption.Watchable -> WatchOptionItemRow(
-                    watchOption = watchOption,
+                    watchOption = primary,
+                    additionalOptions = watchOption.additionalOptionCount,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
@@ -286,6 +299,7 @@ fun TitleDetailsScreen(
 @Composable
 private fun WatchOptionItemRow(
     watchOption: TitleDetails.WatchOption.Watchable,
+    additionalOptions: Int? = null,
     modifier: Modifier = Modifier,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
@@ -305,6 +319,22 @@ private fun WatchOptionItemRow(
         SubtitleText(watchOption.title)
         watchOption.description?.let {
             Text(text = it)
+        }
+    }
+    additionalOptions?.let { count ->
+        Spacer(modifier = Modifier.weight(1f))
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .size(height = 48.dp, width = 86.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text("+$count", style = MaterialTheme.typography.titleLarge)
+            }
         }
     }
 }

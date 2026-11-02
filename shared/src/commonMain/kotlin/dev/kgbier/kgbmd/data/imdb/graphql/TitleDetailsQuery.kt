@@ -1,5 +1,6 @@
 package dev.kgbier.kgbmd.data.imdb.graphql
 
+import dev.kgbier.kgbmd.data.imdb.graphql.model.WatchOptionsLocation
 import dev.kgbier.kgbmd.data.imdb.model.transformImageUrl
 import dev.kgbier.kgbmd.domain.model.CreditGroupingId
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
@@ -9,7 +10,10 @@ import kotlinx.serialization.Serializable
 class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQuery.Result> {
 
     @Serializable
-    data class Params(val id: String)
+    data class Params(
+        val id: String,
+        val location: WatchOptionsLocation?,
+    )
 
     @Serializable
     data class Result(val title: Title) {
@@ -163,13 +167,14 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
 
             @Serializable
             data class PrimaryWatchOption(
+                val additionalWatchOptionsCount: Int?,
                 val watchOption: WatchOptionFragment,
             )
         }
     }
 
     override val document: String = $$"""
-query TitleDetails($id: ID!) {
+query TitleDetails($id: ID!, $location: WatchOptionsLocation) {
   title(id: $id) {
     id
     titleText {
@@ -248,10 +253,9 @@ query TitleDetails($id: ID!) {
       }
     }
     primaryWatchOption(
-      location: {
-        postalCodeLocation: { country: "AU", postalCode: "3000" }
-      }
+      location: $location
     ) {
+      additionalWatchOptionsCount
       watchOption {
         ...$${WatchOptionFragment.name}
       }
@@ -374,7 +378,7 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
         genres = titleGenres.genres.map { it.genre.text },
         topCast = topCast.toTopCast(),
         topEpisodes = episodes?.toTopEpisodes(),
-        watchOption = primaryWatchOption?.watchOption?.toWatchOption(),
+        watchOption = primaryWatchOption?.toPrimaryWatchOption(),
     )
 }
 
@@ -401,3 +405,9 @@ private fun TitleDetailsQuery.Result.Title.Episodes.toTopEpisodes(): TitleDetail
         }
     )
 }
+
+private fun TitleDetailsQuery.Result.Title.PrimaryWatchOption.toPrimaryWatchOption(
+): TitleDetails.PrimaryWatchOption = TitleDetails.PrimaryWatchOption(
+    primary = watchOption.toWatchOption(),
+    additionalOptionCount = additionalWatchOptionsCount?.takeIf { it > 0 },
+)

@@ -13,6 +13,7 @@ import dev.kgbier.kgbmd.presentation.GroupedCreditsForNameViewModel
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleViewModel
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
+import dev.kgbier.kgbmd.presentation.SettingsScreenViewModel
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -31,7 +32,10 @@ class RootModule(
     val storageModule = StorageModule(coreModule)
     val ktorModule = KtorModule()
     val serviceModule = ServiceModule(ktorModule)
-    val repoModule = RepoModule(serviceModule)
+    val repoModule = RepoModule(
+        serviceModule = serviceModule,
+        storageModule = storageModule,
+    )
     val viewModelModule = ViewModelModule(this)
 }
 
@@ -46,6 +50,7 @@ class ViewModelModule(
     DetailsScreenViewModel.Factory,
     GroupedCreditsForTitleViewModel.Factory,
     GroupedCreditsForNameViewModel.Factory,
+    SettingsScreenViewModel.Factory,
     SearchScreenViewModel.Factory {
 
     override fun createTitleListViewModelFactory(
@@ -95,5 +100,12 @@ class ViewModelModule(
         scope = scope,
         id = id,
         mediaInfoRepo = rootModule.repoModule.mediaInfoRepo,
+    )
+
+    override fun createSettingsScreenViewModelFactory(
+        scope: CoroutineScope,
+    ): SettingsScreenViewModel = SettingsScreenViewModel(
+        scope = scope,
+        preferencesRepo = rootModule.storageModule.preferencesRepo,
     )
 }

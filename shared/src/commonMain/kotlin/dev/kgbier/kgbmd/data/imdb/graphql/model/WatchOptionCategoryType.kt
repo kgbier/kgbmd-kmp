@@ -1,4 +1,4 @@
-package dev.kgbier.kgbmd.data.imdb.graphql
+package dev.kgbier.kgbmd.data.imdb.graphql.model
 
 import kotlinx.serialization.Serializable
 
