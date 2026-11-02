@@ -20,9 +20,10 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -62,7 +63,7 @@ fun DetailsScreen(
     }
 ) {
     var bottomSheetState by mutableStateOf<DetailsModalRoute>(DetailsModalRoute.None)
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
     val state by viewModel.state.collectAsState()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
