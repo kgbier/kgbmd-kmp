@@ -12,6 +12,7 @@ object Icons {
 
     val ChevronRight get() = chevron_right
     val Close get() = close
+    val ConfirmationNumber get() = confirmation_number
 
     val Error get() = error
 

@@ -11,6 +11,11 @@ import dev.kgbier.kgbmd.domain.model.TitleDetails
 
 val sampleImage = Image("")
 val sampleMoviePoster = MoviePoster(MediaEntityId(""), "Title", null, sampleImage)
+val sampleNameProfile = NameProfile(MediaEntityId(""), "Name", null)
+val sampleCastCredit = CastCredit(
+    nameProfile = sampleNameProfile,
+    roles = listOf("Main Actor")
+)
 
 val sampleRatingsBreakdown = TitleDetails.RatingsBreakdown(
     listOf(
@@ -30,22 +35,9 @@ val sampleRatingsBreakdown = TitleDetails.RatingsBreakdown(
 val sampleTopCast = TitleDetails.TopCast(
     castTotal = 200,
     topCast = listOf(
-        CastCredit(
-            NameProfile(MediaEntityId(""), "First Actor", null),
-            roles = listOf("Main Actor")
-        ),
-        CastCredit(
-            NameProfile(MediaEntityId(""), "Second Actor", null),
-            roles = listOf("Main Actor")
-        ),
-        CastCredit(
-            NameProfile(MediaEntityId(""), "Third Actor", null),
-            roles = listOf("Main Actor")
-        ),
-        CastCredit(
-            NameProfile(MediaEntityId(""), "Fourth Actor", null),
-            roles = listOf("Main Actor")
-        ),
+        sampleCastCredit,
+        sampleCastCredit,
+        sampleCastCredit,
     ),
     hasMore = true,
     groupingId = CreditGroupingId(""),
@@ -57,7 +49,11 @@ val sampleTitleDetails = TitleDetails(
     poster = sampleImage,
     contentRating = "M",
     genre = "Genre",
-    principalCreditsByGroup = emptyMap(),
+    principalCreditsByGroup = mapOf(
+        "Director" to listOf(sampleNameProfile),
+        "Writers" to listOf(sampleNameProfile, sampleNameProfile),
+        "Stars" to listOf(sampleNameProfile, sampleNameProfile, sampleNameProfile),
+    ),
     description = "Some description",
     yearReleased = "2020",
     rating = TitleDetails.Rating("7.5", "10", "123,400"),
@@ -67,6 +63,12 @@ val sampleTitleDetails = TitleDetails(
     genres = listOf("Horror", "Comedy"),
     topEpisodes = null,
     topCast = sampleTopCast,
+    watchOption = TitleDetails.WatchOption.Cinema,
+//    watchOption = TitleDetails.WatchOption.Watchable(
+//        title = "Netflix",
+//        description = "S1-8",
+//        image = sampleImage,
+//    ),
 )
 
 val sampleNameDetails = NameDetails(

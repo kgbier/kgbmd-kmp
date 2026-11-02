@@ -31,6 +31,7 @@ data class TitleDetails(
     val genres: List<String>,
     val topEpisodes: TopEpisodes?,
     val topCast: TopCast?,
+    val watchOption: WatchOption?,
 ) : MediaEntityDetails {
     data class Rating(
         val value: String,
@@ -70,4 +71,13 @@ data class TitleDetails(
         val hasMore: Boolean,
         val groupingId: CreditGroupingId,
     )
+
+    sealed interface WatchOption {
+        data object Cinema : WatchOption
+        data class Watchable(
+            val title: String,
+            val description: String?,
+            val image: Image?,
+        ) : WatchOption
+    }
 }

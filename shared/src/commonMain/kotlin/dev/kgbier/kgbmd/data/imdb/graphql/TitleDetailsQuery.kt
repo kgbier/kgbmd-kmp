@@ -31,6 +31,7 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
             val topCast: List<TopCastCredits>,
             val outline: Plot,
             val aggregateRatingsBreakdown: AggregateRatingsBreakdown?,
+            val primaryWatchOption: PrimaryWatchOption?,
         ) {
             @Serializable
             data class TitleText(val text: String)
@@ -159,6 +160,11 @@ class TitleDetailsQuery : GraphqlQuery<TitleDetailsQuery.Params, TitleDetailsQue
                     )
                 }
             }
+
+            @Serializable
+            data class PrimaryWatchOption(
+                val watchOption: WatchOptionFragment,
+            )
         }
     }
 
@@ -241,6 +247,15 @@ query TitleDetails($id: ID!) {
         ...$${NameProfileCreditFragment.name}
       }
     }
+    primaryWatchOption(
+      location: {
+        postalCodeLocation: { country: "AU", postalCode: "3000" }
+      }
+    ) {
+      watchOption {
+        ...$${WatchOptionFragment.name}
+      }
+    }
     topCast: principalCreditsV2(filter: { mode: "TOP_CAST" }) {
       totalCredits
       grouping {
@@ -298,6 +313,7 @@ $${TitlePosterFragment.fragment}
 $${NameProfileCreditFragment.fragment}
 $${RoleCreditFragment.fragment}
 $${SeriesSeasonEpisodeFragment.fragment}
+$${WatchOptionFragment.fragment}
 """
 }
 
@@ -358,6 +374,7 @@ fun TitleDetailsQuery.Result.Title.toTitleDetails(): TitleDetails {
         genres = titleGenres.genres.map { it.genre.text },
         topCast = topCast.toTopCast(),
         topEpisodes = episodes?.toTopEpisodes(),
+        watchOption = primaryWatchOption?.watchOption?.toWatchOption(),
     )
 }
 

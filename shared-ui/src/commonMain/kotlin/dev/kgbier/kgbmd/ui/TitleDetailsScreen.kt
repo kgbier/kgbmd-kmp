@@ -1,16 +1,20 @@
 package dev.kgbier.kgbmd.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -18,15 +22,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.CastCreditRow
 import dev.kgbier.kgbmd.ui.component.Histogram
 import dev.kgbier.kgbmd.ui.component.SubtitlePosterView
+import dev.kgbier.kgbmd.ui.component.atom.SubtitleText
 import dev.kgbier.kgbmd.ui.component.atom.Tag
 import dev.kgbier.kgbmd.ui.component.atom.TagDefaults
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.itemSpacingMain
 import dev.kgbier.kgbmd.ui.component.molecule.ExpandableDescription
 import dev.kgbier.kgbmd.ui.component.molecule.TitledContent
@@ -84,12 +94,13 @@ fun TitleDetailsScreen(
         )
     }
 
+    itemSpacingMain()
+
     item {
         title.description?.let { description ->
             ExpandableDescription(
                 contentPadding = PaddingValues(
                     horizontal = 16.dp,
-                    vertical = 8.dp,
                 ),
             ) {
                 TitledContent(
@@ -183,6 +194,43 @@ fun TitleDetailsScreen(
         }
     }
 
+
+    val watchOption = title.watchOption
+    if (watchOption != null) {
+        itemSpacingMain()
+
+        item {
+            Column(
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                )
+            ) {
+                Text(
+                    text = "Watch",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+        }
+
+        itemSpacing(8.dp)
+
+        item {
+            when(watchOption) {
+                TitleDetails.WatchOption.Cinema -> Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Icon(Icons.ConfirmationNumber, contentDescription = "")
+                    Text("In Theatres")
+                }
+                is TitleDetails.WatchOption.Watchable -> WatchOptionItemRow(
+                    watchOption = watchOption,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+        }
+    }
+
     itemSpacingMain()
 
     item {
@@ -233,6 +281,32 @@ fun TitleDetailsScreen(
     }
 
     itemSpacingMain()
+}
+
+@Composable
+private fun WatchOptionItemRow(
+    watchOption: TitleDetails.WatchOption.Watchable,
+    modifier: Modifier = Modifier,
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier,
+) {
+    AsyncImage(
+        contentDescription = null,
+        model = ImageRequest.Builder(LocalPlatformContext.current)
+            .data(watchOption.image?.smallUrl)
+            .build(),
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .size(height = 48.dp, width = 86.dp)
+    )
+    Spacer(modifier = Modifier.width(16.dp))
+    Column {
+        SubtitleText(watchOption.title)
+        watchOption.description?.let {
+            Text(text = it)
+        }
+    }
 }
 
 @AppPreview.Screen
