@@ -73,6 +73,7 @@ fun DetailsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             Surface(
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
                 modifier = Modifier
                     .fillMaxHeight()
                     .widthIn(max = ExpandedWidth.dp)

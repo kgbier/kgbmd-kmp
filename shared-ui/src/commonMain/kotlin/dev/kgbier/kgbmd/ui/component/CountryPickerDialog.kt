@@ -12,7 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,10 +26,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_TYPE_NORMAL
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.kgbier.kgbmd.domain.model.Country
+import dev.kgbier.kgbmd.ui.theme.AppTheme
 
 @Composable
 fun CountryPickerDialog(
@@ -48,17 +56,35 @@ fun CountryPickerDialog(
             ) {
                 val usa = Country("US")
                 val aus = Country("AU")
-                ListItem(
-                    selected = countryState == usa,
-                    onClick = { countryState = usa },
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
                 ) {
-                    Text("🇺🇸 America")
-                }
-                ListItem(
-                    selected = countryState == aus,
-                    onClick = { countryState = aus },
-                ) {
-                    Text("🇦🇺 Australia")
+                    SegmentedListItem(
+                        shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+                        selected = countryState == usa,
+                        onClick = { countryState = usa },
+                        trailingContent = {
+                            RadioButton(
+                                selected = countryState == usa,
+                                onClick = null,
+                            )
+                        },
+                    ) {
+                        Text("🇺🇸 America")
+                    }
+                    SegmentedListItem(
+                        shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+                        selected = countryState == aus,
+                        onClick = { countryState = aus },
+                        trailingContent = {
+                            RadioButton(
+                                selected = countryState == aus,
+                                onClick = null
+                            )
+                        },
+                    ) {
+                        Text("🇦🇺 Australia")
+                    }
                 }
                 Spacer(modifier = Modifier.size(16.dp))
                 Row(
@@ -89,8 +115,10 @@ fun CountryPickerDialog(
 
 @Composable
 @Preview(widthDp = 512, heightDp = 512)
-fun CountryPickerDialogPreview() {
+@Preview(widthDp = 512, heightDp = 512, uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL)
+fun CountryPickerDialogPreview() = AppTheme {
     CountryPickerDialog(
         onDismissRequest = {},
+        initialValue = Country("US")
     )
 }

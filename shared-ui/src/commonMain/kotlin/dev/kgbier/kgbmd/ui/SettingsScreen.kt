@@ -2,18 +2,33 @@
 
 package dev.kgbier.kgbmd.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.ListItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,14 +36,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kgbier.kgbmd.domain.model.Country
 import dev.kgbier.kgbmd.presentation.SettingsScreenViewModel
 import dev.kgbier.kgbmd.ui.component.CountryPickerDialog
 import dev.kgbier.kgbmd.ui.component.TextFieldDialog
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
+import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
 import kotlinx.coroutines.CoroutineScope
 
@@ -65,6 +83,7 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Surface(
+            color = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = Modifier
                 .fillMaxHeight()
                 .widthIn(max = ExpandedWidth.dp)
@@ -88,23 +107,66 @@ fun SettingsScreen(
                 )
             }
 
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = "Location",
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(horizontal = 16.dp)
+            Column(
+                modifier = Modifier.padding(
+                    WindowInsets.safeDrawing
+                        .asPaddingValues()
                 )
-                ListItem(
-                    onClick = { countryDialog.value = true },
-                    supportingContent = country?.let { { Text(it.alpha2) } }
+
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
-                    Text("Country")
+                    TooltipBox(
+                        positionProvider =
+                            TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Above
+                            ),
+                        tooltip = { PlainTooltip { Text("Back") } },
+                        state = rememberTooltipState(),
+                    ) {
+                        val backEventInput = LocalDirectNavigationEventInput.current
+                        IconButton(
+                            onClick = { backEventInput.backCompleted() }
+                        ) {
+                            Icon(
+                                Icons.ArrowBack,
+                                contentDescription = "Back",
+                            )
+                        }
+                    }
+                    Text(
+                        text = "Settings",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
                 }
-                ListItem(
-                    onClick = { postcodeDialog.value = true },
-                    supportingContent = postcode?.let { { Text(it) } }
+                Spacer(modifier = Modifier.size(16.dp))
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap),
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Text("Postcode")
+                    Text(
+                        text = "Location",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    SegmentedListItem(
+                        shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+                        onClick = { countryDialog.value = true },
+                        supportingContent = country?.let { { Text(it.alpha2) } }
+                    ) {
+                        Text("Country")
+                    }
+                    SegmentedListItem(
+                        shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+                        onClick = { postcodeDialog.value = true },
+                        supportingContent = postcode?.let { { Text(it) } }
+                    ) {
+                        Text("Postcode")
+                    }
                 }
             }
         }

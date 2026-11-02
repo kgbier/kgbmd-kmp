@@ -2,15 +2,15 @@ package dev.kgbier.kgbmd.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val primaryLight = Color(0xFF7F5700)
+val primaryLight = Color(0xFFD49E24)
 val onPrimaryLight = Color(0xFFFFFFFF)
-val primaryContainerLight = Color(0xFFE6A000)
-val onPrimaryContainerLight = Color(0xFF593B00)
-val secondaryLight = Color(0xFF745804)
-val onSecondaryLight = Color(0xFFFFFFFF)
-val secondaryContainerLight = Color(0xFF8F7020)
-val onSecondaryContainerLight = Color(0xFFFFFBFF)
-val tertiaryLight = Color(0xFF7F5700)
+val primaryContainerLight = Color(0xFFFFECCA)
+val onPrimaryContainerLight = Color(0xFF281F00)
+val secondaryLight = Tonal.secondaryLight
+val onSecondaryLight = Tonal.onSecondaryLight
+val secondaryContainerLight = Tonal.secondaryContainerLight
+val onSecondaryContainerLight = Tonal.onSecondaryContainerLight
+val tertiaryLight = Color(0xFFB1A185)
 val onTertiaryLight = Color(0xFFFFFFFF)
 val tertiaryContainerLight = Color(0xFFFFC159)
 val onTertiaryContainerLight = Color(0xFF744F00)
@@ -38,14 +38,14 @@ val surfaceContainerLight = Tonal.surfaceContainerLight
 val surfaceContainerHighLight = Tonal.surfaceContainerHighLight
 val surfaceContainerHighestLight = Tonal.surfaceContainerHighestLight
 
-val primaryDark = Color(0xFFFFBD4A)
-val onPrimaryDark = Color(0xFF432C00)
-val primaryContainerDark = Color(0xFFE6A000)
-val onPrimaryContainerDark = Color(0xFF593B00)
-val secondaryDark = Color(0xFFE8C26A)
-val onSecondaryDark = Color(0xFF3F2E00)
-val secondaryContainerDark = Color(0xFFAE8C3A)
-val onSecondaryContainerDark = Color(0xFF221700)
+val primaryDark = Color(0xFFEEAA34)
+val onPrimaryDark = Color(0xFF322300)
+val primaryContainerDark = Color(0xFFE29700)
+val onPrimaryContainerDark = Color(0xFF231800)
+val secondaryDark = Tonal.tertiaryDark
+val onSecondaryDark = Tonal.onTertiaryDark
+val secondaryContainerDark = Tonal.tertiaryContainerDark
+val onSecondaryContainerDark = Tonal.onTertiaryContainerDark
 val tertiaryDark = Color(0xFFFFE4BF)
 val onTertiaryDark = Color(0xFF432C00)
 val tertiaryContainerDark = Color(0xFFFFC159)

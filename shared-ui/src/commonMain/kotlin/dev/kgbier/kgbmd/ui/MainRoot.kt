@@ -2,14 +2,12 @@ package dev.kgbier.kgbmd.ui
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.withCompositionLocals
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import coil3.util.DebugLogger
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
-import dev.kgbier.kgbmd.ui.di.RootModule
 import dev.kgbier.kgbmd.ui.di.rememberRootModule
 import dev.kgbier.kgbmd.ui.nav.Nav
 import dev.kgbier.kgbmd.ui.route.AppRoute
