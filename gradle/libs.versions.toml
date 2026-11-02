@@ -15,7 +15,7 @@ androidx-activity = "1.13.0"    # https://developer.android.com/jetpack/androidx
 androidx-appcompat = "1.8.0"    # https://developer.android.com/jetpack/androidx/releases/appcompat
 androidx-datastore = "1.3.0"    # https://developer.android.com/jetpack/androidx/releases/datastore
 
-ktor = "3.6.0"                  # https://github.com/ktorio/ktor/releases
+ktor = "3.6.1"                  # https://github.com/ktorio/ktor/releases
 coil = "3.6.3"                  # https://github.com/coil-kt/coil/releases
 
 [libraries]
