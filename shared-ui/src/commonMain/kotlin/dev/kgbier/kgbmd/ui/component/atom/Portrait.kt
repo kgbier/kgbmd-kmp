@@ -17,7 +17,6 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
@@ -25,6 +24,7 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun Portrait(
@@ -75,9 +75,9 @@ fun Portrait(
     }
 }
 
-@Preview
 @Composable
-private fun PortraitPlaceholderPreview() = MaterialTheme {
+@AppPreview.Component
+private fun PortraitPlaceholderPreview() {
     Portrait(
         modifier = Modifier.size(64.dp),
     )

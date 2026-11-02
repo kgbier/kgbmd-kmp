@@ -43,9 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.ui.component.SearchSuggestion
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.nav.Router
@@ -62,6 +64,20 @@ fun SearchScreen(
         viewModelFactory.createSearchScreenViewModelFactory(scope)
     }
 ) {
+    val state by viewModel.viewState.collectAsState()
+    SearchScreen(
+        state = state,
+        onSearchQueryUpdated = viewModel::search,
+        onSearchItemClicked = { router.push(AppRoute.Details(it)) },
+    )
+}
+
+@Composable
+fun SearchScreen(
+    state: SearchScreenViewModel.SearchScreenViewState,
+    onSearchQueryUpdated: (String) -> Unit = {},
+    onSearchItemClicked: (MediaEntityId) -> Unit = {},
+) {
     val backEventInput = LocalDirectNavigationEventInput.current
 
     Scaffold { innerPadding ->
@@ -69,7 +85,7 @@ fun SearchScreen(
 
         LaunchedEffect(textFieldState) {
             snapshotFlow { textFieldState.text }
-                .collect { viewModel.search(it.toString()) }
+                .collect { onSearchQueryUpdated(it.toString()) }
         }
 
         val focusRequester = remember { FocusRequester() }
@@ -114,7 +130,7 @@ fun SearchScreen(
 
                     },
                     trailingIcon = {
-                        if(textFieldState.text.isEmpty()) return@InputField
+                        if (textFieldState.text.isEmpty()) return@InputField
 
                         TooltipBox(
                             positionProvider =
@@ -138,8 +154,6 @@ fun SearchScreen(
                         .padding(top = innerPadding.calculateTopPadding())
                 )
             }
-            val state by viewModel.viewState.collectAsState()
-
             if (state is SearchScreenViewModel.SearchScreenViewState.Loading) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -177,7 +191,7 @@ fun SearchScreen(
                                 ratingState = item.ratingState,
                                 modifier = Modifier
                                     .clickable(
-                                        onClick = { router.push(AppRoute.Details(item.suggestion.id)) }
+                                        onClick = { onSearchItemClicked(item.suggestion.id) }
                                     ).padding(16.dp, 8.dp)
                             )
                         }
@@ -186,4 +200,12 @@ fun SearchScreen(
             }
         }
     }
+}
+
+@Composable
+@AppPreview.Screen
+fun SearchScreenPreview() {
+    SearchScreen(
+        state = SearchScreenViewModel.SearchScreenViewState.Idle,
+    )
 }

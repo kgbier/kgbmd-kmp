@@ -10,18 +10,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.FeaturedCreditCard
 import dev.kgbier.kgbmd.ui.component.LazyHeadingRow
 import dev.kgbier.kgbmd.ui.component.atom.SubtitleText
-import dev.kgbier.kgbmd.ui.nav.Router
-import dev.kgbier.kgbmd.ui.route.AppRoute
 
 @Composable
 fun TitlePrincipalCredits(
     title: TitleDetails,
-    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
+    onFeaturedCreditClicked: (MediaEntityId) -> Unit = {},
 ) {
     val headings = remember(title.principalCreditsByGroup) {
         var lastLength = 0
@@ -50,7 +49,7 @@ fun TitlePrincipalCredits(
         items(principalCredits) { item ->
             FeaturedCreditCard(
                 name = item.name,
-                onClick = { router.push(AppRoute.Details(item.id)) },
+                onClick = { onFeaturedCreditClicked(item.id) },
                 creditImageUrl = item.photo?.thumbnailUrl,
                 modifier = Modifier.sizeIn(maxWidth = 90.dp)
             )

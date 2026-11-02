@@ -5,9 +5,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import dev.kgbier.kgbmd.ui.component.atom.SubtitleText
-
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun TitledContent(
@@ -17,16 +16,16 @@ fun TitledContent(
 ) = Column(
     modifier = modifier
 ) {
-    SubtitleText(title,)
+    SubtitleText(title)
     Text(
         text = body,
         style = MaterialTheme.typography.bodyMedium,
     )
 }
 
-@Preview
+@AppPreview.Component
 @Composable
-fun TitledContentPreview() = MaterialTheme {
+fun TitledContentPreview() {
     TitledContent(
         title = "Title",
         body = "Body",

@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.Image
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.ui.component.SubtitlePosterView
 import dev.kgbier.kgbmd.ui.component.itemSpacingMain
@@ -30,14 +32,29 @@ fun NameDetailsScreen(
     name: NameDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    onShowModal: (DetailsModalRoute) -> Unit,
+    onShowModal: (DetailsModalRoute) -> Unit = {},
+) = NameDetailsScreen(
+    name = name,
+    contentPadding = contentPadding,
+    onPortraitViewClicked = { router.push(AppRoute.ImageViewer(it)) },
+    onTopCreditClicked = { router.push(AppRoute.Details(it)) },
+    onShowModal = onShowModal,
+)
+
+@Composable
+fun NameDetailsScreen(
+    name: NameDetails,
+    contentPadding: PaddingValues = PaddingValues(),
+    onPortraitViewClicked: (Image) -> Unit = {},
+    onTopCreditClicked: (MediaEntityId) -> Unit = {},
+    onShowModal: (DetailsModalRoute) -> Unit = {},
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
     item {
         NameDetailsHeader(
             name = name,
-            router = router,
+            onPortraitViewClicked = onPortraitViewClicked,
             modifier = Modifier
                 .padding(16.dp)
                 .padding(top = contentPadding.calculateTopPadding())
@@ -99,7 +116,7 @@ fun NameDetailsScreen(
                     SubtitlePosterView(
                         poster = credit.poster,
                         subtitle = credit.role,
-                        onClick = { router.push(AppRoute.Details(credit.poster.id)) },
+                        onClick = { onTopCreditClicked(credit.poster.id) },
                     )
                 }
             }

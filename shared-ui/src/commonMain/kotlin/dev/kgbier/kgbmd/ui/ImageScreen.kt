@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.ui.component.ImageViewerContainer
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
+import dev.kgbier.kgbmd.ui.component.preview.sampleImage
 import dev.kgbier.kgbmd.ui.component.rememberImageViewerState
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.theme.Tonal
@@ -47,7 +49,9 @@ fun ToolbarIconButton(
 }
 
 @Composable
-fun ImageScreen(image: Image) {
+fun ImageScreen(
+    image: Image,
+) {
     val imageViewerState = rememberImageViewerState()
     Scaffold(
         containerColor = Color.Black,
@@ -82,4 +86,12 @@ fun ImageScreen(image: Image) {
             )
         }
     }
+}
+
+@Composable
+@AppPreview.Screen
+fun ImageScreenPreview() {
+    ImageScreen(
+        image = sampleImage,
+    )
 }

@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.ui.component.molecule.PortraitCard
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun FeaturedCreditCard(
@@ -33,9 +33,9 @@ fun FeaturedCreditCard(
     )
 }
 
-@Preview
 @Composable
-fun FeaturedCreditCardPreview() = MaterialTheme {
+@AppPreview.Component
+fun FeaturedCreditCardPreview() {
     FeaturedCreditCard(
         name = "Name",
         onClick = {},

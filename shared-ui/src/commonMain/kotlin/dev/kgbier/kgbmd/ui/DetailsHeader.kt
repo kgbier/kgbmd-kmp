@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.HeroRatingView
@@ -32,16 +33,17 @@ import dev.kgbier.kgbmd.ui.component.TagGroup
 import dev.kgbier.kgbmd.ui.component.atom.Portrait
 import dev.kgbier.kgbmd.ui.component.atom.Tag
 import dev.kgbier.kgbmd.ui.component.icon.Icons
-import dev.kgbier.kgbmd.ui.nav.Router
-import dev.kgbier.kgbmd.ui.route.AppRoute
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
+import dev.kgbier.kgbmd.ui.component.preview.sampleNameDetails
+import dev.kgbier.kgbmd.ui.component.preview.sampleTitleDetails
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
 fun NameDetailsHeader(
     name: NameDetails,
-    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
+    onPortraitViewClicked: (Image) -> Unit = {},
 ) = DetailsHeader(
     imageUrl = name.headshot?.thumbnailUrl,
     modifier = modifier
@@ -61,7 +63,7 @@ fun NameDetailsHeader(
         name.headshot?.let { image ->
             Portrait(
                 creditImageUrl = image.thumbnailUrl,
-                onClick = { router.push(AppRoute.ImageViewer(image)) },
+                onClick = { onPortraitViewClicked(image) },
                 modifier = Modifier.size(64.dp),
             )
         }
@@ -71,8 +73,8 @@ fun NameDetailsHeader(
 @Composable
 fun TitleDetailsHeader(
     title: TitleDetails,
-    router: Router<AppRoute>,
     modifier: Modifier = Modifier,
+    onPosterViewClicked: (Image) -> Unit = {},
 ) = DetailsHeader(
     imageUrl = title.poster?.thumbnailUrl,
     modifier = modifier
@@ -117,10 +119,7 @@ fun TitleDetailsHeader(
     ) {
         TagGroup(
             tags = title.genres,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .align(Alignment.Bottom)
-                .weight(1f)
+            modifier = Modifier.padding(top = 8.dp).align(Alignment.Bottom).weight(1f)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
@@ -136,12 +135,10 @@ fun TitleDetailsHeader(
             PosterView(
                 thumbnailUrl = poster.hintUrl,
                 imageUrl = poster.thumbnailUrl,
-                onClick = { router.push(AppRoute.ImageViewer(poster)) },
+                onClick = { onPosterViewClicked(poster) },
                 enabled = true,
                 shape = MaterialTheme.shapes.extraSmall,
-                modifier = Modifier
-                    .size(40.dp, 58.dp)
-                    .align(Alignment.CenterVertically)
+                modifier = Modifier.size(40.dp, 58.dp).align(Alignment.CenterVertically)
             )
         }
     }
@@ -185,20 +182,19 @@ fun DetailsHeader(
     modifier: Modifier = Modifier,
     imageUrl: String? = null,
     content: @Composable () -> Unit,
-) = AppTheme(
-    darkTheme = true,
 ) {
-    Surface {
-        Box {
-            DetailsHeaderBackground(
-                imageUrl = imageUrl,
-                modifier = Modifier
-                    .matchParentSize()
-            )
-            DetailsHeaderForeground(
-                modifier = modifier
-            ) {
-                content()
+    // Replace with a less
+    AppTheme(darkTheme = true) {
+        Surface {
+            Box {
+                DetailsHeaderBackground(
+                    imageUrl = imageUrl, modifier = Modifier.matchParentSize()
+                )
+                DetailsHeaderForeground(
+                    modifier = modifier
+                ) {
+                    content()
+                }
             }
         }
     }
@@ -209,8 +205,7 @@ fun DetailsHeaderForeground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) = Column(
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-    modifier = modifier
+    verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier
 ) {
     content()
 }
@@ -232,3 +227,15 @@ fun DetailsHeaderBackground(
         radiusY = 30.dp,
     )
 )
+
+@Composable
+@AppPreview.Component
+fun NameDetailsHeaderPreview() {
+    NameDetailsHeader(sampleNameDetails)
+}
+
+@Composable
+@AppPreview.Component
+fun TitleDetailsHeaderPreview() {
+    TitleDetailsHeader(sampleTitleDetails)
+}

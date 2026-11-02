@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -16,7 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.TileMode
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun rememberShimmerState(): Float {
@@ -67,10 +69,10 @@ fun ShimmerEffect(
     }
 }
 
-@Preview(widthDp = 30, heightDp = 40)
 @Composable
-fun ShimmerEffectPreview() = MaterialTheme {
-    Surface {
+@AppPreview.Component
+fun ShimmerEffectPreview() {
+    Surface(modifier = Modifier.size(30.dp, 40.dp)) {
         ShimmerEffect(0.2f)
     }
 }

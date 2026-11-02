@@ -1,6 +1,5 @@
 package dev.kgbier.kgbmd.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,19 +17,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.domain.model.MediaEntityId
-import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.presentation.TitleListViewModel
 import dev.kgbier.kgbmd.ui.component.ErrorPanel
 import dev.kgbier.kgbmd.ui.component.PosterView
 import dev.kgbier.kgbmd.ui.component.atom.PosterCard
 import dev.kgbier.kgbmd.ui.component.atom.ShimmerEffect
 import dev.kgbier.kgbmd.ui.component.atom.rememberShimmerState
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
+import dev.kgbier.kgbmd.ui.component.preview.sampleMoviePoster
 import dev.kgbier.kgbmd.ui.component.toErrorMessage
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
@@ -56,8 +52,8 @@ fun TitleList(
 ) {
     val state: TitleListViewModel.TitleListState by viewModel.titleList.collectAsState()
     TitleListView(
-        navigate = { router.push(it) },
         state = state,
+        onTitleItemClicked = { router.push(AppRoute.Details(it)) },
         onRetry = { viewModel.retry() },
         contentPadding = contentPadding,
     )
@@ -65,9 +61,9 @@ fun TitleList(
 
 @Composable
 fun TitleListView(
-    navigate: (AppRoute) -> Unit,
     state: TitleListViewModel.TitleListState,
-    onRetry: () -> Unit,
+    onTitleItemClicked: (MediaEntityId) -> Unit = {},
+    onRetry: () -> Unit = {},
     contentPadding: PaddingValues = PaddingValues(),
 ) {
     val layoutDirection = LocalLayoutDirection.current
@@ -118,7 +114,7 @@ fun TitleListView(
                 is TitleListViewModel.TitleListState.Loaded -> items(items = state.items) { item ->
                     PosterView(
                         poster = item,
-                        onClick = { navigate(AppRoute.Details(item.id)) },
+                        onClick = { onTitleItemClicked(item.id) },
                     )
                 }
 
@@ -136,40 +132,31 @@ fun TitleListView(
 }
 
 @Composable
-@Preview
+@AppPreview.Screen
 fun TitleListViewPreview() {
-    MaterialTheme {
-        Box(Modifier.background(Color.White)) {
-            TitleListView(
-                navigate = {},
-                onRetry = {},
-                state = TitleListViewModel.TitleListState.Loaded(
-                    items = listOf(
-                        MoviePoster(
-                            id = MediaEntityId("id"),
-                            title = "Hello Sailor",
-                            rating = null,
-                            image = Image("url"),
-                        )
-                    )
-                ),
+    TitleListView(
+        onTitleItemClicked = {},
+        onRetry = {},
+        state = TitleListViewModel.TitleListState.Loaded(
+            items = listOf(
+                sampleMoviePoster,
+                sampleMoviePoster,
+                sampleMoviePoster,
+                sampleMoviePoster,
+                sampleMoviePoster,
             )
-        }
-    }
+        ),
+    )
 }
 
 @Composable
-@Preview
+@AppPreview.Screen
 fun TitleListErrorPreview() {
-    MaterialTheme {
-        Box(Modifier.background(Color.White)) {
-            TitleListView(
-                navigate = {},
-                onRetry = {},
-                state = TitleListViewModel.TitleListState.Error(
-                    error = IllegalArgumentException("Failure")
-                ),
-            )
-        }
-    }
+    TitleListView(
+        onTitleItemClicked = {},
+        onRetry = {},
+        state = TitleListViewModel.TitleListState.Error(
+            error = IllegalArgumentException("Failure")
+        ),
+    )
 }

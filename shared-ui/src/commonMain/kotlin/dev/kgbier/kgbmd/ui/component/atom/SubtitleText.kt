@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun SubtitleText(
@@ -27,8 +27,8 @@ fun SubtitleText(
     modifier = modifier
 )
 
-@Preview
 @Composable
-fun SubtitleTextPreview() = MaterialTheme {
+@AppPreview.Component
+fun SubtitleTextPreview() {
     SubtitleText("Title")
 }

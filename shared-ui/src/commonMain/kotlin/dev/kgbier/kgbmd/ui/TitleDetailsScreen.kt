@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.domain.model.Image
+import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.ui.component.CastCreditRow
 import dev.kgbier.kgbmd.ui.component.Histogram
@@ -28,6 +30,8 @@ import dev.kgbier.kgbmd.ui.component.atom.TagDefaults
 import dev.kgbier.kgbmd.ui.component.itemSpacingMain
 import dev.kgbier.kgbmd.ui.component.molecule.ExpandableDescription
 import dev.kgbier.kgbmd.ui.component.molecule.TitledContent
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
+import dev.kgbier.kgbmd.ui.component.preview.sampleTitleDetails
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.itemSpacing
@@ -37,17 +41,36 @@ fun TitleDetailsScreen(
     title: TitleDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    onShowModal: (DetailsModalRoute) -> Unit,
+    onShowModal: (DetailsModalRoute) -> Unit = {},
+) = TitleDetailsScreen(
+    title = title,
+    contentPadding = contentPadding,
+    onHeaderPosterViewClicked = { router.push(AppRoute.ImageViewer(it)) },
+    onFeaturedCreditClicked = { router.push(AppRoute.Details(it)) },
+    onEpisodePosterClicked = { router.push(AppRoute.Details(it)) },
+    onCastCreditClicked = { router.push(AppRoute.Details(it)) },
+    onShowModal = onShowModal,
+)
+
+@Composable
+fun TitleDetailsScreen(
+    title: TitleDetails,
+    contentPadding: PaddingValues = PaddingValues(),
+    onShowModal: (DetailsModalRoute) -> Unit = {},
+    onHeaderPosterViewClicked: (Image) -> Unit = {},
+    onFeaturedCreditClicked: (MediaEntityId) -> Unit = {},
+    onEpisodePosterClicked: (MediaEntityId) -> Unit = {},
+    onCastCreditClicked: (MediaEntityId) -> Unit = {},
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
     item {
         TitleDetailsHeader(
             title = title,
-            router = router,
+            onPosterViewClicked = { onHeaderPosterViewClicked(it) },
             modifier = Modifier
                 .padding(16.dp)
-                .padding(top = contentPadding.calculateTopPadding())
+                .padding(top = contentPadding.calculateTopPadding()),
         )
     }
 
@@ -56,8 +79,8 @@ fun TitleDetailsScreen(
     item {
         TitlePrincipalCredits(
             title = title,
-            router = router,
-            modifier = Modifier.fillMaxWidth()
+            onFeaturedCreditClicked = onFeaturedCreditClicked,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 
@@ -116,7 +139,7 @@ fun TitleDetailsScreen(
                     SubtitlePosterView(
                         poster = episode.moviePoster,
                         subtitle = "S${episode.season}:E${episode.number}",
-                        onClick = { router.push(AppRoute.Details(episode.moviePoster.id)) },
+                        onClick = { onEpisodePosterClicked(episode.moviePoster.id) },
                     )
                 }
             }
@@ -153,61 +176,69 @@ fun TitleDetailsScreen(
                 name = castCredit.nameProfile.name,
                 roles = castCredit.roles,
                 creditImageUrl = castCredit.nameProfile.photo?.thumbnailUrl,
-                onClick = { router.push(AppRoute.Details(castCredit.nameProfile.id)) },
+                onClick = { onCastCreditClicked(castCredit.nameProfile.id) },
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                 modifier = Modifier.fillMaxWidth()
             )
         }
-
-        itemSpacingMain()
-
-        item {
-            Text(
-                text = "Awards",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-        }
-
-
-        val ratingsBreakdown = title.ratingsBreakdown
-        if (ratingsBreakdown != null) {
-            itemSpacingMain()
-
-            item {
-                Text(
-                    text = "Reviews",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-            }
-
-            itemSpacing(8.dp)
-
-            item {
-                val values = remember(ratingsBreakdown) { ratingsBreakdown.values.map { it.count } }
-                Histogram(
-                    values = values,
-                    labelContent = { index ->
-                        Text(ratingsBreakdown.values[index].rating)
-                    },
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .height(96.dp)
-                )
-            }
-        }
-
-        itemSpacingMain()
-
-        item {
-            Text(
-                text = "Box Office",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(horizontal = 16.dp),
-            )
-        }
-
-        itemSpacingMain()
     }
+
+    itemSpacingMain()
+
+    item {
+        Text(
+            text = "Awards",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+    }
+
+
+    val ratingsBreakdown = title.ratingsBreakdown
+    if (ratingsBreakdown != null) {
+        itemSpacingMain()
+
+        item {
+            Text(
+                text = "Reviews",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+        }
+
+        itemSpacing(8.dp)
+
+        item {
+            val values = remember(ratingsBreakdown) { ratingsBreakdown.values.map { it.count } }
+            Histogram(
+                values = values,
+                labelContent = { index ->
+                    Text(ratingsBreakdown.values[index].rating)
+                },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .height(96.dp)
+            )
+        }
+    }
+
+    itemSpacingMain()
+
+    item {
+        Text(
+            text = "Box Office",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+    }
+
+    itemSpacingMain()
+}
+
+@AppPreview.Screen
+@Composable
+fun TitleDetailsScreenPreview() {
+    TitleDetailsScreen(
+        title = sampleTitleDetails,
+    )
 }

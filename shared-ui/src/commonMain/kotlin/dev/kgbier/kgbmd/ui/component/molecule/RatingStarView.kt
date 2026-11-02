@@ -21,8 +21,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import kgbmd.shared_ui.generated.resources.Res
 import kgbmd.shared_ui.generated.resources.ic_star
 import org.jetbrains.compose.resources.painterResource
@@ -79,8 +81,9 @@ fun RatingStarView(
 }
 
 @Composable
-@Preview
-fun RatingStarViewPreview() = MaterialTheme {
+@AppPreview.Component
+@PreviewFontScale
+fun RatingStarViewPreview() {
     RatingStarView(
         ratingText = "7.9",
     )

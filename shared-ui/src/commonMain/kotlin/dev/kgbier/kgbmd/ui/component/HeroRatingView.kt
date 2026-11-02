@@ -6,8 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun HeroRatingView(
@@ -38,9 +38,9 @@ fun HeroRatingView(
     }
 }
 
-@Preview
 @Composable
-fun HeroRatingViewPreview() = MaterialTheme {
+@AppPreview.Component
+fun HeroRatingViewPreview() {
     HeroRatingView(
         rating = "7.9",
         bestRating = "10",

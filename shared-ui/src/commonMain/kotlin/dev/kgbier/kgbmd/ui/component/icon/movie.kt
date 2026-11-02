@@ -8,78 +8,78 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Suppress("CheckReturnValue")
 internal val movie: ImageVector
-  get() {
-    if (_movie != null) {
-      return _movie!!
-    }
-    _movie =
-      ImageVector.Builder(
-          name = "movie",
-          defaultWidth = 24.dp,
-          defaultHeight = 24.dp,
-          viewportWidth = 24f,
-          viewportHeight = 24f,
-        )
-        .apply {
-          path(
-            fill = SolidColor(Color.Black),
-            fillAlpha = 1f,
-            stroke = null,
-            strokeAlpha = 1f,
-            strokeLineWidth = 1f,
-            strokeLineCap = StrokeCap.Butt,
-            strokeLineJoin = StrokeJoin.Bevel,
-            strokeLineMiter = 1f,
-            pathFillType = PathFillType.Companion.NonZero,
-          ) {
-            moveTo(4f, 4f)
-            lineTo(6f, 8f)
-            horizontalLineTo(9f)
-            lineTo(7f, 4f)
-            horizontalLineTo(9f)
-            lineToRelative(2f, 4f)
-            horizontalLineToRelative(3f)
-            lineTo(12f, 4f)
-            horizontalLineToRelative(2f)
-            lineToRelative(2f, 4f)
-            horizontalLineToRelative(3f)
-            lineTo(17f, 4f)
-            horizontalLineToRelative(3f)
-            quadToRelative(0.83f, 0f, 1.41f, 0.59f)
-            quadTo(22f, 5.18f, 22f, 6f)
-            verticalLineTo(18f)
-            quadToRelative(0f, 0.82f, -0.59f, 1.41f)
-            reflectiveQuadTo(20f, 20f)
-            horizontalLineTo(4f)
-            quadTo(3.18f, 20f, 2.59f, 19.41f)
-            reflectiveQuadTo(2f, 18f)
-            verticalLineTo(6f)
-            quadTo(2f, 5.18f, 2.59f, 4.59f)
-            reflectiveQuadTo(4f, 4f)
-            close()
-            moveToRelative(0f, 6f)
-            verticalLineToRelative(8f)
-            horizontalLineTo(20f)
-            verticalLineTo(10f)
-            horizontalLineTo(4f)
-            close()
-            moveToRelative(0f, 0f)
-            verticalLineToRelative(8f)
-            verticalLineTo(10f)
-            close()
-          }
+    get() {
+        if (_movie != null) {
+            return _movie!!
         }
-        .build()
-    return _movie!!
-  }
+        _movie =
+            ImageVector.Builder(
+                name = "movie",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24f,
+                viewportHeight = 24f,
+            )
+                .apply {
+                    path(
+                        fill = SolidColor(Color.Black),
+                        fillAlpha = 1f,
+                        stroke = null,
+                        strokeAlpha = 1f,
+                        strokeLineWidth = 1f,
+                        strokeLineCap = StrokeCap.Butt,
+                        strokeLineJoin = StrokeJoin.Bevel,
+                        strokeLineMiter = 1f,
+                        pathFillType = PathFillType.Companion.NonZero,
+                    ) {
+                        moveTo(4f, 4f)
+                        lineTo(6f, 8f)
+                        horizontalLineTo(9f)
+                        lineTo(7f, 4f)
+                        horizontalLineTo(9f)
+                        lineToRelative(2f, 4f)
+                        horizontalLineToRelative(3f)
+                        lineTo(12f, 4f)
+                        horizontalLineToRelative(2f)
+                        lineToRelative(2f, 4f)
+                        horizontalLineToRelative(3f)
+                        lineTo(17f, 4f)
+                        horizontalLineToRelative(3f)
+                        quadToRelative(0.83f, 0f, 1.41f, 0.59f)
+                        quadTo(22f, 5.18f, 22f, 6f)
+                        verticalLineTo(18f)
+                        quadToRelative(0f, 0.82f, -0.59f, 1.41f)
+                        reflectiveQuadTo(20f, 20f)
+                        horizontalLineTo(4f)
+                        quadTo(3.18f, 20f, 2.59f, 19.41f)
+                        reflectiveQuadTo(2f, 18f)
+                        verticalLineTo(6f)
+                        quadTo(2f, 5.18f, 2.59f, 4.59f)
+                        reflectiveQuadTo(4f, 4f)
+                        close()
+                        moveToRelative(0f, 6f)
+                        verticalLineToRelative(8f)
+                        horizontalLineTo(20f)
+                        verticalLineTo(10f)
+                        horizontalLineTo(4f)
+                        close()
+                        moveToRelative(0f, 0f)
+                        verticalLineToRelative(8f)
+                        verticalLineTo(10f)
+                        close()
+                    }
+                }
+                .build()
+        return _movie!!
+    }
 
 private var _movie: ImageVector? = null
 
-@Preview
 @Composable
+@AppPreview.Component
 private fun Preview() = IconPreview(Icons.Movie)

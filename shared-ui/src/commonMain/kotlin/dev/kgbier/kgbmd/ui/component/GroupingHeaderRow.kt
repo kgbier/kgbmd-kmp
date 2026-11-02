@@ -18,13 +18,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.ui.component.atom.Tag
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun GroupingHeaderRow(
     isExpanded: Boolean,
-    onClick: () -> Unit,
     text: String,
-    label: String
+    label: String? = null,
+    onClick: () -> Unit = {},
 ) {
     val rotationAngle by animateFloatAsState(
         targetValue = if (isExpanded) 90f else 0f,
@@ -49,11 +50,13 @@ fun GroupingHeaderRow(
                     .alignByBaseline()
                     .weight(1f)
             )
-            Spacer(Modifier.width(8.dp))
-            Tag(
-                modifier = Modifier.alignByBaseline()
-            ) {
-                Text(label)
+            if (label != null) {
+                Spacer(Modifier.width(8.dp))
+                Tag(
+                    modifier = Modifier.alignByBaseline()
+                ) {
+                    Text(label)
+                }
             }
             Spacer(Modifier.width(8.dp))
             Icon(
@@ -63,4 +66,32 @@ fun GroupingHeaderRow(
             )
         }
     }
+}
+
+@Composable
+@AppPreview.Component
+fun GroupingHeaderRowPreview() {
+    GroupingHeaderRow(
+        isExpanded = false,
+        text = "Title",
+    )
+}
+
+@Composable
+@AppPreview.Component
+fun GroupingHeaderRowPreviewLabel() {
+    GroupingHeaderRow(
+        isExpanded = false,
+        text = "Title",
+        label = "Label",
+    )
+}
+
+@Composable
+@AppPreview.Component
+fun GroupingHeaderRowPreviewExpanded() {
+    GroupingHeaderRow(
+        isExpanded = true,
+        text = "Title",
+    )
 }

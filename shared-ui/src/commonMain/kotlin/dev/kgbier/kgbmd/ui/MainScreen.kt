@@ -3,6 +3,7 @@
 package dev.kgbier.kgbmd.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -23,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,9 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
@@ -47,6 +49,30 @@ fun MainScreen(
     viewModel: MainScreenViewModel = remember {
         viewModelFactory.createMainScreenViewModelFactory(scope)
     }
+) {
+    val titleCategory by viewModel.titleCategory.collectAsStateWithLifecycle(TitleCategory.Movie)
+
+    MainScreen(
+        currentCategory = titleCategory,
+        onTitleCategoryIconClicked = viewModel::toggleTitleCategory,
+        onSearchIconClicked = { router.push(AppRoute.Search) },
+        onSettingsIconClicked = { router.push(AppRoute.Settings) },
+    ) { innerPadding ->
+        TitleList(
+            router = router,
+            scope = scope,
+            contentPadding = innerPadding,
+        )
+    }
+}
+
+@Composable
+fun MainScreen(
+    currentCategory: TitleCategory,
+    onTitleCategoryIconClicked: () -> Unit = {},
+    onSearchIconClicked: () -> Unit = {},
+    onSettingsIconClicked: () -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit = {},
 ) {
     val scrollBehaviour = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
         exitDirection = FloatingToolbarExitDirection.Bottom,
@@ -74,8 +100,7 @@ fun MainScreen(
                     )
                     .offset(y = -ScreenOffset),
             ) {
-                IconButton(onClick = viewModel::toggleTitleCategory) {
-                    val currentCategory by viewModel.titleCategory.collectAsState(TitleCategory.Movie)
+                IconButton(onClick = onTitleCategoryIconClicked) {
                     val toggleCategoryIcon = when (currentCategory) {
                         TitleCategory.Movie -> Icons.Tv
                         TitleCategory.TvShow -> Icons.Movie
@@ -86,7 +111,7 @@ fun MainScreen(
                     )
                 }
                 FilledIconButton(
-                    onClick = { router.push(AppRoute.Search) },
+                    onClick = onSearchIconClicked,
                     modifier = Modifier
                         .width(IconButtonDefaults.smallContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide).width),
                 ) {
@@ -95,19 +120,22 @@ fun MainScreen(
                         contentDescription = "Localized description",
                     )
                 }
-                IconButton(onClick = { router.push(AppRoute.Settings) }) {
+                IconButton(onClick = onSettingsIconClicked) {
                     Icon(
                         Icons.Tune,
                         contentDescription = "Localized description",
                     )
                 }
             }
-
-            TitleList(
-                router = router,
-                scope = scope,
-                contentPadding = innerPadding,
-            )
+            content(innerPadding)
         }
     }
+}
+
+@Composable
+@AppPreview.Screen
+fun MainScreenPreview() {
+    MainScreen(
+        currentCategory = TitleCategory.Movie,
+    )
 }

@@ -19,17 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.useExistingImageAsPlaceholder
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import dev.kgbier.kgbmd.domain.model.MoviePoster
 import dev.kgbier.kgbmd.ui.component.atom.PosterCard
 import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.theme.Tonal
 
 @Composable
@@ -129,8 +128,8 @@ private fun BottomTitle(title: String, modifier: Modifier) = Text(
 )
 
 @Composable
-@Preview
-fun PosterViewPreview() = MaterialTheme {
+@AppPreview.Component
+fun PosterViewPreview() {
     Box(Modifier.width(148.dp)) {
         PosterView(
             thumbnailUrl = null,

@@ -15,10 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.ui.component.ErrorMessage.Type
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import io.ktor.util.network.UnresolvedAddressException
 
 data class ErrorMessage(
@@ -93,9 +93,9 @@ fun ErrorPanel(
     }
 }
 
-@Preview
 @Composable
-fun ErrorPanelPreview() = MaterialTheme {
+@AppPreview.Component
+fun ErrorPanelPreview() {
     ErrorPanel(
         errorMessage = ErrorMessage(
             title = "Error Title",

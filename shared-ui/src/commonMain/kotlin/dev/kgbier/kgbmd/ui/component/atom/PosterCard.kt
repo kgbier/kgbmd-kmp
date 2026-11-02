@@ -12,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun PosterCard(
@@ -36,14 +36,16 @@ fun PosterCard(
 )
 
 @Composable
-@Preview
-fun PosterCardPreview() = PosterCard(
-    onClick = {},
-) {
-    Box(
-        modifier = Modifier
-            .size(100.dp, 100.dp)
-            .background(Color.White)
-            .align(Alignment.CenterHorizontally)
-    )
+@AppPreview.Component
+fun PosterCardPreview() {
+    PosterCard(
+        onClick = {},
+    ) {
+        Box(
+            modifier = Modifier
+                .size(100.dp, 100.dp)
+                .background(Color.White)
+                .align(Alignment.CenterHorizontally)
+        )
+    }
 }

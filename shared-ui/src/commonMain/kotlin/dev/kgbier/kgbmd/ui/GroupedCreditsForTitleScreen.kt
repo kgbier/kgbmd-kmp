@@ -123,7 +123,6 @@ fun GroupedCreditsForTitleList(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-
                 }
 
                 is GroupedCreditsForTitleListItem.Loading -> if (isExpanded) {

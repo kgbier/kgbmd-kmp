@@ -19,8 +19,8 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun Histogram(
@@ -77,9 +77,9 @@ fun Histogram(
     }
 }
 
-@Preview(heightDp = 192)
 @Composable
-fun HistogramPreview() = MaterialTheme {
+@AppPreview.Component
+fun HistogramPreview() {
     Histogram(
         listOf(
             123,
@@ -88,6 +88,7 @@ fun HistogramPreview() = MaterialTheme {
             23,
             83,
             143,
-        )
+        ),
+        modifier = Modifier.height(192.dp)
     )
 }

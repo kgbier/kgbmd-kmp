@@ -32,11 +32,11 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastMaxOfOrDefault
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import kotlin.math.max
 import kotlin.math.min
 
@@ -233,9 +233,9 @@ fun LazyHeadingRow(
     }
 }
 
-@Preview
 @Composable
-private fun LazyHeadingRowPreview() = MaterialTheme {
+@AppPreview.Component
+private fun LazyHeadingRowPreview() {
     LazyHeadingRow(
         headings = listOf(
             LazyHeadingRow.Heading(0, "H1"),
@@ -251,7 +251,7 @@ private fun LazyHeadingRowPreview() = MaterialTheme {
                 modifier = Modifier
                     .width(100.dp)
                     .height(100.dp)
-                    .background(MaterialTheme.colorScheme.background)
+                    .background(MaterialTheme.colorScheme.onSurface)
             )
         }
     }

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -15,9 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun TitleCreditRow(
@@ -111,9 +110,9 @@ fun TitleCreditRow(
     }
 }
 
-@Preview
 @Composable
-fun TitleCreditRowPreview() = MaterialTheme {
+@AppPreview.Component
+fun TitleCreditRowPreview() {
     TitleCreditRow(
         title = "Title Name",
         rating = "7.6",

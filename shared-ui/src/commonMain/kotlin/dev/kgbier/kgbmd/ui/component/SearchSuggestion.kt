@@ -11,14 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.SearchSuggestionType
 import dev.kgbier.kgbmd.domain.model.Suggestion
 import dev.kgbier.kgbmd.presentation.RatingState
 import dev.kgbier.kgbmd.ui.component.atom.Portrait
 import dev.kgbier.kgbmd.ui.component.molecule.RatingStarView
-import dev.kgbier.kgbmd.ui.theme.AppTheme
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Composable
 fun SearchSuggestion(
@@ -120,7 +119,7 @@ fun SearchSuggestion(
 }
 
 @Composable
-@Preview
-fun SearchSuggestionPreview() = AppTheme {
+@AppPreview.Component
+fun SearchSuggestionPreview() {
     SearchSuggestion("title")
 }

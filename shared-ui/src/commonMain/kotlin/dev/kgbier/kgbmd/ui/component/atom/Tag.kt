@@ -22,8 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 
 @Immutable
 data class TagColors(
@@ -103,17 +103,17 @@ fun Tag(
     }
 }
 
-@Preview
 @Composable
-private fun TagDefaultPreview() = MaterialTheme {
+@AppPreview.Component
+private fun TagDefaultPreview() {
     Tag {
         Text("Label")
     }
 }
 
-@Preview
 @Composable
-private fun TagFilledTonalPreview() = MaterialTheme {
+@AppPreview.Component
+private fun TagFilledTonalPreview() {
     Tag(
         colors = TagDefaults.filledTonalTagColors(),
     ) {
@@ -121,9 +121,9 @@ private fun TagFilledTonalPreview() = MaterialTheme {
     }
 }
 
-@Preview
 @Composable
-private fun TagContentSlotPreview() = MaterialTheme {
+@AppPreview.Component
+private fun TagContentSlotPreview() {
     Tag(
         startContent = { Box(modifier = Modifier.size(8.dp).background(Color.Red)) },
         endContent = { Box(modifier = Modifier.background(Color.Blue).size(4.dp)) },
@@ -132,9 +132,9 @@ private fun TagContentSlotPreview() = MaterialTheme {
     }
 }
 
-@Preview
 @Composable
-private fun TagOutlinePreview() = MaterialTheme {
+@AppPreview.Component
+private fun TagOutlinePreview() {
     Tag(
         colors = TagDefaults.outlinedTagColors(),
         border = TagDefaults.outlinedTagBorder()
