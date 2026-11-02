@@ -5,9 +5,6 @@ package dev.kgbier.kgbmd.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FitScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FlexibleBottomAppBar
@@ -27,6 +24,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.domain.model.Image
 import dev.kgbier.kgbmd.ui.component.ImageViewerContainer
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.rememberImageViewerState
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.theme.Tonal
@@ -61,14 +59,14 @@ fun ImageScreen(image: Image) {
                 val backEventInput = LocalDirectNavigationEventInput.current
 
                 ToolbarIconButton(
-                    icon = Icons.Default.Close,
+                    icon = Icons.Close,
                     onClick = { backEventInput.backCompleted() },
                     tooltip = "Close",
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 if (imageViewerState.isDirty) {
                     ToolbarIconButton(
-                        icon = Icons.Default.FitScreen,
+                        icon = Icons.FitScreen,
                         onClick = { imageViewerState.reset() },
                         tooltip = "Fit Image",
                     )

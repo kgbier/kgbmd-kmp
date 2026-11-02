@@ -11,11 +11,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
@@ -38,6 +33,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.zIndex
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
@@ -81,8 +77,8 @@ fun MainScreen(
                 IconButton(onClick = viewModel::toggleTitleCategory) {
                     val currentCategory by viewModel.titleCategory.collectAsState(TitleCategory.Movie)
                     val toggleCategoryIcon = when (currentCategory) {
-                        TitleCategory.Movie -> Icons.Default.Tv
-                        TitleCategory.TvShow -> Icons.Default.Movie
+                        TitleCategory.Movie -> Icons.Tv
+                        TitleCategory.TvShow -> Icons.Movie
                     }
                     Icon(
                         toggleCategoryIcon,
@@ -95,13 +91,13 @@ fun MainScreen(
                         .width(IconButtonDefaults.smallContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide).width),
                 ) {
                     Icon(
-                        Icons.Default.Search,
+                        Icons.Search,
                         contentDescription = "Localized description",
                     )
                 }
                 IconButton(onClick = { router.push(AppRoute.Settings) }) {
                     Icon(
-                        Icons.Default.Tune,
+                        Icons.Tune,
                         contentDescription = "Localized description",
                     )
                 }

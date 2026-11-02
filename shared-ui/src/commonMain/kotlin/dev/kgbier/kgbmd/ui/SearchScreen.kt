@@ -16,9 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -48,6 +45,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.presentation.SearchScreenViewModel
 import dev.kgbier.kgbmd.ui.component.SearchSuggestion
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.di.LocalViewModelModule
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.nav.Router
@@ -108,7 +106,7 @@ fun SearchScreen(
                                 onClick = { backEventInput.backCompleted() }
                             ) {
                                 Icon(
-                                    Icons.AutoMirrored.Default.ArrowBack,
+                                    Icons.ArrowBack,
                                     contentDescription = "Back",
                                 )
                             }
@@ -128,7 +126,7 @@ fun SearchScreen(
                         ) {
                             IconButton(onClick = { textFieldState.clearText() }) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    imageVector = Icons.Close,
                                     contentDescription = "Close"
                                 )
                             }

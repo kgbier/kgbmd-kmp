@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -33,6 +31,7 @@ import dev.kgbier.kgbmd.ui.component.PosterView
 import dev.kgbier.kgbmd.ui.component.TagGroup
 import dev.kgbier.kgbmd.ui.component.atom.Portrait
 import dev.kgbier.kgbmd.ui.component.atom.Tag
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
@@ -167,7 +166,7 @@ private fun TitleSubheadingDetails(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                Icons.Default.Schedule,
+                Icons.Schedule,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(MaterialTheme.typography.labelSmall.fontSize.value.dp)

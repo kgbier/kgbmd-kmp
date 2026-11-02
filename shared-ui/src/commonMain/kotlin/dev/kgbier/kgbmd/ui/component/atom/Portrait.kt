@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -26,6 +24,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 
 @Composable
 fun Portrait(
@@ -67,7 +66,7 @@ fun Portrait(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Icon(
-                imageVector = Icons.Default.Person,
+                imageVector = Icons.Person,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.fillMaxSize(0.62f)

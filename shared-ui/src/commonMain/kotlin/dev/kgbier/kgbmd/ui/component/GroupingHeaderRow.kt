@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +17,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.kgbier.kgbmd.ui.component.atom.Tag
+import dev.kgbier.kgbmd.ui.component.icon.Icons
 
 @Composable
 fun GroupingHeaderRow(
@@ -58,7 +57,7 @@ fun GroupingHeaderRow(
             }
             Spacer(Modifier.width(8.dp))
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = Icons.ChevronRight,
                 contentDescription = null,
                 modifier = Modifier.rotate(rotationAngle)
             )
