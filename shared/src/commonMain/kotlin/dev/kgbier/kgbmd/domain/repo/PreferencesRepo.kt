@@ -3,11 +3,13 @@ package dev.kgbier.kgbmd.domain.repo
 import dev.kgbier.kgbmd.data.PreferencesService
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PreferencesRepo(
     private val prefsService: PreferencesService,
 ) {
-    fun subscribeToTitleCategory(): Flow<TitleCategory> = prefsService.mainTitleCategory
+    fun subscribeToTitleCategory(): Flow<TitleCategory> =
+        prefsService.mainTitleCategory.map { it ?: TitleCategory.Movie }
 
     suspend fun setSavedTitleCategory(
         titleCategory: TitleCategory,
