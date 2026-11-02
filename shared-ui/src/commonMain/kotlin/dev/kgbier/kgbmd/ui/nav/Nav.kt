@@ -35,6 +35,19 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 val LocalDirectNavigationEventInput = staticCompositionLocalOf { DirectNavigationEventInput() }
 
 @Composable
+fun registerLocalNavigationEventDispatcher() {
+    val owner = LocalNavigationEventDispatcherOwner.current
+    val input = LocalDirectNavigationEventInput.current
+
+    DisposableEffect(owner) {
+        owner?.navigationEventDispatcher?.addInput(input)
+        onDispose {
+            owner?.navigationEventDispatcher?.removeInput(input)
+        }
+    }
+}
+
+@Composable
 fun <TRoute : Route> Nav(
     initialRoute: TRoute,
     parentNavigator: Navigator<*>? = null,
@@ -48,15 +61,7 @@ fun <TRoute : Route> Nav(
         parentNavigator = parentNavigator,
     )
 
-    val owner = LocalNavigationEventDispatcherOwner.current
-    val input = LocalDirectNavigationEventInput.current
-
-    DisposableEffect(owner) {
-        owner?.navigationEventDispatcher?.addInput(input)
-        onDispose {
-            owner?.navigationEventDispatcher?.removeInput(input)
-        }
-    }
+    registerLocalNavigationEventDispatcher()
 
     // Set up the Transition
     val seekableTransitionState = remember { SeekableTransitionState(navigator.currentRoute) }

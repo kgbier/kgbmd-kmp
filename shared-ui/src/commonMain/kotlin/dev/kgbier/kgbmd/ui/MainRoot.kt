@@ -20,6 +20,7 @@ import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.di.LocalRootModule
 import dev.kgbier.kgbmd.ui.di.rememberRootModule
 import dev.kgbier.kgbmd.ui.nav.Navigator
+import dev.kgbier.kgbmd.ui.nav.registerLocalNavigationEventDispatcher
 import dev.kgbier.kgbmd.ui.nav.rememberNavigator
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
@@ -58,6 +59,7 @@ fun MainRoot() = AppTheme {
     BoxWithConstraints {
 
         val navigator: Navigator<AppRoute> = rememberNavigator(AppRoute.Main)
+        registerLocalNavigationEventDispatcher()
 
         withCompositionLocals(
             LocalSizeClass provides computeSizeClass(),
