@@ -16,7 +16,7 @@ class NameDetailsQuery : GraphqlQuery<NameDetailsQuery.Params, NameDetailsQuery.
         data class Name(
             val id: String,
             val nameText: NameText,
-            val bio: Bio,
+            val bio: Bio?,
             val primaryImage: PrimaryImage?,
             val knownForV2: KnownFor,
         ) {
@@ -98,7 +98,7 @@ fun NameDetailsQuery.Result.Name.toNameDetails() = NameDetails(
     id = MediaEntityId(id),
     name = nameText.text,
     headshot = primaryImage?.url?.let(::transformImageUrl),
-    description = bio.text.plainText,
+    description = bio?.text?.plainText,
     topCredits = knownForV2.credits.map { credit ->
         NameDetails.TopCredit(
             poster = credit.poster.toMoviePoster(),
