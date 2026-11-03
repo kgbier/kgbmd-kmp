@@ -23,8 +23,9 @@ compose.desktop {
         mainClass = "dev.kgbier.kgbmd.MainKt"
         nativeDistributions {
             targetFormats(
-                TargetFormat.Dmg,
-                TargetFormat.Exe,
+                TargetFormat.Dmg, // macOS
+                TargetFormat.Exe, // Windows
+                TargetFormat.Deb, // Linux
             )
             jvmArgs(
                 "-Dapple.awt.application.appearance=system"
