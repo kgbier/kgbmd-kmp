@@ -27,7 +27,8 @@ import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleListUiState
 import dev.kgbier.kgbmd.presentation.GroupedCreditsForTitleViewModel
 import dev.kgbier.kgbmd.ui.component.CastCreditRow
 import dev.kgbier.kgbmd.ui.component.GroupingHeaderRow
-import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
+import dev.kgbier.kgbmd.ui.di.ViewModelModule
+import dev.kgbier.kgbmd.ui.di.appViewModel
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 
@@ -37,7 +38,7 @@ fun GroupedCreditsForTitleScreen(
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
     viewModel: GroupedCreditsForTitleViewModel = appViewModel(key = id.toString()) {
-        set(LifecycleViewModelModule.Key.mediaEntityId, id)
+        set(ViewModelModule.Key.mediaEntityId, id)
     },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()

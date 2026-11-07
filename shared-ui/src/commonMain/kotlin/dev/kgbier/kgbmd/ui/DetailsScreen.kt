@@ -25,7 +25,8 @@ import dev.kgbier.kgbmd.domain.model.MediaEntityId
 import dev.kgbier.kgbmd.domain.model.NameDetails
 import dev.kgbier.kgbmd.domain.model.TitleDetails
 import dev.kgbier.kgbmd.presentation.DetailsScreenViewModel
-import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
+import dev.kgbier.kgbmd.ui.di.ViewModelModule
+import dev.kgbier.kgbmd.ui.di.appViewModel
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
@@ -35,7 +36,7 @@ fun DetailsScreen(
     id: MediaEntityId,
     router: Router<AppRoute>,
     viewModel: DetailsScreenViewModel = appViewModel(key = id.toString()) {
-        set(LifecycleViewModelModule.Key.mediaEntityId, id)
+        set(ViewModelModule.Key.mediaEntityId, id)
     },
 ) {
     val state by viewModel.state.collectAsState()

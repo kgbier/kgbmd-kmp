@@ -27,6 +27,7 @@ import dev.kgbier.kgbmd.ui.component.atom.rememberShimmerState
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.component.preview.sampleMoviePoster
 import dev.kgbier.kgbmd.ui.component.toErrorMessage
+import dev.kgbier.kgbmd.ui.di.appViewModel
 import dev.kgbier.kgbmd.ui.nav.Router
 import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.util.LocalSizeClass

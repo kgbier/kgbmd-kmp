@@ -43,6 +43,7 @@ import dev.kgbier.kgbmd.ui.component.CountryPickerDialog
 import dev.kgbier.kgbmd.ui.component.TextFieldDialog
 import dev.kgbier.kgbmd.ui.component.icon.Icons
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
+import dev.kgbier.kgbmd.ui.di.appViewModel
 import dev.kgbier.kgbmd.ui.nav.LocalDirectNavigationEventInput
 import dev.kgbier.kgbmd.ui.util.ExpandedWidth
 

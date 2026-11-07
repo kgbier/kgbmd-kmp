@@ -10,11 +10,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.withCompositionLocals
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.MutableCreationExtras
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -23,7 +18,6 @@ import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import coil3.util.DebugLogger
-import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.di.LocalRootModule
 import dev.kgbier.kgbmd.ui.di.rememberRootModule
 import dev.kgbier.kgbmd.ui.nav.BottomSheetSceneStrategy
@@ -34,22 +28,6 @@ import dev.kgbier.kgbmd.ui.route.AppRoute
 import dev.kgbier.kgbmd.ui.theme.AppTheme
 import dev.kgbier.kgbmd.ui.util.LocalSizeClass
 import dev.kgbier.kgbmd.ui.util.computeSizeClass
-
-@Composable
-inline fun <reified VM : ViewModel> appViewModel(
-    viewModelStoreOwner: ViewModelStoreOwner =
-        checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        },
-    key: String? = null,
-    extrasBlock: MutableCreationExtras.() -> Unit = {},
-): VM {
-    val extras = MutableCreationExtras().apply {
-        set(LifecycleViewModelModule.Key.rootModule, LocalRootModule.current)
-        extrasBlock()
-    }
-    return viewModel(VM::class, viewModelStoreOwner, key, LifecycleViewModelModule.factory, extras)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
