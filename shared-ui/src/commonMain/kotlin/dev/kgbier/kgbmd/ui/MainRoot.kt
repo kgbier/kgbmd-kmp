@@ -1,7 +1,14 @@
 package dev.kgbier.kgbmd.ui
 
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.withCompositionLocals
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelStoreOwner
@@ -19,6 +26,7 @@ import coil3.util.DebugLogger
 import dev.kgbier.kgbmd.ui.di.LifecycleViewModelModule
 import dev.kgbier.kgbmd.ui.di.LocalRootModule
 import dev.kgbier.kgbmd.ui.di.rememberRootModule
+import dev.kgbier.kgbmd.ui.nav.BottomSheetSceneStrategy
 import dev.kgbier.kgbmd.ui.nav.Navigator
 import dev.kgbier.kgbmd.ui.nav.registerLocalNavigationEventDispatcher
 import dev.kgbier.kgbmd.ui.nav.rememberNavigator
@@ -43,6 +51,7 @@ inline fun <reified VM : ViewModel> appViewModel(
     return viewModel(VM::class, viewModelStoreOwner, key, LifecycleViewModelModule.factory, extras)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainRoot() = AppTheme {
 
@@ -55,12 +64,10 @@ fun MainRoot() = AppTheme {
     }
 
     val di = rememberRootModule()
+    val navigator: Navigator<AppRoute> = rememberNavigator(AppRoute.Main)
+    registerLocalNavigationEventDispatcher()
 
     BoxWithConstraints {
-
-        val navigator: Navigator<AppRoute> = rememberNavigator(AppRoute.Main)
-        registerLocalNavigationEventDispatcher()
-
         withCompositionLocals(
             LocalSizeClass provides computeSizeClass(),
             LocalRootModule provides di,
@@ -68,6 +75,9 @@ fun MainRoot() = AppTheme {
             NavDisplay(
                 backStack = navigator.backstack,
                 onBack = { navigator.router.pop() },
+                sceneStrategies = listOf(
+                    remember { BottomSheetSceneStrategy() },
+                ),
                 entryDecorators = listOf(
                     // Add the default decorators for managing scenes and saving state
                     rememberSaveableStateHolderNavEntryDecorator(),
@@ -97,6 +107,42 @@ fun MainRoot() = AppTheme {
 
                     is AppRoute.ImageViewer -> NavEntry(key) {
                         ImageScreen(image = key.image)
+                    }
+
+                    is AppRoute.CastAndCrew -> NavEntry(
+                        key = key,
+                        metadata = BottomSheetSceneStrategy.bottomSheet(),
+                    ) {
+                        GroupedCreditsForTitleScreen(
+                            id = key.id,
+                            router = navigator.router,
+                            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                                .asPaddingValues(),
+                        )
+                    }
+
+                    is AppRoute.Filmography -> NavEntry(
+                        key = key,
+                        metadata = BottomSheetSceneStrategy.bottomSheet(),
+                    ) {
+                        GroupedCreditsForNameScreen(
+                            id = key.id,
+                            router = navigator.router,
+                            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                                .asPaddingValues(),
+                        )
+                    }
+
+                    is AppRoute.Episodes -> NavEntry(
+                        key = key,
+                        metadata = BottomSheetSceneStrategy.bottomSheet(),
+                    ) {
+                        GroupedEpisodesForTitleScreen(
+                            id = key.id,
+                            router = navigator.router,
+                            contentPadding = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                                .asPaddingValues(),
+                        )
                     }
                 }
             }

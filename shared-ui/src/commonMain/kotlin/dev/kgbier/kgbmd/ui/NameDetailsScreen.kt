@@ -32,13 +32,12 @@ fun NameDetailsScreen(
     name: NameDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    onShowModal: (DetailsModalRoute) -> Unit = {},
 ) = NameDetailsScreen(
     name = name,
     contentPadding = contentPadding,
     onPortraitViewClicked = { router.push(AppRoute.ImageViewer(it)) },
     onTopCreditClicked = { router.push(AppRoute.Details(it)) },
-    onShowModal = onShowModal,
+    onFilmographyClicked = { router.push(AppRoute.Filmography(it)) },
 )
 
 @Composable
@@ -47,7 +46,7 @@ fun NameDetailsScreen(
     contentPadding: PaddingValues = PaddingValues(),
     onPortraitViewClicked: (Image) -> Unit = {},
     onTopCreditClicked: (MediaEntityId) -> Unit = {},
-    onShowModal: (DetailsModalRoute) -> Unit = {},
+    onFilmographyClicked: (MediaEntityId) -> Unit = {},
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
@@ -94,9 +93,7 @@ fun NameDetailsScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = {
-                    onShowModal(DetailsModalRoute.Filmography(name.id))
-                }) {
+                TextButton(onClick = { onFilmographyClicked(name.id) }) {
                     Text("Filmography")
                 }
             }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import dev.kgbier.kgbmd.ui.route.BottomsheetRoute
 
 interface Route
 
@@ -56,6 +57,9 @@ class StackNavigator<TRoute : Route>(
 
     private inner class StackRouter : Router<TRoute> {
         override fun push(route: TRoute) {
+            if (backstack.lastOrNull() is BottomsheetRoute) {
+                pop()
+            }
             backstack.add(route)
         }
 

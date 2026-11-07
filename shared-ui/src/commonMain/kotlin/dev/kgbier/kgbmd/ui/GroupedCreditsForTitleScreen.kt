@@ -81,8 +81,8 @@ fun GroupedCreditsForTitleList(
     onGroupClick: (CreditGrouping) -> Unit = {},
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
         contentPadding = contentPadding,
+        modifier = Modifier.fillMaxWidth()
     ) {
         state.items.forEach { item ->
             val isExpanded = expandedGroups.contains(item.groupingId)

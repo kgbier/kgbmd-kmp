@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -53,7 +52,6 @@ fun TitleDetailsScreen(
     title: TitleDetails,
     router: Router<AppRoute>,
     contentPadding: PaddingValues = PaddingValues(),
-    onShowModal: (DetailsModalRoute) -> Unit = {},
 ) = TitleDetailsScreen(
     title = title,
     contentPadding = contentPadding,
@@ -61,18 +59,20 @@ fun TitleDetailsScreen(
     onFeaturedCreditClicked = { router.push(AppRoute.Details(it)) },
     onEpisodePosterClicked = { router.push(AppRoute.Details(it)) },
     onCastCreditClicked = { router.push(AppRoute.Details(it)) },
-    onShowModal = onShowModal,
+    onFullCreditsClicked = { router.push(AppRoute.CastAndCrew(it)) },
+    onAllEpisodesClicked = { router.push(AppRoute.Episodes(it)) },
 )
 
 @Composable
 fun TitleDetailsScreen(
     title: TitleDetails,
     contentPadding: PaddingValues = PaddingValues(),
-    onShowModal: (DetailsModalRoute) -> Unit = {},
     onHeaderPosterViewClicked: (Image) -> Unit = {},
     onFeaturedCreditClicked: (MediaEntityId) -> Unit = {},
     onEpisodePosterClicked: (MediaEntityId) -> Unit = {},
     onCastCreditClicked: (MediaEntityId) -> Unit = {},
+    onFullCreditsClicked: (MediaEntityId) -> Unit = {},
+    onAllEpisodesClicked: (MediaEntityId) -> Unit = {},
 ) = LazyColumn(
     contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding()),
 ) {
@@ -82,7 +82,7 @@ fun TitleDetailsScreen(
             onPosterViewClicked = { onHeaderPosterViewClicked(it) },
             modifier = Modifier
                 .padding(16.dp)
-                .padding(top = contentPadding.calculateTopPadding()),
+                .padding(top = contentPadding.calculateTopPadding())
         )
     }
 
@@ -128,9 +128,7 @@ fun TitleDetailsScreen(
                 )
 
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = {
-                    onShowModal(DetailsModalRoute.Episodes(title.id))
-                }) {
+                TextButton(onClick = { onAllEpisodesClicked(title.id) }) {
                     Text("All")
                     Spacer(modifier = Modifier.width(8.dp))
                     Tag(
@@ -174,9 +172,7 @@ fun TitleDetailsScreen(
                     style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = {
-                    onShowModal(DetailsModalRoute.CastAndCrew(title.id))
-                }) {
+                TextButton(onClick = { onFullCreditsClicked(title.id) }) {
                     Text("Full credits")
                 }
             }
@@ -299,8 +295,8 @@ fun TitleDetailsScreen(
 @Composable
 private fun WatchOptionItemRow(
     watchOption: TitleDetails.WatchOption.Watchable,
-    additionalOptions: Int? = null,
     modifier: Modifier = Modifier,
+    additionalOptions: Int? = null,
 ) = Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier,
@@ -327,7 +323,7 @@ private fun WatchOptionItemRow(
             color = MaterialTheme.colorScheme.surfaceContainer,
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .size(height = 48.dp, width = 86.dp)
+                .size(height = 48.dp, width = 48.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
