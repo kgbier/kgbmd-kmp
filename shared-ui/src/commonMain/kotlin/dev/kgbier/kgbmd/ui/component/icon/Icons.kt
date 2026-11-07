@@ -27,6 +27,8 @@ object Icons {
 
     val Tune get() = tune
     val Tv get() = tv
+
+    val ZoomIn get() = zoom_in
 }
 
 @Composable

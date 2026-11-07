@@ -56,6 +56,8 @@ kotlin {
 
             implementation(libs.kotlin.stdlib)
 
+            implementation(libs.kermit)
+
             implementation(libs.jetbrains.compose.runtime)
             implementation(libs.jetbrains.compose.foundation)
             implementation(libs.jetbrains.compose.material3)

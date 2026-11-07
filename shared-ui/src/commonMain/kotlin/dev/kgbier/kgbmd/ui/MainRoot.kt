@@ -14,10 +14,8 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
-import coil3.request.crossfade
-import coil3.util.DebugLogger
+import dev.kgbier.kgbmd.ui.di.CoilModule
 import dev.kgbier.kgbmd.ui.di.LocalRootModule
 import dev.kgbier.kgbmd.ui.di.rememberRootModule
 import dev.kgbier.kgbmd.ui.nav.BottomSheetSceneStrategy
@@ -35,10 +33,7 @@ fun MainRoot() = AppTheme {
 
     // Coil
     setSingletonImageLoaderFactory { context ->
-        ImageLoader.Builder(context)
-            .crossfade(true)
-            .logger(DebugLogger())
-            .build()
+        CoilModule.createImageLoader(context)
     }
 
     val di = rememberRootModule()
