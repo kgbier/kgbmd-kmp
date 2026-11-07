@@ -15,9 +15,9 @@ import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 @Composable
 fun TagGroup(
     tags: List<String>,
+    modifier: Modifier = Modifier,
     maxItemsInEachRow: Int = Int.MAX_VALUE,
     maxLines: Int = Int.MAX_VALUE,
-    modifier: Modifier = Modifier,
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp),

@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.HorizontalFloatingToolbar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kgbier.kgbmd.domain.model.TitleCategory
 import dev.kgbier.kgbmd.presentation.MainScreenViewModel
 import dev.kgbier.kgbmd.ui.component.icon.Icons
+import dev.kgbier.kgbmd.ui.component.molecule.ToolbarFilledIconButton
+import dev.kgbier.kgbmd.ui.component.molecule.ToolbarIconButton
 import dev.kgbier.kgbmd.ui.component.preview.AppPreview
 import dev.kgbier.kgbmd.ui.di.appViewModel
 import dev.kgbier.kgbmd.ui.nav.Router
@@ -90,32 +89,29 @@ fun MainScreen(
                     )
                     .offset(y = -ScreenOffset),
             ) {
-                IconButton(onClick = onTitleCategoryIconClicked) {
-                    val toggleCategoryIcon = when (currentCategory) {
+                ToolbarIconButton(
+                    icon = when (currentCategory) {
                         TitleCategory.Movie -> Icons.Tv
                         TitleCategory.TvShow -> Icons.Movie
+                    },
+                    onClick = onTitleCategoryIconClicked,
+                    tooltip = when (currentCategory) {
+                        TitleCategory.Movie -> "Show TV"
+                        TitleCategory.TvShow -> "Show Movies"
                     }
-                    Icon(
-                        toggleCategoryIcon,
-                        contentDescription = "Localized description",
-                    )
-                }
-                FilledIconButton(
+                )
+                ToolbarFilledIconButton(
+                    icon = Icons.Search,
                     onClick = onSearchIconClicked,
                     modifier = Modifier
                         .width(IconButtonDefaults.smallContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide).width),
-                ) {
-                    Icon(
-                        Icons.Search,
-                        contentDescription = "Localized description",
-                    )
-                }
-                IconButton(onClick = onSettingsIconClicked) {
-                    Icon(
-                        Icons.Tune,
-                        contentDescription = "Localized description",
-                    )
-                }
+                    tooltip = "Search"
+                )
+                ToolbarIconButton(
+                    icon = Icons.Tune,
+                    onClick = onSettingsIconClicked,
+                    tooltip = "Settings",
+                )
             }
             content(innerPadding)
         }
